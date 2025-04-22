@@ -1,0 +1,7 @@
+﻿CREATE TABLE [dbo].[Trainer]
+(
+	[Id] INT NOT NULL PRIMARY KEY IDENTITY, 
+    [Name] VARCHAR(100) NOT NULL, 
+    [Number] VARCHAR(10) NOT NULL UNIQUE, 
+    [Status] BIT NOT NULL DEFAULT 1
+)

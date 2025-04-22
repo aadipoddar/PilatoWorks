@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PilatoWorksLibrary\PilatoWorksLibrary.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="PilatoWorks.Common" />
+    <Using Include="PilatoWorksLibrary.Data" />
+    <Using Include="PilatoWorksLibrary.DataAccess" />
+    <Using Include="PilatoWorksLibrary.Models" />
+  </ItemGroup>
+
+</Project>
