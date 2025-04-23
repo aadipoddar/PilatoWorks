@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PilatoWorks.Sessions"
         mc:Ignorable="d" WindowState="Maximized"
-        Title="Select Date" Height="450" Width="800">
+        Title="Select Date" Height="450" Width="800"
+		Closed="Window_Closed">
 
 	<Viewbox>
 		<Calendar Name="calendar" Margin="10" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" SelectedDatesChanged="calendar_SelectedDatesChanged"/>

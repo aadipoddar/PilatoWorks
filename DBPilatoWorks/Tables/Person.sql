@@ -7,9 +7,8 @@
     [Number] VARCHAR(10) NOT NULL UNIQUE, 
     [Email] VARCHAR(100) NOT NULL, 
     [Address] VARCHAR(250) NOT NULL, 
-    [SessionTypeId] INT NOT NULL, 
     [EmerrgencyName] VARCHAR(100) NOT NULL, 
-    [EmergencyRelaionship] VARCHAR(100) NOT NULL, 
+    [EmergencyRelationship] VARCHAR(100) NOT NULL, 
     [EmergencyNumber] VARCHAR(10) NOT NULL, 
     [ExistingMedicalCondition] VARCHAR(250) NOT NULL, 
     [CurrentlyOnMedication] VARCHAR(250) NOT NULL, 
@@ -17,6 +16,5 @@
     [FitnessGoals] VARCHAR(250) NOT NULL, 
     [CurrentFitnessLevel] VARCHAR(250) NOT NULL, 
     [OftenExercise] VARCHAR(250) NOT NULL, 
-    [Diet] VARCHAR(250) NOT NULL, 
-    CONSTRAINT [FK_Person_ToSessionType] FOREIGN KEY (SessionTypeId) REFERENCES [SessionType](Id),
+    [Diet] VARCHAR(250) NOT NULL
 )

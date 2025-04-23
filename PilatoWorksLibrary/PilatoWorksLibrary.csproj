@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <Using Include="PilatoWorksLibrary.DataAccess" />
+    <Using Include="PilatoWorksLibrary.Models" />
   </ItemGroup>
 
 </Project>

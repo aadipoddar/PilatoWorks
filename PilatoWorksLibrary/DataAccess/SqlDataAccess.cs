@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Diagnostics.CodeAnalysis;
 
 using Dapper;
 
@@ -30,5 +31,21 @@ public static class SqlDataAccess
 		using IDbConnection connection = new SqlConnection(ConnectionStrings.Local);
 
 		await connection.ExecuteAsync(storedProcedure, commandType: CommandType.StoredProcedure);
+	}
+}
+
+public class DateOnlyTypeHandler : SqlMapper.TypeHandler<DateOnly>
+{
+	public override DateOnly Parse(object value)
+	{
+		return value is DateOnly dateOnly
+			? dateOnly
+			: DateOnly.FromDateTime((DateTime)value);
+	}
+
+	public override void SetValue([DisallowNull] IDbDataParameter parameter, DateOnly value)
+	{
+		parameter.Value = value.ToDateTime(TimeOnly.MinValue);
+		parameter.DbType = DbType.Date;
 	}
 }

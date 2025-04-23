@@ -1,6 +1,4 @@
-﻿using PilatoWorksLibrary.Models;
-
-namespace PilatoWorksLibrary.Data;
+﻿namespace PilatoWorksLibrary.Data;
 
 public static class UserData
 {

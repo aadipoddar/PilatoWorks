@@ -7,6 +7,7 @@ public static class TableNames
 	public static string SessionType => "SessionType";
 	public static string Trainer => "Trainer";
 	public static string User => "User";
+	public static string Slot => "Slot";
 }
 
 public static class StoredProcedureNames
@@ -16,6 +17,7 @@ public static class StoredProcedureNames
 	public static string LoadTableDataByStatus => "Load_TableData_By_Status";
 
 	public static string LoadUserByPassword => "Load_User_By_Password";
+	public static string LoadPersonByNumber => "Load_Person_By_Number";
 
 	public static string InsertPerson => "Insert_Person";
 	public static string InsertSession => "Insert_Session";

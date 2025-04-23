@@ -9,8 +9,11 @@ public partial class LoginWindow : Window
 {
 	public LoginWindow() => InitializeComponent();
 
-	private void Window_Loaded(object sender, RoutedEventArgs e) =>
+	private void Window_Loaded(object sender, RoutedEventArgs e)
+	{
+		Dapper.SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());
 		userPasswordBox.Focus();
+	}
 
 	private async void userPasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
 	{

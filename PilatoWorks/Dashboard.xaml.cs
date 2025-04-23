@@ -1,5 +1,8 @@
 ﻿using System.Windows;
 
+using PilatoWorks.Person;
+using PilatoWorks.Sessions;
+
 namespace PilatoWorks;
 
 /// <summary>
@@ -17,4 +20,37 @@ public partial class Dashboard : Window
 		_user = user;
 		_loginWindow = loginWindow;
 	}
+
+	private void Window_Loaded(object sender, RoutedEventArgs e)
+	{
+		if (!_user.Session) sessionButton.Visibility = Visibility.Collapsed;
+		if (!_user.Trainer) trainerButton.Visibility = Visibility.Collapsed;
+		if (!_user.Admin) adminButton.Visibility = Visibility.Collapsed;
+	}
+
+	private void sessionButton_Click(object sender, RoutedEventArgs e)
+	{
+		SelectDateWindow selectDateWindow = new(_user, _loginWindow);
+		selectDateWindow.Show();
+		Close();
+	}
+
+	private void trainerButton_Click(object sender, RoutedEventArgs e)
+	{
+
+	}
+
+	private void managePersonButton_Click(object sender, RoutedEventArgs e)
+	{
+		ManagePersonWindow managePersonWindow = new();
+		managePersonWindow.ShowDialog();
+	}
+
+	private void adminButton_Click(object sender, RoutedEventArgs e)
+	{
+
+	}
+
+	private void Window_Closed(object sender, EventArgs e) =>
+		_loginWindow.Show();
 }
