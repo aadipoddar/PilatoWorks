@@ -8,6 +8,8 @@ public static class TableNames
 	public static string Trainer => "Trainer";
 	public static string User => "User";
 	public static string Slot => "Slot";
+	public static string Subscription => "Subscription";
+	public static string PaymentModes => "PaymentMode";
 }
 
 public static class StoredProcedureNames
@@ -18,9 +20,11 @@ public static class StoredProcedureNames
 
 	public static string LoadUserByPassword => "Load_User_By_Password";
 	public static string LoadPersonByNumber => "Load_Person_By_Number";
+	public static string LoadValidSubscriptionByPerson => "Load_Valid_Subscription_By_Person";
 
 	public static string InsertPerson => "Insert_Person";
 	public static string InsertSession => "Insert_Session";
 	public static string InsertTrainer => "Insert_Trainer";
 	public static string InsertUser => "Insert_User";
+	public static string InsertSubscription => "Insert_Subscription";
 }

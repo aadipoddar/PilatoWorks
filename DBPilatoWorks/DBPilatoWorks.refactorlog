@@ -140,4 +140,32 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[EmergencyRelationship]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="46880c24-3427-404e-903f-6f1fe6a7b08d" ChangeDateTime="04/23/2025 08:24:14">
+    <Property Name="ElementName" Value="[dbo].[Subscription].[ValidT]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Subscription]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ValidTo" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b129d93a-bbaa-4d2d-8a79-dc2ddfc834c4" ChangeDateTime="04/23/2025 08:25:08">
+    <Property Name="ElementName" Value="[dbo].[Subscription].[PaymentMode]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Subscription]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="PaymentModeid" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d5048636-998c-4a61-923a-cf831811936a" ChangeDateTime="04/23/2025 08:25:15">
+    <Property Name="ElementName" Value="[dbo].[Subscription].[PaymentModeid]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Subscription]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="PaymentModeId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="89a9cc0e-1f49-4b85-a996-ab7a3de4663e" ChangeDateTime="04/23/2025 08:26:05">
+    <Property Name="ElementName" Value="[dbo].[PaymentModes]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[PaymentMode]" />
+  </Operation>
 </Operations>

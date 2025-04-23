@@ -45,6 +45,11 @@ public partial class Dashboard : Window
 		ManagePersonWindow managePersonWindow = new();
 		managePersonWindow.ShowDialog();
 	}
+	private void manageSubscriptionButton_Click(object sender, RoutedEventArgs e)
+	{
+		SubscriptionWindow subscriptionWindow = new();
+		subscriptionWindow.ShowDialog();
+	}
 
 	private void adminButton_Click(object sender, RoutedEventArgs e)
 	{
