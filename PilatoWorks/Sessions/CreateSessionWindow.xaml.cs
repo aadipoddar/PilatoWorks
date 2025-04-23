@@ -7,20 +7,33 @@ namespace PilatoWorks.Sessions;
 /// </summary>
 public partial class CreateSessionWindow : Window
 {
-	private readonly DateTime _sessionDate;
+	private readonly DateOnly _sessionDate;
 	private readonly int _slotId;
+	private readonly SessionModel _session;
+	private readonly SessionsWindow _sessionsWindow;
 
-	public CreateSessionWindow(DateTime sessionDate, int slotId)
+	public CreateSessionWindow(DateOnly sessionDate, int slotId, SessionsWindow sessionsWindow)
 	{
 		InitializeComponent();
 
 		_sessionDate = sessionDate;
 		_slotId = slotId;
+		_sessionsWindow = sessionsWindow;
+	}
+
+	public CreateSessionWindow(SessionModel sessionModel, SessionsWindow sessionsWindow)
+	{
+		InitializeComponent();
+
+		_session = sessionModel;
+		_sessionDate = sessionModel.SessionDate;
+		_slotId = sessionModel.SlotId;
+		_sessionsWindow = sessionsWindow;
 	}
 
 	private async void Window_Loaded(object sender, RoutedEventArgs e)
 	{
-		sessionDatePicker.SelectedDate = _sessionDate;
+		sessionDatePicker.SelectedDate = _sessionDate.ToDateTime(TimeOnly.MinValue);
 
 		slotComboBox.ItemsSource = await CommonData.LoadTableData<SlotModel>(TableNames.Slot);
 		slotComboBox.DisplayMemberPath = nameof(SlotModel.Hour);
@@ -40,6 +53,16 @@ public partial class CreateSessionWindow : Window
 		trainer2ComboBox.DisplayMemberPath = nameof(TrainerModel.Name);
 		trainer2ComboBox.SelectedValuePath = nameof(TrainerModel.Id);
 		trainer2ComboBox.SelectedIndex = -1;
+
+		if (_session is not null)
+		{
+			sessionDatePicker.SelectedDate = _session.SessionDate.ToDateTime(TimeOnly.MinValue);
+			slotComboBox.SelectedValue = _session.SlotId;
+			personComboBox.SelectedValue = _session.PersonId;
+			trainer1ComboBox.SelectedValue = _session.Trainer1Id;
+			trainer2ComboBox.SelectedValue = _session.Trainer2Id;
+			confirmedCheckBox.IsChecked = _session.Confirmed;
+		}
 	}
 
 	private async void sessionDatePicker_SelectedDateChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -77,6 +100,7 @@ public partial class CreateSessionWindow : Window
 
 		await SessionData.InsertSession(new SessionModel
 		{
+			Id = _session?.Id ?? 0,
 			SessionDate = DateOnly.FromDateTime(sessionDatePicker.SelectedDate.Value),
 			SlotId = (int)slotComboBox.SelectedValue,
 			PersonId = (int)personComboBox.SelectedValue,
@@ -84,6 +108,8 @@ public partial class CreateSessionWindow : Window
 			Trainer2Id = trainer2ComboBox.SelectedValue != null ? (int)trainer2ComboBox.SelectedValue : null,
 			Confirmed = (bool)confirmedCheckBox.IsChecked
 		});
+
+		await _sessionsWindow.LoadSessions();
 		Close();
 	}
 }

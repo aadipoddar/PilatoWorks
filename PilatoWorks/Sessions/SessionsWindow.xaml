@@ -4,8 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PilatoWorks.Sessions"
-        mc:Ignorable="d" WindowState="Maximized"
-        Title="SessionsWindow" Height="450" Width="800" Loaded="Window_Loaded">
+        mc:Ignorable="d" WindowStartupLocation="CenterScreen"
+        Title="Sessions" Height="450" Width="800" Loaded="Window_Loaded">
 
 	<ScrollViewer>
 		<Grid>
@@ -30,7 +30,18 @@
 				<Button x:Name="createSessionWindow" Grid.Column="4" Content="Create" Margin="10" Padding="5" MinWidth="100" MinHeight="40" Click="createSessionWindow_Click" />
 			</Grid>
 
-			<DataGrid x:Name="sessionsDataGrid" Grid.Row="1" Margin="10" Padding="5" MinColumnWidth="100" HorizontalAlignment="Center" IsReadOnly="True" SelectedCellsChanged="sessionsDataGrid_SelectedCellsChanged" SelectionMode="Single"/>
+            <DataGrid x:Name="sessionsDataGrid" Grid.Row="1" Margin="10" Padding="5" MinColumnWidth="100" 
+                      HorizontalAlignment="Center" IsReadOnly="True" AutoGenerateColumns="False"
+                      SelectedCellsChanged="sessionsDataGrid_SelectedCellsChanged" SelectionMode="Single">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Name" Binding="{Binding PersonName}" />
+                    <DataGridTextColumn Header="Number" Binding="{Binding PersonNumber}" />
+                    <DataGridTextColumn Header="Type" Binding="{Binding SessionTypeName}" />
+					<DataGridTextColumn Header="Trainer 1" Binding="{Binding Trainer1Name}" />
+					<DataGridTextColumn Header="Trainer 2" Binding="{Binding Trainer2Name}" />
+					<DataGridTextColumn Header="Confirmed" Binding="{Binding Confirmed}" />
+                </DataGrid.Columns>
+            </DataGrid>
 		</Grid>
 	</ScrollViewer>
 </Window>

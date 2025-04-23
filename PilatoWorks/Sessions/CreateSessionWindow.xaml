@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PilatoWorks.Sessions"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
-        Title="Create Session" Height="400" Width="400"
+        Title="Create Session" Height="410" Width="400"
 		Loaded="Window_Loaded">
 
 	<ScrollViewer>

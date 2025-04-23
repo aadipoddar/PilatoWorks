@@ -30,15 +30,18 @@ public partial class SessionsWindow : Window
 		slotComboBox.SelectedIndex = 0;
 	}
 
-	private async void slotComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e) =>
-		sessionsDataGrid.ItemsSource = await SessionData.LoadSessionDetailsByDateSlot(DateOnly.FromDateTime(datePicker.SelectedDate.Value), (int)slotComboBox.SelectedValue);
-
-	private async void datePicker_SelectedDateChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+	public async Task LoadSessions()
 	{
 		if (datePicker.SelectedDate is null || datePicker is null || slotComboBox is null || slotComboBox.SelectedValue is null) return;
 
 		sessionsDataGrid.ItemsSource = await SessionData.LoadSessionDetailsByDateSlot(DateOnly.FromDateTime(datePicker.SelectedDate.Value), (int)slotComboBox.SelectedValue);
 	}
+
+	private async void slotComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e) =>
+		await LoadSessions();
+
+	private async void datePicker_SelectedDateChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e) =>
+		await LoadSessions();
 
 	private async void createSessionWindow_Click(object sender, RoutedEventArgs e)
 	{
@@ -50,13 +53,25 @@ public partial class SessionsWindow : Window
 			return;
 		}
 
-		CreateSessionWindow createSessionWindow = new(datePicker.SelectedDate.Value, (int)slotComboBox.SelectedValue);
+		CreateSessionWindow createSessionWindow = new(DateOnly.FromDateTime(datePicker.SelectedDate.Value), (int)slotComboBox.SelectedValue, this);
 		createSessionWindow.ShowDialog();
 	}
 
 	private void sessionsDataGrid_SelectedCellsChanged(object sender, System.Windows.Controls.SelectedCellsChangedEventArgs e)
 	{
-		CreateSessionWindow createSessionWindow = new(datePicker.SelectedDate.Value, (int)slotComboBox.SelectedValue);
+		var selectedSession = (SessionDetailsModel)sessionsDataGrid.SelectedItem;
+		if (selectedSession is null) return;
+
+		CreateSessionWindow createSessionWindow = new(new SessionModel
+		{
+			Id = selectedSession.Id,
+			SessionDate = selectedSession.SessionDate,
+			SlotId = selectedSession.SlotId,
+			PersonId = selectedSession.PersonId,
+			Trainer1Id = selectedSession.Trainer1Id,
+			Trainer2Id = selectedSession.Trainer2Id,
+			Confirmed = selectedSession.Confirmed
+		}, this);
 		createSessionWindow.ShowDialog();
 	}
 }
