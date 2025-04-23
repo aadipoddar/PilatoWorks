@@ -30,15 +30,31 @@ public partial class SessionsWindow : Window
 		slotComboBox.SelectedIndex = 0;
 	}
 
-	private void Window_Closed(object sender, EventArgs e) =>
-		_selectDateWindow.Show();
+	private async void slotComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e) =>
+		sessionsDataGrid.ItemsSource = await SessionData.LoadSessionDetailsByDateSlot(DateOnly.FromDateTime(datePicker.SelectedDate.Value), (int)slotComboBox.SelectedValue);
 
-	private void slotComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+	private async void datePicker_SelectedDateChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
 	{
+		if (datePicker.SelectedDate is null || datePicker is null || slotComboBox is null || slotComboBox.SelectedValue is null) return;
 
+		sessionsDataGrid.ItemsSource = await SessionData.LoadSessionDetailsByDateSlot(DateOnly.FromDateTime(datePicker.SelectedDate.Value), (int)slotComboBox.SelectedValue);
 	}
 
-	private void createSessionWindow_Click(object sender, RoutedEventArgs e)
+	private async void createSessionWindow_Click(object sender, RoutedEventArgs e)
+	{
+		var confirmedSessions = (await SessionData.LoadSessionDetailsByDateSlot(DateOnly.FromDateTime(datePicker.SelectedDate.Value), (int)slotComboBox.SelectedValue)).Count;
+		var slotMax = (await CommonData.LoadTableDataById<SlotModel>(TableNames.Slot, (int)slotComboBox.SelectedValue)).Hour;
+		if (confirmedSessions >= slotMax)
+		{
+			MessageBox.Show($"The maximum number of sessions for this slot has been reached ({slotMax}).", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+			return;
+		}
+
+		CreateSessionWindow createSessionWindow = new(datePicker.SelectedDate.Value, (int)slotComboBox.SelectedValue);
+		createSessionWindow.ShowDialog();
+	}
+
+	private void sessionsDataGrid_SelectedCellsChanged(object sender, System.Windows.Controls.SelectedCellsChangedEventArgs e)
 	{
 		CreateSessionWindow createSessionWindow = new(datePicker.SelectedDate.Value, (int)slotComboBox.SelectedValue);
 		createSessionWindow.ShowDialog();

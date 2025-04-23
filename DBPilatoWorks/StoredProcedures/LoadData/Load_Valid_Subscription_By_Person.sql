@@ -3,9 +3,6 @@
 AS
 BEGIN
 	SELECT *
-	FROM [dbo].[Subscription] AS s
-	WHERE s.[Status] = 1
-		AND s.PersonId = @PersonId
-		AND s.ValidFrom <= GETDATE()
-		AND s.ValidTo > GETDATE()
+	FROM [dbo].[Valid_Subscriptions] AS s
+	WHERE s.[PersonId] = @PersonId
 END

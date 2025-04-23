@@ -5,13 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PilatoWorks.Sessions"
         mc:Ignorable="d" WindowState="Maximized"
-        Title="SessionsWindow" Height="450" Width="800" Loaded="Window_Loaded" Closed="Window_Closed">
+        Title="SessionsWindow" Height="450" Width="800" Loaded="Window_Loaded">
 
 	<ScrollViewer>
 		<Grid>
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto"/>
-				<RowDefinition Height="*"/>
+				<RowDefinition Height="Auto"/>
 			</Grid.RowDefinitions>
 
 			<Grid HorizontalAlignment="Center">
@@ -23,14 +23,14 @@
 					<ColumnDefinition Width="Auto"/>
 				</Grid.ColumnDefinitions>
 
-				<DatePicker Name="datePicker" Margin="10" Padding="5"/>
+				<DatePicker Name="datePicker" Margin="10" Padding="5" SelectedDateChanged="datePicker_SelectedDateChanged"/>
 
 				<ComboBox x:Name="slotComboBox" Grid.Column="2" Margin="10" Padding="5" MinWidth="100" SelectionChanged="slotComboBox_SelectionChanged" />
 
 				<Button x:Name="createSessionWindow" Grid.Column="4" Content="Create" Margin="10" Padding="5" MinWidth="100" MinHeight="40" Click="createSessionWindow_Click" />
 			</Grid>
 
-			<DataGrid x:Name="sessionsDataGrid" Grid.Row="1" Margin="10" Padding="5"/>
+			<DataGrid x:Name="sessionsDataGrid" Grid.Row="1" Margin="10" Padding="5" MinColumnWidth="100" HorizontalAlignment="Center" IsReadOnly="True" SelectedCellsChanged="sessionsDataGrid_SelectedCellsChanged" SelectionMode="Single"/>
 		</Grid>
 	</ScrollViewer>
 </Window>

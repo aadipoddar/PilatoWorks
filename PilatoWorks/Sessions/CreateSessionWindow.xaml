@@ -26,7 +26,7 @@
 			</Grid.RowDefinitions>
 
 			<Label Content="Session Date" Grid.Column="0" Margin="10" Padding="5"/>
-			<DatePicker Grid.Column="1" Margin="10" Padding="5" x:Name="sessionDatePicker"/>
+			<DatePicker Grid.Column="1" Margin="10" Padding="5" x:Name="sessionDatePicker" SelectedDateChanged="sessionDatePicker_SelectedDateChanged"/>
 
 			<Label Content="Slot" Grid.Row="1" Grid.Column="0" Margin="10" Padding="5"/>
 			<ComboBox x:Name="slotComboBox" Grid.Row="1" Grid.Column="1" Margin="10" Padding="5" />
@@ -40,7 +40,7 @@
 			<Label Content="Trainer 2" Grid.Row="4" Grid.Column="0" Margin="10" Padding="5"/>
 			<ComboBox x:Name="trainer2ComboBox" Grid.Row="4" Grid.Column="1" Margin="10" Padding="5"/>
 
-			<CheckBox Content="Confirmed" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="10" Padding="5" IsChecked="True"/>
+			<CheckBox Content="Confirmed" x:Name="confirmedCheckBox" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="10" Padding="5" IsChecked="True"/>
 
 			<Button Content="Save" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="10" Padding="5" MinWidth="100" MinHeight="40" Click="saveButton_Click" Style="{DynamicResource AccentButtonStyle}"/>
 		</Grid>

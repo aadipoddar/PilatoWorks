@@ -33,6 +33,7 @@ public partial class Dashboard : Window
 		SelectDateWindow selectDateWindow = new(_user, _loginWindow);
 		selectDateWindow.Show();
 		Close();
+		_loginWindow.Hide();
 	}
 
 	private void trainerButton_Click(object sender, RoutedEventArgs e)

@@ -61,6 +61,7 @@
     <Folder Include="StoredProcedures\Insert" />
     <Folder Include="StoredProcedures\LoadData" />
     <Folder Include="Publish\" />
+    <Folder Include="Views" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\Person.sql" />
@@ -82,6 +83,10 @@
     <Build Include="Tables\PaymentMode.sql" />
     <Build Include="StoredProcedures\Insert\Insert_Subscription.sql" />
     <Build Include="StoredProcedures\LoadData\Load_Valid_Subscription_By_Person.sql" />
+    <Build Include="Views\Valid_Subscriptions.sql" />
+    <Build Include="StoredProcedures\LoadData\Load_Valid_Subscription_By_Date.sql" />
+    <Build Include="Views\Session_Details.sql" />
+    <Build Include="StoredProcedures\LoadData\Load_SessionDetails_By_Date_Slot.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="DBPilatoWorks.refactorlog" />

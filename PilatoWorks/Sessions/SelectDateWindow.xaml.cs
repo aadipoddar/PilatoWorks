@@ -16,13 +16,14 @@ public partial class SelectDateWindow : Window
 
 		_user = user;
 		_loginWindow = loginWindow;
+
+		_loginWindow.Hide();
 	}
 
 	private void calendar_SelectedDatesChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
 	{
 		SessionsWindow sessionsWindow = new(_user, calendar.SelectedDate.Value, this);
-		sessionsWindow.Show();
-		Hide();
+		sessionsWindow.ShowDialog();
 	}
 
 	private void Window_Closed(object sender, EventArgs e) =>

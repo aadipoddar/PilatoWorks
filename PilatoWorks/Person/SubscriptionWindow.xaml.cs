@@ -42,8 +42,10 @@ public partial class SubscriptionWindow : Window
 
 				validFromDatePicker.SelectedDate = validSubscriptions.ValidFrom.ToDateTime(new TimeOnly(0, 0));
 				validToDatePicker.SelectedDate = validSubscriptions.ValidTo.ToDateTime(new TimeOnly(0, 0));
-				amountTextBox.Text = validSubscriptions.Amount.ToString();
+				subscriptionTypeComboBox.SelectedValue = validSubscriptions.SessionTypeId;
 				noSessionsTextBox.Text = validSubscriptions.NoSessions.ToString();
+				amountTextBox.Text = validSubscriptions.Amount.ToString();
+				paymentModeComboBox.SelectedValue = validSubscriptions.PaymentModeId;
 				statusCheckBox.IsChecked = validSubscriptions.Status;
 			}
 			else

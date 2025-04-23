@@ -27,9 +27,9 @@ public partial class CreateSessionWindow : Window
 		slotComboBox.SelectedValuePath = nameof(SlotModel.Id);
 		slotComboBox.SelectedValue = _slotId;
 
-		personComboBox.ItemsSource = await CommonData.LoadTableData<PersonModel>(TableNames.Person);
-		personComboBox.DisplayMemberPath = $"{nameof(PersonModel.Name)} ({nameof(PersonModel.Number)})";
-		personComboBox.SelectedValuePath = nameof(PersonModel.Id);
+		personComboBox.ItemsSource = await SubscriptionData.LoadValidSubscriptionByDate(DateOnly.FromDateTime(sessionDatePicker.SelectedDate.Value));
+		personComboBox.DisplayMemberPath = nameof(ValidSubscriptionModel.PersonName);
+		personComboBox.SelectedValuePath = nameof(ValidSubscriptionModel.PersonId);
 
 		trainer1ComboBox.ItemsSource = await CommonData.LoadTableDataByStatus<TrainerModel>(TableNames.Trainer);
 		trainer1ComboBox.DisplayMemberPath = nameof(TrainerModel.Name);
@@ -42,21 +42,28 @@ public partial class CreateSessionWindow : Window
 		trainer2ComboBox.SelectedIndex = -1;
 	}
 
+	private async void sessionDatePicker_SelectedDateChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+	{
+		personComboBox.ItemsSource = await SubscriptionData.LoadValidSubscriptionByDate(DateOnly.FromDateTime(sessionDatePicker.SelectedDate.Value));
+		personComboBox.DisplayMemberPath = nameof(ValidSubscriptionModel.PersonName);
+		personComboBox.SelectedValuePath = nameof(ValidSubscriptionModel.PersonId);
+	}
+
 	private async void saveButton_Click(object sender, RoutedEventArgs e)
 	{
-		if (slotComboBox.SelectedValue == null)
+		if (slotComboBox.SelectedValue is null)
 		{
 			MessageBox.Show("Please select a slot.");
 			return;
 		}
 
-		if (personComboBox.SelectedValue == null)
+		if (personComboBox.SelectedValue is null)
 		{
 			MessageBox.Show("Please select a person.");
 			return;
 		}
 
-		if (trainer1ComboBox.SelectedValue == null && trainer2ComboBox.SelectedValue == null)
+		if (trainer1ComboBox.SelectedValue is null && trainer2ComboBox.SelectedValue is null)
 		{
 			MessageBox.Show("Please select at least one trainer.");
 			return;
@@ -74,7 +81,8 @@ public partial class CreateSessionWindow : Window
 			SlotId = (int)slotComboBox.SelectedValue,
 			PersonId = (int)personComboBox.SelectedValue,
 			Trainer1Id = trainer1ComboBox.SelectedValue != null ? (int)trainer1ComboBox.SelectedValue : null,
-			Trainer2Id = trainer2ComboBox.SelectedValue != null ? (int)trainer2ComboBox.SelectedValue : null
+			Trainer2Id = trainer2ComboBox.SelectedValue != null ? (int)trainer2ComboBox.SelectedValue : null,
+			Confirmed = (bool)confirmedCheckBox.IsChecked
 		});
 		Close();
 	}
