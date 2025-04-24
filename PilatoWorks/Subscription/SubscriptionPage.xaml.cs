@@ -1,19 +1,22 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 
-namespace PilatoWorks.Person;
+namespace PilatoWorks.Subscription;
 
 /// <summary>
-/// Interaction logic for Subscription.xaml
+/// Interaction logic for SubscriptionPage.xaml
 /// </summary>
-public partial class SubscriptionWindow : Window
+public partial class SubscriptionPage : Page
 {
 	private readonly List<SubscriptionPaymentModeModel> _paymentModels = [];
 	private int _subscriptionId = 0;
 
-	public SubscriptionWindow() => InitializeComponent();
+	public SubscriptionPage() => InitializeComponent();
 
-	private async void Window_Loaded(object sender, RoutedEventArgs e)
+	private async void Page_Loaded(object sender, RoutedEventArgs e)
 	{
+		validSubscriptionsDataGrid.ItemsSource = await CommonData.LoadTableData<ValidSubscriptionModel>(ViewNames.ValidSubscriptionsDetails);
+
 		subscriptionTypeComboBox.ItemsSource = await CommonData.LoadTableDataByStatus<SessionTypeModel>(TableNames.SessionType);
 		subscriptionTypeComboBox.DisplayMemberPath = nameof(SessionTypeModel.Name);
 		subscriptionTypeComboBox.SelectedValuePath = nameof(SessionTypeModel.Id);
@@ -30,7 +33,7 @@ public partial class SubscriptionWindow : Window
 	private void personNumberTextBox_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e) =>
 		Helper.ValidateIntegerInput(sender, e);
 
-	private async void personNumberTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+	private async void personNumberTextBox_TextChanged(object sender, TextChangedEventArgs e)
 	{
 		var foundPerson = await PersonData.LoadPersonByNumber(personNumberTextBox.Text.Trim());
 
@@ -185,7 +188,7 @@ public partial class SubscriptionWindow : Window
 				Status = true
 			});
 
-		Close();
+		personNumberTextBox.Clear();
 	}
 
 	private bool ValidateForm()
@@ -233,5 +236,12 @@ public partial class SubscriptionWindow : Window
 		}
 
 		return true;
+	}
+
+	private void validSubscriptionsGrid_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
+	{
+		if (validSubscriptionsDataGrid.SelectedItem is null) return;
+
+		personNumberTextBox.Text = ((ValidSubscriptionModel)validSubscriptionsDataGrid.SelectedItem).PersonNumber;
 	}
 }

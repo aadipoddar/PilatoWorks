@@ -4,46 +4,56 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PilatoWorks.Sessions"
+		xmlns:common="clr-namespace:PilatoWorks.Common"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
         Title="Create Session" Height="410" Width="400"
 		Loaded="Window_Loaded">
 
 	<ScrollViewer>
-		<Grid HorizontalAlignment="Center">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="Auto"/>
-				<ColumnDefinition Width="Auto" MinWidth="200"/>
-			</Grid.ColumnDefinitions>
-
+		<Grid>
 			<Grid.RowDefinitions>
-				<RowDefinition Height="Auto"/>
-				<RowDefinition Height="Auto"/>
-				<RowDefinition Height="Auto"/>
-				<RowDefinition Height="Auto"/>
-				<RowDefinition Height="Auto"/>
-				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="*"/>
 				<RowDefinition Height="Auto"/>
 			</Grid.RowDefinitions>
 
-			<Label Content="Session Date" Grid.Column="0" Margin="10" Padding="5" x:Name="sessionDateLabel"/>
-			<DatePicker Grid.Column="1" Margin="10" Padding="5" x:Name="sessionDatePicker" SelectedDateChanged="sessionDatePicker_SelectedDateChanged"/>
+			<Grid HorizontalAlignment="Center">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="Auto" MinWidth="200"/>
+				</Grid.ColumnDefinitions>
 
-			<Label Content="Slot" Grid.Row="1" Grid.Column="0" Margin="10" Padding="5"/>
-			<ComboBox x:Name="slotComboBox" Grid.Row="1" Grid.Column="1" Margin="10" Padding="5" SelectionChanged="slotComboBox_SelectionChanged" />
-			
-			<Label Content="Person" Grid.Row="2" Grid.Column="0" Margin="10" Padding="5"/>
-			<ComboBox x:Name="personSubscriptionComboBox" Grid.Row="2" Grid.Column="1" Margin="10" Padding="5" />
-			<TextBox x:Name="personSubscriptionTextBox" Grid.Row="2" Grid.Column="1" Margin="10" Padding="5" IsReadOnly="True" Visibility="Hidden" />
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+				</Grid.RowDefinitions>
 
-			<Label Content="Trainer 1" Grid.Row="3" Grid.Column="0" Margin="10" Padding="5"/>
-			<ComboBox x:Name="trainer1ComboBox" Grid.Row="3" Grid.Column="1" Margin="10" Padding="5"/>
+				<Label Content="Session Date" Grid.Column="0" Margin="10" Padding="5" x:Name="sessionDateLabel"/>
+				<DatePicker Grid.Column="1" Margin="10" Padding="5" x:Name="sessionDatePicker" SelectedDateChanged="sessionDatePicker_SelectedDateChanged"/>
 
-			<Label Content="Trainer 2" Grid.Row="4" Grid.Column="0" Margin="10" Padding="5"/>
-			<ComboBox x:Name="trainer2ComboBox" Grid.Row="4" Grid.Column="1" Margin="10" Padding="5"/>
+				<Label Content="Slot" Grid.Row="1" Grid.Column="0" Margin="10" Padding="5"/>
+				<ComboBox x:Name="slotComboBox" Grid.Row="1" Grid.Column="1" Margin="10" Padding="5" SelectionChanged="slotComboBox_SelectionChanged" />
 
-			<CheckBox Content="Confirmed" x:Name="confirmedCheckBox" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="10" Padding="5" IsChecked="True"/>
+				<Label Content="Person" Grid.Row="2" Grid.Column="0" Margin="10" Padding="5"/>
+				<ComboBox x:Name="personSubscriptionComboBox" Grid.Row="2" Grid.Column="1" Margin="10" Padding="5" />
+				<TextBox x:Name="personSubscriptionTextBox" Grid.Row="2" Grid.Column="1" Margin="10" Padding="5" IsReadOnly="True" Visibility="Hidden" />
 
-			<Button Content="Save" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="10" Padding="5" MinWidth="100" MinHeight="40" Click="saveButton_Click" Style="{DynamicResource AccentButtonStyle}"/>
+				<Label Content="Trainer 1" Grid.Row="3" Grid.Column="0" Margin="10" Padding="5"/>
+				<ComboBox x:Name="trainer1ComboBox" Grid.Row="3" Grid.Column="1" Margin="10" Padding="5"/>
+
+				<Label Content="Trainer 2" Grid.Row="4" Grid.Column="0" Margin="10" Padding="5"/>
+				<ComboBox x:Name="trainer2ComboBox" Grid.Row="4" Grid.Column="1" Margin="10" Padding="5"/>
+
+				<CheckBox Content="Confirmed" x:Name="confirmedCheckBox" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="10" Padding="5" IsChecked="True"/>
+
+				<Button Content="Save" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="10" Padding="5" MinWidth="100" MinHeight="40" Click="saveButton_Click" Style="{DynamicResource AccentButtonStyle}"/>
+			</Grid>
+
+			<common:FooterControl Grid.Row="1"/>
 		</Grid>
 	</ScrollViewer>
 </Window>

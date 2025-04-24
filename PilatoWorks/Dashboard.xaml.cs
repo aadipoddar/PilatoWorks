@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 
-using PilatoWorks.Person;
 using PilatoWorks.Sessions;
+using PilatoWorks.Subscription;
 
 namespace PilatoWorks;
 
@@ -41,15 +41,17 @@ public partial class Dashboard : Window
 
 	}
 
-	private void personButton_Click(object sender, RoutedEventArgs e)
-	{
-		ManagePersonWindow managePersonWindow = new();
-		managePersonWindow.ShowDialog();
-	}
 	private void subscriptionButton_Click(object sender, RoutedEventArgs e)
 	{
-		SubscriptionWindow subscriptionWindow = new();
-		subscriptionWindow.ShowDialog();
+		ManageSubscriptionsPanel manageSubscriptions = new(_loginWindow);
+		manageSubscriptions.Show();
+		Close();
+		_loginWindow.Hide();
+	}
+
+	private void clearDuesButton_Click(object sender, RoutedEventArgs e)
+	{
+
 	}
 
 	private void adminButton_Click(object sender, RoutedEventArgs e)

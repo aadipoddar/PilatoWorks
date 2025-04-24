@@ -4,44 +4,54 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PilatoWorks.Sessions"
+		xmlns:common="clr-namespace:PilatoWorks.Common"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
         Title="Sessions" Height="450" Width="800" Loaded="Window_Loaded">
 
 	<ScrollViewer>
 		<Grid>
 			<Grid.RowDefinitions>
-				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="*"/>
 				<RowDefinition Height="Auto"/>
 			</Grid.RowDefinitions>
 
-			<Grid HorizontalAlignment="Center">
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="Auto"/>
-					<ColumnDefinition Width="50"/>
-					<ColumnDefinition Width="Auto"/>
-					<ColumnDefinition Width="50"/>
-					<ColumnDefinition Width="Auto"/>
-				</Grid.ColumnDefinitions>
+			<Grid>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+				</Grid.RowDefinitions>
 
-				<DatePicker Name="datePicker" Margin="10" Padding="5" SelectedDateChanged="datePicker_SelectedDateChanged"/>
+				<Grid HorizontalAlignment="Center">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto"/>
+						<ColumnDefinition Width="50"/>
+						<ColumnDefinition Width="Auto"/>
+						<ColumnDefinition Width="50"/>
+						<ColumnDefinition Width="Auto"/>
+					</Grid.ColumnDefinitions>
 
-				<ComboBox x:Name="slotComboBox" Grid.Column="2" Margin="10" Padding="5" MinWidth="100" SelectionChanged="slotComboBox_SelectionChanged" />
+					<DatePicker Name="datePicker" Margin="10" Padding="5" SelectedDateChanged="datePicker_SelectedDateChanged"/>
 
-				<Button x:Name="createSessionWindow" Grid.Column="4" Content="Create" Margin="10" Padding="5" MinWidth="100" MinHeight="40" Click="createSessionWindow_Click" />
-			</Grid>
+					<ComboBox x:Name="slotComboBox" Grid.Column="2" Margin="10" Padding="5" MinWidth="100" SelectionChanged="slotComboBox_SelectionChanged" />
 
-            <DataGrid x:Name="sessionsDataGrid" Grid.Row="1" Margin="10" Padding="5" MinColumnWidth="100" 
+					<Button x:Name="createSessionWindow" Grid.Column="4" Content="Create" Margin="10" Padding="5" MinWidth="100" MinHeight="40" Click="createSessionWindow_Click" />
+				</Grid>
+
+				<DataGrid x:Name="sessionsDataGrid" Grid.Row="1" Margin="10" Padding="5" MinColumnWidth="100" 
                       HorizontalAlignment="Center" IsReadOnly="True" AutoGenerateColumns="False"
                       SelectedCellsChanged="sessionsDataGrid_SelectedCellsChanged" SelectionMode="Single">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Name" Binding="{Binding PersonName}" />
-                    <DataGridTextColumn Header="Number" Binding="{Binding PersonNumber}" />
-                    <DataGridTextColumn Header="Type" Binding="{Binding SessionTypeName}" />
-					<DataGridTextColumn Header="Trainer 1" Binding="{Binding Trainer1Name}" />
-					<DataGridTextColumn Header="Trainer 2" Binding="{Binding Trainer2Name}" />
-					<DataGridTextColumn Header="Confirmed" Binding="{Binding Confirmed}"/>
-                </DataGrid.Columns>
-            </DataGrid>
+					<DataGrid.Columns>
+						<DataGridTextColumn Header="Name" Binding="{Binding PersonName}" />
+						<DataGridTextColumn Header="Number" Binding="{Binding PersonNumber}" />
+						<DataGridTextColumn Header="Type" Binding="{Binding SessionTypeName}" />
+						<DataGridTextColumn Header="Trainer 1" Binding="{Binding Trainer1Name}" />
+						<DataGridTextColumn Header="Trainer 2" Binding="{Binding Trainer2Name}" />
+						<DataGridTextColumn Header="Confirmed" Binding="{Binding Confirmed}"/>
+					</DataGrid.Columns>
+				</DataGrid>
+			</Grid>
+
+			<common:FooterControl Grid.Row="1"/>
 		</Grid>
 	</ScrollViewer>
 </Window>

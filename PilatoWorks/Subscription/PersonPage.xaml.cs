@@ -1,20 +1,24 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 
-namespace PilatoWorks.Person;
+namespace PilatoWorks.Subscription;
 
 /// <summary>
-/// Interaction logic for CreatePerson.xaml
+/// Interaction logic for PersonPage.xaml
 /// </summary>
-public partial class ManagePersonWindow : Window
+public partial class PersonPage : Page
 {
 	private int _foundId = 0;
 
-	public ManagePersonWindow() => InitializeComponent();
+	public PersonPage() => InitializeComponent();
+
+	private async void Page_Loaded(object sender, RoutedEventArgs e) =>
+		await ApplySearchFilter();
 
 	private void numberTextBox_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e) =>
 		Helper.ValidateIntegerInput(sender, e);
 
-	private async void numberTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+	private async void numberTextBox_TextChanged(object sender, TextChangedEventArgs e)
 	{
 		var foundPerson = await PersonData.LoadPersonByNumber(numberTextBox.Text.Trim().RemoveSpace());
 
@@ -43,29 +47,8 @@ public partial class ManagePersonWindow : Window
 
 	private async void saveButton_Click(object sender, RoutedEventArgs e)
 	{
-		if (string.IsNullOrWhiteSpace(nameTextBox.Text))
-		{
-			MessageBox.Show("Please enter a name.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+		if (!ValidateForm())
 			return;
-		}
-
-		if (string.IsNullOrWhiteSpace(genderTextBox.Text))
-		{
-			MessageBox.Show("Please enter a Gender.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-			return;
-		}
-
-		if (string.IsNullOrWhiteSpace(numberTextBox.Text))
-		{
-			MessageBox.Show("Please enter a number.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-			return;
-		}
-
-		if (dateOfBirthPicker.SelectedDate == null)
-		{
-			MessageBox.Show("Please select a date of birth.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-			return;
-		}
 
 		await PersonData.InsertPerson(new PersonModel
 		{
@@ -88,6 +71,52 @@ public partial class ManagePersonWindow : Window
 			Diet = dietTextBox.Text.Trim()
 		});
 
-		Close();
+		_foundId = 0;
+		numberTextBox.Clear();
+		await ApplySearchFilter();
+	}
+
+	private bool ValidateForm()
+	{
+		if (string.IsNullOrWhiteSpace(nameTextBox.Text))
+		{
+			MessageBox.Show("Please enter a name.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+			return false;
+		}
+
+		if (string.IsNullOrWhiteSpace(genderTextBox.Text))
+		{
+			MessageBox.Show("Please enter a Gender.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+			return false;
+		}
+
+		if (string.IsNullOrWhiteSpace(numberTextBox.Text))
+		{
+			MessageBox.Show("Please enter a number.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+			return false;
+		}
+
+		if (dateOfBirthPicker.SelectedDate == null)
+		{
+			MessageBox.Show("Please select a date of birth.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+			return false;
+		}
+
+		return true;
+	}
+
+	private async void searchTextBox_TextChanged(object sender, TextChangedEventArgs e) =>
+		await ApplySearchFilter();
+
+	private async Task ApplySearchFilter() =>
+		personDataGrid.ItemsSource = await PersonData.LoadPersonByNameNumber(
+			searchNameTextBox.Text.Trim().RemoveSpace(),
+			searchNumberTextBox.Text.Trim().RemoveSpace());
+
+	private void personDataGrid_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
+	{
+		if (personDataGrid.SelectedItem is null) return;
+
+		numberTextBox.Text = ((PersonModel)personDataGrid.SelectedItem).Number;
 	}
 }

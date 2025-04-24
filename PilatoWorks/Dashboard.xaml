@@ -4,22 +4,30 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PilatoWorks"
+		xmlns:common="clr-namespace:PilatoWorks.Common"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
-        Title="Dashboard" Height="350" Width="300"
+        Title="Dashboard" Height="300" Width="300"
 		Loaded="Window_Loaded" Closed="Window_Closed">
-    <Grid>
+
+	<Grid>
 		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
 			<RowDefinition Height="Auto"/>
 		</Grid.RowDefinitions>
+		<Grid VerticalAlignment="Center">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+			</Grid.RowDefinitions>
 
-		<Button x:Name="sessionButton" Content="Session" MinWidth="100" MinHeight="40" Margin="10" Padding="5" Click="sessionButton_Click" HorizontalAlignment="Center" />
-		<Button x:Name="trainerButton" Grid.Row="1" Content="Trainer" MinWidth="100" MinHeight="40" Margin="10" Padding="5" Click="trainerButton_Click" HorizontalAlignment="Center" />
-		<Button x:Name="personButton" Grid.Row="2" Content="Person" MinWidth="100" MinHeight="40" Margin="10" Padding="5" Click="personButton_Click" HorizontalAlignment="Center" />
-		<Button x:Name="subscriptionButton" Grid.Row="3" Content="Subscription" MinWidth="100" MinHeight="40" Margin="10" Padding="5" Click="subscriptionButton_Click" HorizontalAlignment="Center" />
-		<Button x:Name="adminButton" Grid.Row="4" Content="Admin" MinWidth="100" MinHeight="40" Margin="10" Padding="5" Click="adminButton_Click" HorizontalAlignment="Center" />
+			<Button x:Name="sessionButton" Content="Session" MinWidth="100" MinHeight="40" Margin="10" Padding="5" Click="sessionButton_Click" HorizontalAlignment="Center" />
+			<Button x:Name="trainerButton" Grid.Row="1" Content="Trainer" MinWidth="100" MinHeight="40" Margin="10" Padding="5" Click="trainerButton_Click" HorizontalAlignment="Center" />
+			<Button x:Name="subscriptionButton" Grid.Row="2" Content="Subscription" MinWidth="100" MinHeight="40" Margin="10" Padding="5" Click="subscriptionButton_Click" HorizontalAlignment="Center" />
+			<Button x:Name="adminButton" Grid.Row="3" Content="Admin" MinWidth="100" MinHeight="40" Margin="10" Padding="5" Click="adminButton_Click" HorizontalAlignment="Center" />
+		</Grid>
+
+		<common:FooterControl Grid.Row="1"/>
 	</Grid>
 </Window>

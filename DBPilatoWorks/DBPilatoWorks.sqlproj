@@ -92,6 +92,7 @@
     <Build Include="StoredProcedures\LoadData\Subscription\Load_Valid_Subscription_By_Person.sql" />
     <Build Include="StoredProcedures\LoadData\Subscription\Load_SubscriptionPaymentDetails_By_SubscriptionId.sql" />
     <Build Include="Views\Subscription_Details.sql" />
+    <Build Include="StoredProcedures\LoadData\Load_Person_By_Name_Number.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="DBPilatoWorks.refactorlog" />
