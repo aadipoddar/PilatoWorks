@@ -175,4 +175,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[Booking]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="457f5671-9a18-4e29-bc15-d0a57564ab30" ChangeDateTime="04/24/2025 10:06:33">
+    <Property Name="ElementName" Value="[dbo].[Session].[PersonId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Session]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[SubscriptionId]" />
+  </Operation>
 </Operations>

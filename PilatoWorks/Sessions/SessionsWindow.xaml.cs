@@ -67,11 +67,13 @@ public partial class SessionsWindow : Window
 			Id = selectedSession.Id,
 			SessionDate = selectedSession.SessionDate,
 			SlotId = selectedSession.SlotId,
-			PersonId = selectedSession.PersonId,
+			SubscriptionId = selectedSession.SubscriptionId,
 			Trainer1Id = selectedSession.Trainer1Id,
 			Trainer2Id = selectedSession.Trainer2Id,
 			Confirmed = selectedSession.Confirmed
 		}, this);
 		createSessionWindow.ShowDialog();
+
+		sessionsDataGrid.SelectedItem = null;
 	}
 }

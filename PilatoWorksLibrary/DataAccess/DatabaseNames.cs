@@ -36,6 +36,7 @@ public static class StoredProcedureNames
 
 public static class ViewNames
 {
-	public static string ValidSubscriptions => "Valid_Subscriptions";
+	public static string SubscriptionDetails => "Subscription_Details";
+	public static string ValidSubscriptionsDetails => "Valid_Subscription_Details";
 	public static string SessionDetails => "Session_Details";
 }

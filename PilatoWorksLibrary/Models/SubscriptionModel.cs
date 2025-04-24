@@ -14,14 +14,17 @@ public class SubscriptionModel
 
 public class ValidSubscriptionModel
 {
-	public int Id { get; set; }
 	public int PersonId { get; set; }
 	public string PersonName { get; set; }
 	public string PersonNumber { get; set; }
-	public DateOnly ValidFrom { get; set; }
-	public DateOnly ValidTo { get; set; }
+	public int SubscriptionId { get; set; }
+	public DateOnly SubscriptionValidFrom { get; set; }
+	public DateOnly SubscriptionValidTo { get; set; }
+	public int NoOfSessions { get; set; }
 	public int SessionTypeId { get; set; }
-	public int NoSessions { get; set; }
-	public int Booking { get; set; }
-	public bool Status { get; set; }
+	public string SessionType { get; set; }
+	public int BookingAmount { get; set; }
+	public int RemainingSessions { get; set; }
+	public int TotalPaid { get; set; }
+	public int Dues { get; set; }
 }

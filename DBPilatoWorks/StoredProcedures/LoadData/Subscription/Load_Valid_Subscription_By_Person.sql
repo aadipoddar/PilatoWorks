@@ -3,6 +3,6 @@
 AS
 BEGIN
 	SELECT *
-	FROM [dbo].[Valid_Subscriptions] AS s
+	FROM [dbo].[Valid_Subscription_Details] AS s
 	WHERE s.[PersonId] = @PersonId
 END

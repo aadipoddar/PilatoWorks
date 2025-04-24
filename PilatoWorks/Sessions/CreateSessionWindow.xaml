@@ -25,14 +25,15 @@
 				<RowDefinition Height="Auto"/>
 			</Grid.RowDefinitions>
 
-			<Label Content="Session Date" Grid.Column="0" Margin="10" Padding="5"/>
+			<Label Content="Session Date" Grid.Column="0" Margin="10" Padding="5" x:Name="sessionDateLabel"/>
 			<DatePicker Grid.Column="1" Margin="10" Padding="5" x:Name="sessionDatePicker" SelectedDateChanged="sessionDatePicker_SelectedDateChanged"/>
 
 			<Label Content="Slot" Grid.Row="1" Grid.Column="0" Margin="10" Padding="5"/>
-			<ComboBox x:Name="slotComboBox" Grid.Row="1" Grid.Column="1" Margin="10" Padding="5" />
+			<ComboBox x:Name="slotComboBox" Grid.Row="1" Grid.Column="1" Margin="10" Padding="5" SelectionChanged="slotComboBox_SelectionChanged" />
 			
 			<Label Content="Person" Grid.Row="2" Grid.Column="0" Margin="10" Padding="5"/>
-			<ComboBox x:Name="personComboBox" Grid.Row="2" Grid.Column="1" Margin="10" Padding="5" />
+			<ComboBox x:Name="personSubscriptionComboBox" Grid.Row="2" Grid.Column="1" Margin="10" Padding="5" />
+			<TextBox x:Name="personSubscriptionTextBox" Grid.Row="2" Grid.Column="1" Margin="10" Padding="5" IsReadOnly="True" Visibility="Hidden" />
 
 			<Label Content="Trainer 1" Grid.Row="3" Grid.Column="0" Margin="10" Padding="5"/>
 			<ComboBox x:Name="trainer1ComboBox" Grid.Row="3" Grid.Column="1" Margin="10" Padding="5"/>

@@ -42,8 +42,8 @@ public partial class SubscriptionWindow : Window
 
 			if (validSubscriptions is not null)
 			{
-				validFromDatePicker.DisplayDateStart = validSubscriptions.ValidTo.ToDateTime(new TimeOnly(0, 0));
-				validToDatePicker.DisplayDateStart = validSubscriptions.ValidTo.ToDateTime(new TimeOnly(0, 0)).AddDays(1);
+				validFromDatePicker.DisplayDateStart = validSubscriptions.SubscriptionValidTo.ToDateTime(new TimeOnly(0, 0));
+				validToDatePicker.DisplayDateStart = validSubscriptions.SubscriptionValidTo.ToDateTime(new TimeOnly(0, 0)).AddDays(1);
 
 				if (MessageBox.Show("This person already has a valid subscription. Do you want to update it?", "Update Subscription", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
 				{
@@ -51,17 +51,16 @@ public partial class SubscriptionWindow : Window
 					return;
 				}
 
-				_subscriptionId = validSubscriptions.Id;
-				validFromDatePicker.SelectedDate = validSubscriptions.ValidFrom.ToDateTime(new TimeOnly(0, 0));
-				validToDatePicker.SelectedDate = validSubscriptions.ValidTo.ToDateTime(new TimeOnly(0, 0));
+				_subscriptionId = validSubscriptions.SubscriptionId;
+				validFromDatePicker.SelectedDate = validSubscriptions.SubscriptionValidFrom.ToDateTime(new TimeOnly(0, 0));
+				validToDatePicker.SelectedDate = validSubscriptions.SubscriptionValidTo.ToDateTime(new TimeOnly(0, 0));
 				subscriptionTypeComboBox.SelectedValue = validSubscriptions.SessionTypeId;
-				noSessionsTextBox.Text = validSubscriptions.NoSessions.ToString();
-				bookingTextBox.Text = validSubscriptions.Booking.ToString();
-				statusCheckBox.IsChecked = validSubscriptions.Status;
+				noSessionsTextBox.Text = validSubscriptions.NoOfSessions.ToString();
+				bookingTextBox.Text = validSubscriptions.BookingAmount.ToString();
 
 				_paymentModels.Clear();
 
-				var subscriptionPayments = await SubscriptionData.LoadSubscriptionPaymentDetailsBySubscriptionId(validSubscriptions.Id);
+				var subscriptionPayments = await SubscriptionData.LoadSubscriptionPaymentDetailsBySubscriptionId(validSubscriptions.SubscriptionId);
 
 				if (subscriptionPayments is null) return;
 
@@ -88,7 +87,6 @@ public partial class SubscriptionWindow : Window
 				validToDatePicker.SelectedDate = DateTime.Now.AddDays(30);
 				bookingTextBox.Clear();
 				noSessionsTextBox.Clear();
-				statusCheckBox.IsChecked = true;
 
 				_paymentModels.Clear();
 			}
