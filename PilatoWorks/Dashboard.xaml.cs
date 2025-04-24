@@ -38,7 +38,8 @@ public partial class Dashboard : Window
 
 	private void trainerButton_Click(object sender, RoutedEventArgs e)
 	{
-
+		TrainerWindow trainerWindow = new();
+		trainerWindow.ShowDialog();
 	}
 
 	private void subscriptionButton_Click(object sender, RoutedEventArgs e)
