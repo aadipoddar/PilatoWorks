@@ -2,8 +2,6 @@
 	@ForDate DATE
 AS
 BEGIN
-	SET NOCOUNT ON;
-
 	SELECT *
 	FROM [dbo].[Valid_Subscriptions] AS s
 	WHERE s.[ValidFrom] <= @ForDate

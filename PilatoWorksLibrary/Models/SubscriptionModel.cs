@@ -8,8 +8,7 @@ public class SubscriptionModel
 	public DateOnly ValidTo { get; set; }
 	public int SessionTypeId { get; set; }
 	public int NoSessions { get; set; }
-	public int Amount { get; set; }
-	public int PaymentModeId { get; set; }
+	public int Booking { get; set; }
 	public bool Status { get; set; }
 }
 
@@ -23,7 +22,6 @@ public class ValidSubscriptionModel
 	public DateOnly ValidTo { get; set; }
 	public int SessionTypeId { get; set; }
 	public int NoSessions { get; set; }
-	public int Amount { get; set; }
-	public int PaymentModeId { get; set; }
+	public int Booking { get; set; }
 	public bool Status { get; set; }
 }

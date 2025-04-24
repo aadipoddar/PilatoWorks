@@ -10,6 +10,7 @@ public static class TableNames
 	public static string Slot => "Slot";
 	public static string Subscription => "Subscription";
 	public static string PaymentModes => "PaymentMode";
+	public static string SubscriptionPaymentDetails => "SubscriptionPaymentDetails";
 }
 
 public static class StoredProcedureNames
@@ -23,12 +24,14 @@ public static class StoredProcedureNames
 	public static string LoadValidSubscriptionByPerson => "Load_Valid_Subscription_By_Person";
 	public static string LoadValidSubscriptionByDate => "Load_Valid_Subscription_By_Date";
 	public static string LoadSessionDetailsByDateSlot => "Load_SessionDetails_By_Date_Slot";
+	public static string LoadSubscriptionPaymentDetailsBySubscriptionId => "Load_SubscriptionPaymentDetails_By_SubscriptionId";
 
 	public static string InsertPerson => "Insert_Person";
 	public static string InsertSession => "Insert_Session";
 	public static string InsertTrainer => "Insert_Trainer";
 	public static string InsertUser => "Insert_User";
 	public static string InsertSubscription => "Insert_Subscription";
+	public static string InsertSubscriptionPaymentDetails => "Insert_Subscription_PaymentDetails";
 }
 
 public static class ViewNames

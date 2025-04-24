@@ -168,4 +168,11 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[PaymentMode]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="abc67fbf-b81d-41c2-bfc8-451ed16cdc08" ChangeDateTime="04/24/2025 05:26:05">
+    <Property Name="ElementName" Value="[dbo].[Subscription].[Amount]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Subscription]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Booking]" />
+  </Operation>
 </Operations>

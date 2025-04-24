@@ -18,8 +18,8 @@
 
 		<Button x:Name="sessionButton" Content="Session" MinWidth="100" MinHeight="40" Margin="10" Padding="5" Click="sessionButton_Click" HorizontalAlignment="Center" />
 		<Button x:Name="trainerButton" Grid.Row="1" Content="Trainer" MinWidth="100" MinHeight="40" Margin="10" Padding="5" Click="trainerButton_Click" HorizontalAlignment="Center" />
-		<Button x:Name="managePersonButton" Grid.Row="2" Content="Manage Person" MinWidth="100" MinHeight="40" Margin="10" Padding="5" Click="managePersonButton_Click" HorizontalAlignment="Center" />
-		<Button x:Name="manageSubscriptionButton" Grid.Row="3" Content="Manage Subscription" MinWidth="100" MinHeight="40" Margin="10" Padding="5" Click="manageSubscriptionButton_Click" HorizontalAlignment="Center" />
+		<Button x:Name="personButton" Grid.Row="2" Content="Person" MinWidth="100" MinHeight="40" Margin="10" Padding="5" Click="personButton_Click" HorizontalAlignment="Center" />
+		<Button x:Name="subscriptionButton" Grid.Row="3" Content="Subscription" MinWidth="100" MinHeight="40" Margin="10" Padding="5" Click="subscriptionButton_Click" HorizontalAlignment="Center" />
 		<Button x:Name="adminButton" Grid.Row="4" Content="Admin" MinWidth="100" MinHeight="40" Margin="10" Padding="5" Click="adminButton_Click" HorizontalAlignment="Center" />
 	</Grid>
 </Window>

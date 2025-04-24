@@ -9,8 +9,7 @@
 		s.[ValidTo],
 		s.[SessionTypeId],
 		s.[NoSessions],
-		s.[Amount],
-		s.[PaymentModeId],
+		s.[Booking],
 		s.[Status]
 	FROM [dbo].[Subscription] AS s
 	INNER JOIN
