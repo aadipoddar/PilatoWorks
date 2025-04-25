@@ -1,0 +1,19 @@
+﻿@page "/Dashboard"
+
+<PageTitle>Dashboard</PageTitle>
+
+<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; gap: 10px;">
+    @if (_user?.Session == true)
+    {
+        <button class="btn btn-primary" @onclick="OnSessionClick">Session</button>
+    }
+    @if (_user?.Trainer == true)
+    {
+        <button class="btn btn-primary" @onclick="OnTrainerClick">Trainer</button>
+    }
+    <button class="btn btn-primary" @onclick="OnSubscriptionClick">Subscription</button>
+    @if (_user?.Admin == true)
+    {
+        <button class="btn btn-primary" @onclick="OnAdminClick">Admin</button>
+    }
+</div>

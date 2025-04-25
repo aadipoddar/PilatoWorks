@@ -14,6 +14,8 @@ Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "PilatoWorksSetup", "PilatoW
 		{B3899817-D9C3-42C6-913C-4561FDAAB205} = {B3899817-D9C3-42C6-913C-4561FDAAB205}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PilatoWorksWeb", "PilatoWorksWeb\PilatoWorksWeb.csproj", "{023D4C23-71B7-4FDE-9435-EEF0B9B6F37F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,6 +38,10 @@ Global
 		{FF750455-DD7F-45DB-A556-F1952139A1C4}.Release|Any CPU.Deploy.0 = Release|Any CPU
 		{CD04F990-1526-ACCD-92A9-D18D542F0B0C}.Debug|Any CPU.ActiveCfg = Debug
 		{CD04F990-1526-ACCD-92A9-D18D542F0B0C}.Release|Any CPU.ActiveCfg = Release
+		{023D4C23-71B7-4FDE-9435-EEF0B9B6F37F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{023D4C23-71B7-4FDE-9435-EEF0B9B6F37F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{023D4C23-71B7-4FDE-9435-EEF0B9B6F37F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{023D4C23-71B7-4FDE-9435-EEF0B9B6F37F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

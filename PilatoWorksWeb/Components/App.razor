@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
+    <link rel="stylesheet" href="@Assets["app.css"]" />
+    <link rel="stylesheet" href="@Assets["PilatoWorksWeb.styles.css"]" />
+    <ImportMap />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <HeadOutlet @rendermode="InteractiveServer" />
+	<link href="_content/Syncfusion.Blazor.Themes/bootstrap5.css" rel="stylesheet" />
+</head>
+
+<body>
+    <Routes @rendermode="InteractiveServer" />
+    <script src="_framework/blazor.web.js"></script>
+	<script src="_content/Syncfusion.Blazor.Core/scripts/syncfusion-blazor.min.js" type="text/javascript"></script>
+
+	<script>
+		function setCookie(name, value, hours) {
+			const date = new Date();
+			date.setTime(date.getTime() + (hours * 60 * 60 * 1000)); // Convert hours to milliseconds
+			const expires = "expires=" + date.toUTCString();
+			document.cookie = name + "=" + value + ";" + expires + ";path=/";
+		}
+
+		function getCookie(name) {
+			const cookieName = name + "=";
+			const decodedCookie = decodeURIComponent(document.cookie);
+			const cookies = decodedCookie.split(';');
+			for (let i = 0; i < cookies.length; i++) {
+				let cookie = cookies[i].trim();
+				if (cookie.startsWith(cookieName)) {
+					return cookie.substring(cookieName.length, cookie.length);
+				}
+			}
+			return "";
+		}
+	</script>
+</body>
+
+</html>
