@@ -1,0 +1,18 @@
+﻿<Page x:Class="PilatoWorks.Admin.SqlEditorPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="clr-namespace:PilatoWorks.Admin"
+	  xmlns:syncfusion="http://schemas.syncfusion.com/wpf">
+
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+		</Grid.RowDefinitions>
+
+		<Button x:Name="executeButton" Grid.Row="0" Margin="5" Padding="5" MinWidth="100" Content="Run" Style="{DynamicResource AccentButtonStyle}" Click="executeButton_Click"/>
+		<syncfusion:EditControl x:Name="sqlEditControl" Grid.Row="1" MinHeight="200" DocumentLanguage="SQL" KeyDown="sqlEditControl_KeyDown" Margin="5" Background="LightGray"/>
+		<TabControl x:Name="tabControl1" Grid.Row="2" Margin="5" />
+	</Grid>
+</Page>

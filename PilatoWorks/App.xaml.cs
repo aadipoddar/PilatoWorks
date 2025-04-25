@@ -18,6 +18,8 @@ public partial class App : Application
 
 	protected override void OnStartup(StartupEventArgs e)
 	{
+		Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(Secrets.SyncfusionLicense);
+
 		EventManager.RegisterClassHandler(typeof(TextBox), UIElement.PreviewMouseLeftButtonDownEvent,
 			new MouseButtonEventHandler(SelectivelyIgnoreMouseButton));
 		EventManager.RegisterClassHandler(typeof(TextBox), UIElement.GotKeyboardFocusEvent,

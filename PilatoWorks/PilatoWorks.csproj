@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Syncfusion.Edit.WPF" Version="29.1.39" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\PilatoWorksLibrary\PilatoWorksLibrary.csproj" />
   </ItemGroup>
 

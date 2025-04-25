@@ -10,90 +10,90 @@
 				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="Auto"/>
 			</Grid.RowDefinitions>
-			
+
 			<Grid>
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="Auto"/>
-				<ColumnDefinition Width="Auto"/>
-			</Grid.ColumnDefinitions>
-
-			<Grid.RowDefinitions>
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="Auto" />
-			</Grid.RowDefinitions>
-
-			<TextBlock Text="Person Number" Margin="10" Padding="5" />
-			<TextBox x:Name="personNumberTextBox" Grid.Column="1" Margin="10" Padding="5" TextChanged="personNumberTextBox_TextChanged" PreviewTextInput="personNumberTextBox_PreviewTextInput" MaxLength="10" />
-
-			<TextBlock Text="Person Name" Grid.Row="1" Margin="10" Padding="5" />
-			<TextBox x:Name="personNameTextBox" Grid.Row="1" Grid.Column="1" Margin="10" Padding="5" IsReadOnly="True" />
-
-			<TextBlock Text="Valid From" Grid.Row="2" Margin="10" Padding="5" />
-			<DatePicker x:Name="validFromDatePicker" Grid.Row="2" Grid.Column="1" Margin="10" Padding="5" />
-
-			<TextBlock Text="Valid To" Grid.Row="3" Margin="10" Padding="5" />
-			<DatePicker x:Name="validToDatePicker" Grid.Row="3" Grid.Column="1" Margin="10" Padding="5" />
-
-			<TextBlock Text="Subscription Type" Grid.Row="4" Margin="10" Padding="5" />
-			<ComboBox x:Name="subscriptionTypeComboBox" Grid.Row="4" Grid.Column="1" Margin="10" Padding="5" />
-
-			<TextBlock Text="No Of Sessions" Grid.Row="5" Margin="10" Padding="5" />
-			<TextBox x:Name="noSessionsTextBox" Grid.Row="5" Grid.Column="1" Margin="10" Padding="5" PreviewTextInput="personNumberTextBox_PreviewTextInput" MaxLength="2"/>
-
-			<TextBlock Text="Booking" Grid.Row="6" Margin="10" Padding="5" />
-			<TextBox x:Name="bookingTextBox" Grid.Row="6" Grid.Column="1" Margin="10" Padding="5" PreviewTextInput="personNumberTextBox_PreviewTextInput"/>
-
-			<CheckBox Content="Status" x:Name="statusCheckBox" IsChecked="True" Grid.Row="7" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="10" Padding="5" />
-
-			<Grid Grid.Row="8" Grid.ColumnSpan="2" Margin="10" HorizontalAlignment="Center">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="Auto"/>
-					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="Auto"/>
 				</Grid.ColumnDefinitions>
 
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto" />
 					<RowDefinition Height="Auto" />
-					<RowDefinition Height="Auto" MinHeight="150" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
 				</Grid.RowDefinitions>
 
-				<ComboBox x:Name="paymentModeComboBox" Grid.Row="0" Grid.Column="0" Margin="10" Padding="5" HorizontalAlignment="Center" MinWidth="100" />
-				<TextBox x:Name="amountTextBox" Grid.Row="0" Grid.Column="1" Text="0" Margin="10" Padding="5" HorizontalAlignment="Center" MinWidth="100" TextAlignment="Right" PreviewTextInput="amountTextBox_PreviewTextInput" />
+				<Label Content="Person Number" Margin="10" Padding="5" />
+				<TextBox x:Name="personNumberTextBox" Grid.Column="1" Margin="10" Padding="5" TextChanged="personNumberTextBox_TextChanged" PreviewTextInput="personNumberTextBox_PreviewTextInput" MaxLength="10" />
 
-				<Button x:Name="addButton" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Content="Add" HorizontalAlignment="Center" MinWidth="100" MinHeight="40" Margin="10" Padding="5" Click="addButton_Click"/>
+				<Label Content="Person Name" Grid.Row="1" Margin="10" Padding="5" />
+				<TextBox x:Name="personNameTextBox" Grid.Row="1" Grid.Column="1" Margin="10" Padding="5" IsReadOnly="True" />
 
-				<DataGrid x:Name="amountDataGrid" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" Padding="5" AutoGenerateColumns="False" MaxWidth="300" VerticalScrollBarVisibility="Auto"
+				<Label Content="Valid From" Grid.Row="2" Margin="10" Padding="5" />
+				<DatePicker x:Name="validFromDatePicker" Grid.Row="2" Grid.Column="1" Margin="10" Padding="5" />
+
+				<Label Content="Valid To" Grid.Row="3" Margin="10" Padding="5" />
+				<DatePicker x:Name="validToDatePicker" Grid.Row="3" Grid.Column="1" Margin="10" Padding="5" />
+
+				<Label Content="Subscription Type" Grid.Row="4" Margin="10" Padding="5" />
+				<ComboBox x:Name="subscriptionTypeComboBox" Grid.Row="4" Grid.Column="1" Margin="10" Padding="5" />
+
+				<Label Content="No Of Sessions" Grid.Row="5" Margin="10" Padding="5" />
+				<TextBox x:Name="noSessionsTextBox" Grid.Row="5" Grid.Column="1" Margin="10" Padding="5" PreviewTextInput="personNumberTextBox_PreviewTextInput" MaxLength="2"/>
+
+				<Label Content="Booking" Grid.Row="6" Margin="10" Padding="5" />
+				<TextBox x:Name="bookingTextBox" Grid.Row="6" Grid.Column="1" Margin="10" Padding="5" PreviewTextInput="personNumberTextBox_PreviewTextInput"/>
+
+				<CheckBox Content="Status" x:Name="statusCheckBox" IsChecked="True" Grid.Row="7" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="10" Padding="5" />
+
+				<Grid Grid.Row="8" Grid.ColumnSpan="2" Margin="10" HorizontalAlignment="Center">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto"/>
+						<ColumnDefinition Width="*"/>
+					</Grid.ColumnDefinitions>
+
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" MinHeight="150" />
+					</Grid.RowDefinitions>
+
+					<ComboBox x:Name="paymentModeComboBox" Grid.Row="0" Grid.Column="0" Margin="10" Padding="5" HorizontalAlignment="Center" MinWidth="100" />
+					<TextBox x:Name="amountTextBox" Grid.Row="0" Grid.Column="1" Text="0" Margin="10" Padding="5" HorizontalAlignment="Center" MinWidth="100" TextAlignment="Right" PreviewTextInput="amountTextBox_PreviewTextInput" />
+
+					<Button x:Name="addButton" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Content="Add" HorizontalAlignment="Center" MinWidth="100" MinHeight="40" Margin="10" Padding="5" Click="addButton_Click"/>
+
+					<DataGrid x:Name="amountDataGrid" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" Padding="5" AutoGenerateColumns="False" MaxWidth="300" VerticalScrollBarVisibility="Auto"
 				CanUserDeleteRows="False" CanUserReorderColumns="True" CanUserSortColumns="True" CanUserResizeColumns="True" CanUserAddRows="False"
 				MouseLeftButtonUp="amountDataGrid_MouseLeftButtonUp">
-					<DataGrid.Columns>
-						<DataGridTextColumn Header="Id" Binding="{Binding PaymentModeId}" Visibility="Hidden"/>
-						<DataGridTextColumn Header="Mode" Binding="{Binding PaymentModeName}" Width="*"/>
-						<DataGridTextColumn Header="Amount" Binding="{Binding Amount}" Width="*">
-							<DataGridTextColumn.ElementStyle>
-								<Style TargetType="TextBlock">
-									<Setter Property="HorizontalAlignment" Value="Right" />
-								</Style>
-							</DataGridTextColumn.ElementStyle>
-							<DataGridTextColumn.EditingElementStyle>
-								<Style TargetType="TextBox">
-									<Setter Property="HorizontalAlignment" Value="Right" />
-								</Style>
-							</DataGridTextColumn.EditingElementStyle>
-						</DataGridTextColumn>
-					</DataGrid.Columns>
-				</DataGrid>
-			</Grid>
+						<DataGrid.Columns>
+							<DataGridTextColumn Header="Id" Binding="{Binding PaymentModeId}" Visibility="Hidden"/>
+							<DataGridTextColumn Header="Mode" Binding="{Binding PaymentModeName}" Width="*"/>
+							<DataGridTextColumn Header="Amount" Binding="{Binding Amount}" Width="*">
+								<DataGridTextColumn.ElementStyle>
+									<Style TargetType="TextBlock">
+										<Setter Property="HorizontalAlignment" Value="Right" />
+									</Style>
+								</DataGridTextColumn.ElementStyle>
+								<DataGridTextColumn.EditingElementStyle>
+									<Style TargetType="TextBox">
+										<Setter Property="HorizontalAlignment" Value="Right" />
+									</Style>
+								</DataGridTextColumn.EditingElementStyle>
+							</DataGridTextColumn>
+						</DataGrid.Columns>
+					</DataGrid>
+				</Grid>
 
-			<Button Content="Save" Grid.Row="9" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="10" Padding="5" MinWidth="100" MinHeight="40" Click="saveButton_Click" Style="{DynamicResource AccentButtonStyle}" />
-		</Grid>
+				<Button Content="Save" Grid.Row="9" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="10" Padding="5" MinWidth="100" MinHeight="40" Click="saveButton_Click" Style="{DynamicResource AccentButtonStyle}" />
+			</Grid>
 
 			<DataGrid x:Name="validSubscriptionsDataGrid" Grid.Row="2" Margin="10" Padding="5" SelectionMode="Single"
 					SelectedCellsChanged="validSubscriptionsGrid_SelectedCellsChanged" IsReadOnly="True" MaxHeight="600" MinColumnWidth="100" />

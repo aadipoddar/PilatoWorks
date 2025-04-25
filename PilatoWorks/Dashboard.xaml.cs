@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 
+using PilatoWorks.Admin;
 using PilatoWorks.Sessions;
 using PilatoWorks.Subscription;
 
@@ -50,14 +51,10 @@ public partial class Dashboard : Window
 		_loginWindow.Hide();
 	}
 
-	private void clearDuesButton_Click(object sender, RoutedEventArgs e)
-	{
-
-	}
-
 	private void adminButton_Click(object sender, RoutedEventArgs e)
 	{
-
+		AdminPanel adminPanel = new();
+		adminPanel.ShowDialog();
 	}
 
 	private void Window_Closed(object sender, EventArgs e) =>

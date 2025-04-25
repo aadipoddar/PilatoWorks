@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectVersion>4.1</ProjectVersion>
     <ProjectGuid>{ff750455-dd7f-45db-a556-f1952139a1c4}</ProjectGuid>
-    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider</DSP>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.SqlAzureV12DatabaseSchemaProvider</DSP>
     <OutputType>Database</OutputType>
     <RootPath>
     </RootPath>
@@ -96,11 +96,14 @@
     <Build Include="StoredProcedures\LoadData\Common\Load_TableData_By_Id.sql" />
     <Build Include="StoredProcedures\LoadData\Common\Load_TableData_By_Status.sql" />
     <Build Include="StoredProcedures\LoadData\Sessions\Load_SessionDetails_By_Date_Trainer.sql" />
+    <Build Include="StoredProcedures\Insert\Insert_Slot.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="DBPilatoWorks.refactorlog" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Publish\DBPilatoWorks.publish.xml" />
+    <None Include="DBPilatoWorks.publish.xml" />
+    <None Include="Publish\AzureDBPilatoWorks.publish.xml" />
   </ItemGroup>
 </Project>

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PilatoWorks"
 		xmlns:common="clr-namespace:PilatoWorks.Common"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
-        Title="Dashboard" Height="300" Width="300"
+        Title="Dashboard" Height="320" Width="300"
 		Loaded="Window_Loaded" Closed="Window_Closed">
 
 	<Grid>

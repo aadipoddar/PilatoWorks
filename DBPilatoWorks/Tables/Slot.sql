@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[Slot]
 (
 	[Id] INT NOT NULL PRIMARY KEY IDENTITY, 
-    [Hour] INT NOT NULL, 
+    [Hour] INT NOT NULL UNIQUE, 
     [Max] INT NOT NULL DEFAULT 4
 )

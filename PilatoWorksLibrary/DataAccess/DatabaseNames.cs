@@ -30,10 +30,13 @@ public static class StoredProcedureNames
 	public static string LoadSessionDetailsByDateSlot => "Load_SessionDetails_By_Date_Slot";
 	public static string LoadSessionDetailsByDateTrainer => "Load_SessionDetails_By_Date_Trainer";
 
+	public static string InsertSlot => "Insert_Slot";
+	public static string InsertUser => "Insert_User";
+	public static string InsertTrainer => "Insert_Trainer";
+
 	public static string InsertPerson => "Insert_Person";
 	public static string InsertSession => "Insert_Session";
-	public static string InsertTrainer => "Insert_Trainer";
-	public static string InsertUser => "Insert_User";
+
 	public static string InsertSubscription => "Insert_Subscription";
 	public static string InsertSubscriptionPaymentDetails => "Insert_Subscription_PaymentDetails";
 }
