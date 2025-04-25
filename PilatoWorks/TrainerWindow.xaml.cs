@@ -42,8 +42,7 @@ public partial class TrainerWindow : Window
 
 		sessionTakenDataGrid.ItemsSource = sessions;
 
-		// TODO - Fix Commission
 		noSessionsTextBox.Text = sessions.Count.ToString();
-		commissionAmountTextBox.Text = (sessions.Count * _foundTrainer.CommissionPercent / 100).FormatIndianCurrency();
+		totalSalesTextBox.Text = sessions.Sum(x => x.PerSessionCost).FormatIndianCurrency();
 	}
 }

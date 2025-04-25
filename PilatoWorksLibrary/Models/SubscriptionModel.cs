@@ -9,7 +9,9 @@ public class SubscriptionModel
 	public int SessionTypeId { get; set; }
 	public int NoSessions { get; set; }
 	public int Booking { get; set; }
+	public int UserId { get; set; }
 	public bool Status { get; set; }
+	public DateTime SubscriptionDate { get; set; }
 }
 
 public class ValidSubscriptionModel
@@ -27,4 +29,7 @@ public class ValidSubscriptionModel
 	public int RemainingSessions { get; set; }
 	public int TotalPaid { get; set; }
 	public int Dues { get; set; }
+	public int UserId { get; set; }
+	public string UserName { get; set; }
+	public DateTime SubscriptionDate { get; set; }
 }

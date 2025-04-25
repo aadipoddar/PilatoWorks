@@ -18,15 +18,13 @@ public partial class SelectDateWindow : Window
 		_loginWindow = loginWindow;
 
 		_loginWindow.Hide();
-
-		calendar.DisplayDateStart = DateTime.Now;
 	}
 
 	private void calendar_SelectedDatesChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
 	{
 		if (calendar.SelectedDate is null) return;
 
-		SessionsWindow sessionsWindow = new(_user, calendar.SelectedDate.Value, this);
+		SessionsWindow sessionsWindow = new(_user, calendar.SelectedDate.Value);
 		sessionsWindow.ShowDialog();
 
 		calendar.SelectedDate = null;

@@ -9,6 +9,8 @@ public class SessionModel
 	public int Trainer1Id { get; set; }
 	public int? Trainer2Id { get; set; }
 	public bool Confirmed { get; set; }
+	public int UserId { get; set; }
+	public DateTime CreatedDate { get; set; }
 }
 
 public class SessionDetailsModel
@@ -27,5 +29,9 @@ public class SessionDetailsModel
 	public string Trainer1Name { get; set; }
 	public int? Trainer2Id { get; set; }
 	public string Trainer2Name { get; set; }
+	public decimal PerSessionCost { get; set; }
 	public bool Confirmed { get; set; }
+	public int UserId { get; set; }
+	public string UserName { get; set; }
+	public DateTime CreatedDate { get; set; }
 }

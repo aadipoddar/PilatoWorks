@@ -44,7 +44,7 @@ public partial class Dashboard : Window
 
 	private void subscriptionButton_Click(object sender, RoutedEventArgs e)
 	{
-		ManageSubscriptionsPanel manageSubscriptions = new(_loginWindow);
+		ManageSubscriptionsPanel manageSubscriptions = new(_user, _loginWindow);
 		manageSubscriptions.Show();
 		Close();
 		_loginWindow.Hide();

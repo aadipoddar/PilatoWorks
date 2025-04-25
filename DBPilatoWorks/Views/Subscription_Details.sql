@@ -18,7 +18,10 @@ SELECT
           AND sess.Confirmed = 1
     ), 0) AS RemainingSessions,
     ISNULL(SUM(spd.Amount), 0) AS TotalPaid,
-    (s.Booking - ISNULL(SUM(spd.Amount), 0)) AS Dues
+    (s.Booking - ISNULL(SUM(spd.Amount), 0)) AS Dues,
+    s.UserId,
+    u.[Name] AS UserName,
+    s.SubscriptionDate
 FROM 
     [dbo].[Subscription] s
 INNER JOIN 
@@ -27,7 +30,9 @@ LEFT JOIN
     [dbo].[SubscriptionPaymentDetails] spd ON s.Id = spd.SubscriptionId AND spd.Status = 1
 LEFT JOIN
     [dbo].[SessionType] st ON s.SessionTypeId = st.Id
+LEFT JOIN
+    [dbo].[User] u ON s.UserId = u.Id
 WHERE
     s.Status = 1
 GROUP BY 
-    p.Id, p.Name, p.Number, s.Id, s.PersonId, s.ValidFrom, s.ValidTo, s.NoSessions, st.Id, st.Name, s.Booking;
+    p.Id, p.Name, p.Number, s.Id, s.PersonId, s.ValidFrom, s.ValidTo, s.NoSessions, st.Id, st.Name, s.Booking, s.UserId, u.[Name], s.SubscriptionDate

@@ -35,7 +35,7 @@
 				<Label Content="Session Date" Grid.Column="0" Margin="10" Padding="5" x:Name="sessionDateLabel"/>
 				<DatePicker Grid.Column="1" Margin="10" Padding="5" x:Name="sessionDatePicker" SelectedDateChanged="sessionDatePicker_SelectedDateChanged"/>
 
-				<Label Content="Slot" Grid.Row="1" Grid.Column="0" Margin="10" Padding="5"/>
+				<Label x:Name="slotLabel" Content="Slot" Grid.Row="1" Grid.Column="0" Margin="10" Padding="5"/>
 				<ComboBox x:Name="slotComboBox" Grid.Row="1" Grid.Column="1" Margin="10" Padding="5" SelectionChanged="slotComboBox_SelectionChanged" />
 
 				<Label Content="Person" Grid.Row="2" Grid.Column="0" Margin="10" Padding="5"/>

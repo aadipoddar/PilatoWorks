@@ -14,7 +14,11 @@ SELECT
     [t1].[Name] AS Trainer1Name,
     [s].[Trainer2Id],
     [t2].[Name] AS Trainer2Name,
-    [s].[Confirmed]
+    [sb].[Booking] / [sb].[NoSessions] AS PerSessionCost,
+    [s].[Confirmed],
+    [s].[UserId],
+    [u].[Name],
+    [s].CreatedDate
 FROM dbo.[Session] s
 INNER JOIN
     dbo.[Slot] sl ON sl.Id = s.SlotId
@@ -28,3 +32,5 @@ INNER JOIN
     dbo.[SessionType] st ON st.Id = sb.SessionTypeId
 INNER JOIN
     dbo.[Person] p ON p.Id = sb.PersonId
+INNER JOIN
+    dbo.[User] u ON u.Id = s.UserId

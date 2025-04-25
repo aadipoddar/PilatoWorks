@@ -8,10 +8,16 @@ namespace PilatoWorks.Subscription;
 /// </summary>
 public partial class SubscriptionPage : Page
 {
+	private readonly UserModel _user;
 	private readonly List<SubscriptionPaymentModeModel> _paymentModels = [];
 	private int _subscriptionId = 0;
 
-	public SubscriptionPage() => InitializeComponent();
+	public SubscriptionPage(UserModel user)
+	{
+		InitializeComponent();
+
+		_user = user;
+	}
 
 	private async void Page_Loaded(object sender, RoutedEventArgs e)
 	{
@@ -88,9 +94,9 @@ public partial class SubscriptionPage : Page
 
 				validFromDatePicker.SelectedDate = DateTime.Now;
 				validToDatePicker.SelectedDate = DateTime.Now.AddDays(30);
+
 				bookingTextBox.Clear();
 				noSessionsTextBox.Clear();
-
 				_paymentModels.Clear();
 			}
 		}
@@ -98,7 +104,17 @@ public partial class SubscriptionPage : Page
 		else
 		{
 			_subscriptionId = 0;
+
+			validFromDatePicker.DisplayDateStart = DateTime.Now.AddDays(-30);
+			validToDatePicker.DisplayDateStart = DateTime.Now.AddDays(-30);
+
+			validFromDatePicker.SelectedDate = DateTime.Now;
+			validToDatePicker.SelectedDate = DateTime.Now.AddDays(30);
+
 			personNameTextBox.Clear();
+			bookingTextBox.Clear();
+			noSessionsTextBox.Clear();
+			_paymentModels.Clear();
 		}
 
 		amountDataGrid.Items.Refresh();
@@ -159,7 +175,9 @@ public partial class SubscriptionPage : Page
 			SessionTypeId = ((SessionTypeModel)subscriptionTypeComboBox.SelectedItem).Id,
 			NoSessions = int.Parse(noSessionsTextBox.Text.Trim()),
 			Booking = int.Parse(bookingTextBox.Text.Trim()),
-			Status = (bool)statusCheckBox.IsChecked
+			UserId = _user.Id,
+			Status = (bool)statusCheckBox.IsChecked,
+			SubscriptionDate = DateTime.Now
 		};
 		subscription.Id = await SubscriptionData.InsertSubscription(subscription);
 
@@ -189,6 +207,8 @@ public partial class SubscriptionPage : Page
 			});
 
 		personNumberTextBox.Clear();
+
+		validSubscriptionsDataGrid.ItemsSource = await CommonData.LoadTableData<ValidSubscriptionModel>(ViewNames.ValidSubscriptionsDetails);
 	}
 
 	private bool ValidateForm()

@@ -5,13 +5,15 @@
 	@SubscriptionId INT,
 	@Trainer1Id INT,
 	@Trainer2Id INT,
-	@Confirmed BIT
+	@Confirmed BIT,
+	@UserId INT,
+	@CreatedDate DATETIME
 AS
 BEGIN
 	IF @Id = 0
 	BEGIN
-		INSERT INTO [dbo].[Session] ([SessionDate], [SlotId], [SubscriptionId], [Trainer1Id], [Trainer2Id], [Confirmed])
-		VALUES (@SessionDate, @SlotId, @SubscriptionId, @Trainer1Id, @Trainer2Id, @Confirmed);
+		INSERT INTO [dbo].[Session] ([SessionDate], [SlotId], [SubscriptionId], [Trainer1Id], [Trainer2Id], [Confirmed], [UserId])
+		VALUES (@SessionDate, @SlotId, @SubscriptionId, @Trainer1Id, @Trainer2Id, @Confirmed, @UserId);
 	END
 
 	ELSE
@@ -23,7 +25,8 @@ BEGIN
 			[SubscriptionId] = @SubscriptionId,
 			[Trainer1Id] = @Trainer1Id,
 			[Trainer2Id] = @Trainer2Id,
-			[Confirmed] = @Confirmed
+			[Confirmed] = @Confirmed,
+			[UserId] = @UserId
 		WHERE [Id] = @Id;
 	END
 

@@ -9,15 +9,17 @@ public partial class CreateSessionWindow : Window
 {
 	private readonly DateOnly _sessionDate;
 	private readonly int _slotId;
+	private readonly UserModel _user;
 	private readonly SessionModel _session;
 	private readonly SessionsWindow _sessionsWindow;
 
-	public CreateSessionWindow(DateOnly sessionDate, int slotId, SessionsWindow sessionsWindow)
+	public CreateSessionWindow(DateOnly sessionDate, int slotId, UserModel user, SessionsWindow sessionsWindow)
 	{
 		InitializeComponent();
 
 		_sessionDate = sessionDate;
 		_slotId = slotId;
+		_user = user;
 		_sessionsWindow = sessionsWindow;
 	}
 
@@ -67,9 +69,10 @@ public partial class CreateSessionWindow : Window
 			var person = await CommonData.LoadTableDataById<PersonModel>(TableNames.Person, subscription.PersonId);
 			personSubscriptionTextBox.Text = person.Name;
 
-			slotComboBox.IsReadOnly = true;
-			sessionDatePicker.Visibility = Visibility.Hidden;
-			sessionDateLabel.Visibility = Visibility.Hidden;
+			slotComboBox.IsEnabled = false;
+			slotLabel.IsEnabled = false;
+			sessionDatePicker.IsEnabled = false;
+			sessionDateLabel.IsEnabled = false;
 		}
 	}
 
@@ -119,7 +122,9 @@ public partial class CreateSessionWindow : Window
 			SubscriptionId = _session?.SubscriptionId ?? (int)personSubscriptionComboBox.SelectedValue,
 			Trainer1Id = (int)trainer1ComboBox.SelectedValue,
 			Trainer2Id = trainer2ComboBox.SelectedValue is not null ? (int)trainer2ComboBox.SelectedValue : null,
-			Confirmed = (bool)confirmedCheckBox.IsChecked
+			Confirmed = (bool)confirmedCheckBox.IsChecked,
+			UserId = _session?.UserId ?? _user.Id,
+			CreatedDate = _session?.CreatedDate ?? DateTime.Now
 		});
 
 		await _sessionsWindow.LoadSessions();

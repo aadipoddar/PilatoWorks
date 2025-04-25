@@ -13,7 +13,10 @@
 		[BookingAmount],
 		[RemainingSessions],
 		[TotalPaid],
-		[Dues]
+		[Dues],
+		[UserId],
+		[UserName],
+		[SubscriptionDate]
 	FROM [dbo].[Subscription_Details] AS s
 	WHERE s.SubscriptionValidFrom <= GETDATE()
 		AND s.SubscriptionValidTo >= GETDATE()

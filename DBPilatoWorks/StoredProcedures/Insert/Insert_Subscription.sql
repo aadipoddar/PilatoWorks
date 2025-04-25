@@ -6,15 +6,17 @@
 	@SessionTypeId INT,
 	@NoSessions INT,
 	@Booking INT,
-	@Status BIT
+	@UserId INT,
+	@Status BIT,
+	@SubscriptionDate DATETIME
 AS
 BEGIN
 	IF @Id = 0
 	BEGIN
 		INSERT INTO [dbo].[Subscription]
-			([PersonId], [ValidFrom], [ValidTo], [SessionTypeId], [NoSessions], [Booking], [Status])
+			([PersonId], [ValidFrom], [ValidTo], [SessionTypeId], [NoSessions], [Booking], [UserId], [Status])
 		VALUES
-			(@PersonId, @ValidFrom, @ValidTo, @SessionTypeId, @NoSessions, @Booking, @Status);
+			(@PersonId, @ValidFrom, @ValidTo, @SessionTypeId, @NoSessions, @Booking, @UserId, @Status);
 		SET @Id = SCOPE_IDENTITY();
 	END
 
@@ -28,6 +30,7 @@ BEGIN
 			[SessionTypeId] = @SessionTypeId,
 			[NoSessions] = @NoSessions,
 			[Booking] = @Booking,
+			[UserId] = @UserId,
 			[Status] = @Status
 		WHERE
 			Id = @Id;

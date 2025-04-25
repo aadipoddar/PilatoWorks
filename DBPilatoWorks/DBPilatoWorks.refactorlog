@@ -189,4 +189,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[CommissionPercent]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="d26ae8d2-644a-4466-8687-3530e71c4cad" ChangeDateTime="04/25/2025 05:13:41">
+    <Property Name="ElementName" Value="[dbo].[Subscription].[CreatedAt]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Subscription]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Subscri" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="37e53ff7-4961-42db-a6ab-19604c977836" ChangeDateTime="04/25/2025 05:14:13">
+    <Property Name="ElementName" Value="[dbo].[Subscription].[Subscri]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Subscription]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="SubscriptionDate" />
+  </Operation>
 </Operations>

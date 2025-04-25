@@ -9,15 +9,13 @@ public partial class SessionsWindow : Window
 {
 	private readonly UserModel _user;
 	private readonly DateTime _selectedDate;
-	private readonly SelectDateWindow _selectDateWindow;
 
-	public SessionsWindow(UserModel user, DateTime selectedDate, SelectDateWindow selectDateWindow)
+	public SessionsWindow(UserModel user, DateTime selectedDate)
 	{
 		InitializeComponent();
 
 		_user = user;
 		_selectedDate = selectedDate;
-		_selectDateWindow = selectDateWindow;
 	}
 
 	private async void Window_Loaded(object sender, RoutedEventArgs e)
@@ -53,7 +51,7 @@ public partial class SessionsWindow : Window
 			return;
 		}
 
-		CreateSessionWindow createSessionWindow = new(DateOnly.FromDateTime(datePicker.SelectedDate.Value), (int)slotComboBox.SelectedValue, this);
+		CreateSessionWindow createSessionWindow = new(DateOnly.FromDateTime(datePicker.SelectedDate.Value), (int)slotComboBox.SelectedValue, _user, this);
 		createSessionWindow.ShowDialog();
 	}
 
@@ -70,7 +68,9 @@ public partial class SessionsWindow : Window
 			SubscriptionId = selectedSession.SubscriptionId,
 			Trainer1Id = selectedSession.Trainer1Id,
 			Trainer2Id = selectedSession.Trainer2Id,
-			Confirmed = selectedSession.Confirmed
+			Confirmed = selectedSession.Confirmed,
+			UserId = selectedSession.UserId,
+			CreatedDate = selectedSession.CreatedDate
 		}, this);
 		createSessionWindow.ShowDialog();
 

@@ -54,13 +54,24 @@
 				<TextBlock Text="No Of Sessions" Grid.Row="6" Margin="10" Padding="5"/>
 				<TextBox x:Name="noSessionsTextBox" Grid.Row="6" Grid.Column="1" Margin="10" Padding="5" IsReadOnly="True"/>
 
-				<TextBlock Text="Commission Amount" Grid.Row="7" Margin="10" Padding="5"/>
-				<TextBox x:Name="commissionAmountTextBox" Grid.Row="7" Grid.Column="1" Margin="10" Padding="5" IsReadOnly="True"/>
+				<TextBlock Text="Total Sales" Grid.Row="7" Margin="10" Padding="5"/>
+				<TextBox x:Name="totalSalesTextBox" Grid.Row="7" Grid.Column="1" Margin="10" Padding="5" IsReadOnly="True"/>
 
 				<DatePicker x:Name="fromDatePicker" Grid.Row="8" Margin="10" Padding="5" SelectedDateChanged="datePicker_SelectedDateChanged"/>
 				<DatePicker x:Name="toDatePicker" Grid.Row="8" Grid.Column="1" Margin="10" Padding="5" SelectedDateChanged="datePicker_SelectedDateChanged"/>
 
-				<DataGrid x:Name="sessionTakenDataGrid" IsReadOnly="True" Grid.Row="9" Grid.ColumnSpan="2" Margin="10" Padding="5" MinColumnWidth="100"/>
+				<DataGrid x:Name="sessionTakenDataGrid" IsReadOnly="True" Grid.Row="9" Grid.ColumnSpan="2" Margin="10" Padding="5" MinColumnWidth="100" AutoGenerateColumns="False">
+					<DataGrid.Columns>
+						<DataGridTextColumn Header="Date" Binding="{Binding SessionDate}" />
+						<DataGridTextColumn Header="Slot" Binding="{Binding SlotHour}" />
+						<DataGridTextColumn Header="Name" Binding="{Binding PersonName}" />
+						<DataGridTextColumn Header="Number" Binding="{Binding PersonNumber}" />
+						<DataGridTextColumn Header="Type" Binding="{Binding SessionTypeName}" />
+						<DataGridTextColumn Header="Cost / Session" Binding="{Binding PerSessionCost}" />
+						<DataGridTextColumn Header="Trainer 1" Binding="{Binding Trainer1Name}" />
+						<DataGridTextColumn Header="Trainer 2" Binding="{Binding Trainer2Name}" />
+					</DataGrid.Columns>
+				</DataGrid>
 			</Grid>
 
 			<common:FooterControl Grid.Row="1"/>
