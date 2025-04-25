@@ -43,7 +43,7 @@
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:Release\\PilatoWorksSetup.msi"
+        "OutputFilename" = "8:PilatoWorks.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -53,6 +53,27 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.NetCore.CoreRuntime.9.0.x86"
+                    {
+                    "Name" = "8:.NET Runtime 9.0.4 (x86)"
+                    "ProductCode" = "8:Microsoft.NetCore.CoreRuntime.9.0.x86"
+                    }
+                }
+            }
         }
     }
     "Deployable"
@@ -129,25 +150,25 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:PilatoWorksSetup"
+        "ProductName" = "8:Pilato Works"
         "ProductCode" = "8:{2523CB8D-C7D3-4792-8AED-9BEF8D64E1A9}"
         "PackageCode" = "8:{CF529F4B-EFFE-41D6-8DFE-98F01F6E8E69}"
         "UpgradeCode" = "8:{EC996429-5C4B-4579-81D2-2B32E7FF906F}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
-        "RemovePreviousVersions" = "11:FALSE"
+        "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
         "ProductVersion" = "8:1.0.0"
-        "Manufacturer" = "8:aadipoddarmail@gmail.com"
-        "ARPHELPTELEPHONE" = "8:"
-        "ARPHELPLINK" = "8:"
-        "Title" = "8:PilatoWorksSetup"
+        "Manufacturer" = "8:AadiSoft"
+        "ARPHELPTELEPHONE" = "8:9007388669"
+        "ARPHELPLINK" = "8:aadi.vercel.app"
+        "Title" = "8:Pilato Works"
         "Subject" = "8:"
         "ARPCONTACT" = "8:aadipoddarmail@gmail.com"
         "Keywords" = "8:"
-        "ARPCOMMENTS" = "8:"
-        "ARPURLINFOABOUT" = "8:"
+        "ARPCOMMENTS" = "8:Installer for Pilato Works"
+        "ARPURLINFOABOUT" = "8:aadi.vercel.app"
         "ARPPRODUCTICON" = "8:"
         "ARPIconIndex" = "3:0"
         "SearchPath" = "8:"
@@ -680,7 +701,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_56AAB868A09B44379352BF8F02D9F815"
             {
-            "SourcePath" = "8:..\\PilatoWorks\\obj\\Debug\\net9.0-windows\\apphost.exe"
+            "SourcePath" = "8:..\\PilatoWorks\\obj\\Release\\net9.0-windows\\apphost.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_EFD1C7BEBB794B41831CA684941340E3"

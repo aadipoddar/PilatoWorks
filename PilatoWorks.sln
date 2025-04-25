@@ -10,6 +10,9 @@ EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "DBPilatoWorks", "DBPilatoWorks\DBPilatoWorks.sqlproj", "{FF750455-DD7F-45DB-A556-F1952139A1C4}"
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "PilatoWorksSetup", "PilatoWorksSetup\PilatoWorksSetup.vdproj", "{CD04F990-1526-ACCD-92A9-D18D542F0B0C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B3899817-D9C3-42C6-913C-4561FDAAB205} = {B3899817-D9C3-42C6-913C-4561FDAAB205}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
