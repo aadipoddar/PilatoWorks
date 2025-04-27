@@ -47,12 +47,6 @@ public partial class SessionsWindow : Window
 
 		var confirmedSessions = (await SessionData.LoadSessionDetailsByDateSlot(DateOnly.FromDateTime(datePicker.SelectedDate.Value), (int)slotComboBox.SelectedValue)).Count;
 
-		if (confirmedSessions == 0)
-		{
-			MessageBox.Show("No sessions available for this date and slot.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-			return;
-		}
-
 		var slotMax = (await CommonData.LoadTableDataById<SlotModel>(TableNames.Slot, (int)slotComboBox.SelectedValue)).Hour;
 		if (confirmedSessions >= slotMax)
 		{

@@ -2,97 +2,98 @@
 
 <PageTitle>Sessions</PageTitle>
 
-@page "/SessionsPanel"
-
-<PageTitle>Sessions</PageTitle>
-
 <style>
-    #_sfGrid {
-        font-size: 1.5rem;
-        background-color: #ffffff;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
+	#_sfGrid {
+		font-size: 1.1rem;
+	}
 
-    .e-grid .e-headercell {
-        font-size: 1.5rem;
-        font-weight: 600;
-        height: 60px;
-        background-color: #e9ecef !important;
-    }
+	.e-grid .e-headercell {
+		font-size: 1.1rem;
+		font-weight: 600;
+	}
 
-    .e-grid .e-rowcell {
-        padding: 16px 12px;
-        height: 60px;
-        line-height: 1.4;
-    }
+	.combo-box-row {
+		display: flex;
+		justify-content: center;
+		gap: 1rem;
+		margin-top: 1rem;
+	}
 
-    .e-grid .e-gridheader {
-        background-color: #e9ecef;
-        border-bottom: 3px solid #dee2e6;
-    }
+	.checkbox-row {
+		text-align: center;
+		margin-top: 1rem;
+	}
 
-    .e-grid {
-        line-height: 1.4;
-    }
-
-    .e-grid .e-row:nth-child(even) {
-        background-color: #f0f7ff !important;
-    }
-
-    .e-grid .e-row:nth-child(odd) {
-        background-color: #e6f3ff !important;
-    }
-
-    .e-grid .e-row:hover {
-        background-color: #d9ecff !important;
-    }
-
-    .e-grid .e-altrow {
-        background-color: #f0f7ff;
-    }
+	.save-button-row {
+		text-align: center;
+		margin-top: 1rem;
+	}
 </style>
+
 <div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-6 text-center mt-4">
-            <div class="mb-3">
-                <SfDatePicker TValue="DateOnly"
-                             Placeholder="Select Session Date"
-                             Value="_selectedDate"
-                             Width="200px">
-                    <DatePickerEvents TValue="DateOnly" ValueChange="OnDateChanged" />
-                </SfDatePicker>
-            </div>
-            
-            <div class="mb-3">
-                <select class="form-select w-auto mx-auto" @bind="_selectedSlotId" @bind:after="OnSlotChanged">
-                    @foreach (var slot in _slots)
-                    {
-                        <option value="@slot.Id">@slot.Hour</option>
-                    }
-                </select>
-            </div>
-            
-            <div class="mb-4">
-                <button class="btn btn-primary" @onclick="OnCreateClick">Create</button>
-            </div>
-        </div>
-        
-        <div class="col-12">
-            <SfGrid DataSource="@SessionDetailsModels"
-                    ID="_sfGrid"
-                    @ref="_sfGrid"
-                    Height="500"
-                    Width="100%"
-                    style="margin: 0 auto;">
-                <GridColumns>
-                    <GridColumn Field="@nameof(SessionDetailsModel.PersonName)" Type="ColumnType.String"></GridColumn>
-                    <GridColumn Field="@nameof(SessionDetailsModel.PersonNumber)" Type="ColumnType.String"></GridColumn>
-                    <GridColumn Field="@nameof(SessionDetailsModel.SessionTypeName)" Type="ColumnType.String"></GridColumn>
-                    <GridColumn Field="@nameof(SessionDetailsModel.Trainer1Name)" Type="ColumnType.String"></GridColumn>
-                    <GridColumn Field="@nameof(SessionDetailsModel.Trainer2Name)" Type="ColumnType.String"></GridColumn>
-                    <GridColumn Field="@nameof(SessionDetailsModel.Confirmed)" Type="ColumnType.Boolean"></GridColumn>
-                </GridColumns>
-            </SfGrid>
-        </div>
-    </div>
+	<div class="row justify-content-center">
+		<div class="col-md-6 text-center mt-4">
+			<div class="mb-3">
+				<SfDatePicker TValue="DateOnly"
+							  Placeholder="Select Session Date"
+							  Value="_selectedDate"
+							  Width="200px">
+					<DatePickerEvents TValue="DateOnly" ValueChange="OnDateChanged" />
+				</SfDatePicker>
+			</div>
+
+			<div class="mb-3">
+				<SfComboBox TValue="int" TItem="SlotModel" Placeholder="Select a Slot" DataSource="@_slots" @bind-Value="_selectedSlot" Width="200px">
+					<ComboBoxEvents TItem="SlotModel" TValue="int" ValueChange="@OnSlotChanged" />
+					<ComboBoxFieldSettings Value="Id" Text="Hour"/>
+				</SfComboBox>
+			</div>
+		</div>
+
+		<div class="col-12">
+			<SfGrid DataSource="@SessionDetailsModels"
+					ID="_sfGrid"
+					@ref="_sfGrid"
+					Height="300"
+					Width="100%"
+					style="margin: 0 auto;">
+
+				<GridEvents RowSelected="RowSelectHandler" TValue="SessionDetailsModel"></GridEvents>
+
+				<GridColumns>
+					<GridColumn Field="@nameof(SessionDetailsModel.PersonName)" Type="ColumnType.String"></GridColumn>
+					<GridColumn Field="@nameof(SessionDetailsModel.PersonNumber)" Type="ColumnType.String"></GridColumn>
+					<GridColumn Field="@nameof(SessionDetailsModel.SessionTypeName)" Type="ColumnType.String"></GridColumn>
+					<GridColumn Field="@nameof(SessionDetailsModel.Trainer1Name)" Type="ColumnType.String"></GridColumn>
+					<GridColumn Field="@nameof(SessionDetailsModel.Trainer2Name)" Type="ColumnType.String"></GridColumn>
+					<GridColumn Field="@nameof(SessionDetailsModel.Confirmed)" DisplayAsCheckBox="true"></GridColumn>
+				</GridColumns>
+			</SfGrid>
+		</div>
+
+		<div class="combo-box-row">
+			@if (!_isUpdating)
+			{
+				<SfComboBox TValue="int" TItem="ValidSubscriptionModel" Placeholder="Select a Person" DataSource="@_validSubs" @bind-Value="_selectedValidSub">
+					<ComboBoxFieldSettings Value="SubscriptionId" Text="PersonName"></ComboBoxFieldSettings>
+				</SfComboBox>
+			}
+
+			<SfComboBox TValue="int" TItem="TrainerModel" Placeholder="Select a Trainer" DataSource="@_trainers" @bind-Value="_selectedTrainer1">
+				<ComboBoxFieldSettings Value="Id" Text="Name"></ComboBoxFieldSettings>
+			</SfComboBox>
+
+			<SfComboBox TValue="int" TItem="TrainerModel" Placeholder="Select a Trainer" DataSource="@_trainers" @bind-Value="_selectedTrainer2">
+				<ComboBoxFieldSettings Value="Id" Text="Name"></ComboBoxFieldSettings>
+			</SfComboBox>
+		</div>
+
+		<div class="checkbox-row">
+			<SfCheckBox Label="Confirmed" @bind-Checked="_isConfirmed" />
+		</div>
+
+		<div class="save-button-row">
+			<button class="btn btn-primary" @onclick="OnSaveClick">Save</button>
+		</div>
+	</div>
 </div>
