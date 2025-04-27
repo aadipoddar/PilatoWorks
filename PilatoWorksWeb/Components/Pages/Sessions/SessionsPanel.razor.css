@@ -1,0 +1,25 @@
+﻿#_sfGrid {
+	font-size: 1.1rem;
+}
+
+.e-grid .e-headercell {
+	font-size: 1.1rem;
+	font-weight: 600;
+}
+
+.combo-box-row {
+	display: flex;
+	justify-content: center;
+	gap: 1rem;
+	margin-top: 1rem;
+}
+
+.checkbox-row {
+	text-align: center;
+	margin-top: 1rem;
+}
+
+.save-button-row {
+	text-align: center;
+	margin-top: 1rem;
+}

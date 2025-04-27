@@ -1,6 +1,6 @@
-namespace PilatoWorksWeb.Components.Pages;
+namespace PilatoWorksWeb.Components.Pages.Subscriptions;
 
-public partial class Dashbaord
+public partial class SubscriptionsPanel
 {
 	[Inject] public NavigationManager NavManager { get; set; }
 	[Inject] public IJSRuntime JS { get; set; }
@@ -10,7 +10,10 @@ public partial class Dashbaord
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
 		if (firstRender && !await ValidatePassword()) NavManager.NavigateTo("/");
-		StateHasChanged();
+
+		if (firstRender)
+		{
+		}
 	}
 
 	private async Task<bool> ValidatePassword()
@@ -27,23 +30,5 @@ public partial class Dashbaord
 
 		_user = user;
 		return true;
-	}
-
-	private void OnSessionClick() =>
-		NavManager.NavigateTo("/Sessions");
-
-	private void OnTrainerClick()
-	{
-		// Handle Trainer button click
-		Console.WriteLine("Trainer button clicked");
-	}
-
-	private void OnSubscriptionClick() =>
-		NavManager.NavigateTo("/Subscriptions");
-
-	private void OnAdminClick()
-	{
-		// Handle Admin button click
-		Console.WriteLine("Admin button clicked");
 	}
 }

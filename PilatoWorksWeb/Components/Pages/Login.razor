@@ -2,6 +2,21 @@
 
 <PageTitle>Login</PageTitle>
 
-<div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
-	<input type="password" placeholder="Password" @bind-value="_password" @oninput="CheckPassword" />
+<div class="center-screen">
+	<div class="fixed-width">
+		<SfOtpInput Type="OtpInputType.Number" OnInput="CheckPassword" Value="@_password" Placeholder="CODE" />
+	</div>
 </div>
+
+<style>
+	.center-screen {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 100vh;
+	}
+
+	.fixed-width {
+		width: 300px;
+	}
+</style>

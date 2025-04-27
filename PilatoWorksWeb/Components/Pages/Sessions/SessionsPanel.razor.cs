@@ -1,10 +1,3 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
-
-using PilatoWorksLibrary.Data;
-using PilatoWorksLibrary.DataAccess;
-using PilatoWorksLibrary.Models;
-
 using Syncfusion.Blazor.Calendars;
 using Syncfusion.Blazor.DropDowns;
 using Syncfusion.Blazor.Grids;
@@ -113,7 +106,7 @@ public partial class SessionsPanel
 				_validSubs.Remove(subscription);
 		}
 
-		_selectedValidSub = _validSubs.FirstOrDefault()?.SubscriptionId ?? 1;
+		_selectedValidSub = _validSubs.FirstOrDefault()?.SubscriptionId ?? 0;
 		StateHasChanged();
 	}
 
@@ -184,6 +177,13 @@ public partial class SessionsPanel
 			await JS.InvokeVoidAsync("alert", "Trainer 1 and Trainer 2 cannot be the same.");
 			return false;
 		}
+
+		if (_selectedSlot == 0)
+		{
+			await JS.InvokeVoidAsync("alert", "Please select a slot.");
+			return false;
+		}
+
 		return true;
 	}
 }

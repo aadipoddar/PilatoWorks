@@ -1,34 +1,6 @@
-﻿@page "/SessionsPanel"
+﻿@page "/Sessions"
 
 <PageTitle>Sessions</PageTitle>
-
-<style>
-	#_sfGrid {
-		font-size: 1.1rem;
-	}
-
-	.e-grid .e-headercell {
-		font-size: 1.1rem;
-		font-weight: 600;
-	}
-
-	.combo-box-row {
-		display: flex;
-		justify-content: center;
-		gap: 1rem;
-		margin-top: 1rem;
-	}
-
-	.checkbox-row {
-		text-align: center;
-		margin-top: 1rem;
-	}
-
-	.save-button-row {
-		text-align: center;
-		margin-top: 1rem;
-	}
-</style>
 
 <div class="container">
 	<div class="row justify-content-center">
@@ -45,7 +17,7 @@
 			<div class="mb-3">
 				<SfComboBox TValue="int" TItem="SlotModel" Placeholder="Select a Slot" DataSource="@_slots" @bind-Value="_selectedSlot" Width="200px">
 					<ComboBoxEvents TItem="SlotModel" TValue="int" ValueChange="@OnSlotChanged" />
-					<ComboBoxFieldSettings Value="Id" Text="Hour"/>
+					<ComboBoxFieldSettings Value="Id" Text="Hour" />
 				</SfComboBox>
 			</div>
 		</div>
@@ -93,7 +65,7 @@
 		</div>
 
 		<div class="save-button-row">
-			<button class="btn btn-primary" @onclick="OnSaveClick">Save</button>
+			<SfButton OnClick="OnSaveClick" Content="Save" CssClass="e-primary" />
 		</div>
 	</div>
 </div>

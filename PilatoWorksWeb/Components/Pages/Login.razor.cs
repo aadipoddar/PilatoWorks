@@ -1,9 +1,4 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
-
-using PilatoWorksLibrary.Data;
-using PilatoWorksLibrary.DataAccess;
-using PilatoWorksLibrary.Models;
+using Syncfusion.Blazor.Inputs;
 
 namespace PilatoWorksWeb.Components.Pages;
 
@@ -32,7 +27,7 @@ public partial class Login
 		}
 	}
 
-	private async void CheckPassword(ChangeEventArgs e)
+	private async Task CheckPassword(OtpInputEventArgs e)
 	{
 		_password = e.Value?.ToString() ?? string.Empty;
 		if (_password.Length != 4) return;

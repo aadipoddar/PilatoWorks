@@ -11,11 +11,20 @@
     <PackageReference Include="Syncfusion.Blazor.Calendars" Version="29.1.39" />
     <PackageReference Include="Syncfusion.Blazor.DropDowns" Version="29.1.39" />
     <PackageReference Include="Syncfusion.Blazor.Grid" Version="29.1.39" />
+    <PackageReference Include="Syncfusion.Blazor.Inputs" Version="29.1.39" />
     <PackageReference Include="Syncfusion.Blazor.Themes" Version="29.1.39" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\PilatoWorksLibrary\PilatoWorksLibrary.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Microsoft.AspNetCore.Components" />
+    <Using Include="Microsoft.JSInterop" />
+    <Using Include="PilatoWorksLibrary.Data" />
+    <Using Include="PilatoWorksLibrary.DataAccess" />
+    <Using Include="PilatoWorksLibrary.Models" />
   </ItemGroup>
 
 </Project>
