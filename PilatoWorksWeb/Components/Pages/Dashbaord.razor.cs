@@ -46,4 +46,12 @@ public partial class Dashbaord
 		// Handle Admin button click
 		Console.WriteLine("Admin button clicked");
 	}
+
+	private async Task OnLogoutClick()
+	{
+		await JS.InvokeVoidAsync("deleteCookie", "UserId");
+		await JS.InvokeVoidAsync("deleteCookie", "Password");
+
+		NavManager.NavigateTo("/");
+	}
 }

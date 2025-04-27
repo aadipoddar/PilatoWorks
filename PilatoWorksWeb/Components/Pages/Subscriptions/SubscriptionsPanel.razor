@@ -2,4 +2,70 @@
 
 <PageTitle>Subscriptions</PageTitle>
 
-<h3>SubscriptionsPanel</h3>
+<div class="container mt-4">
+	<div class="card shadow">
+		<div class="card-header bg-primary text-white">
+			<h3 class="mb-0">Subscription Form</h3>
+		</div>
+		<div class="card-body">
+			<div class="row g-3">
+				<!-- Customer Information Section -->
+				<div class="col-12">
+					<h5 class="section-header">Customer Information</h5>
+				</div>
+				<div class="col-md-6">
+					<SfTextBox Placeholder='Person Number' FloatLabelType='@FloatLabelType.Auto' Type="InputType.Number" ValueChanged="OnNumberChanged" maxlength="10" />
+				</div>
+				<div class="col-md-6">
+					<SfTextBox Placeholder='Person Name' FloatLabelType='@FloatLabelType.Auto' @bind-Value="@_personName" />
+				</div>
+
+				<!-- Subscription Details Section -->
+				<div class="col-12 mt-2">
+					<h5 class="section-header">Subscription Details</h5>
+				</div>
+				<div class="col-md-6">
+					<SfComboBox TValue="int" TItem="SessionTypeModel" Placeholder="Session Type"
+								FloatLabelType='@FloatLabelType.Auto' DataSource="@_sessionTypes"
+								@bind-Value="_selectedSessionType">
+						<ComboBoxFieldSettings Value="Id" Text="Name" />
+					</SfComboBox>
+				</div>
+				<div class="col-md-6">
+					<SfDateRangePicker Placeholder="Validity" TValue="DateOnly"
+						FloatLabelType='@FloatLabelType.Auto' @bind-StartDate="@ValidStartDate" EndDate="@ValidEndDate"
+						Min="@MinValidDate"/>
+				</div>
+				<div class="col-md-6">
+					<SfTextBox Placeholder='No Of Sessions' FloatLabelType='@FloatLabelType.Auto' Type="InputType.Number" @bind-Value="@_noSessions" />
+				</div>
+				<div class="col-md-6">
+					<SfTextBox Placeholder='Booking' FloatLabelType='@FloatLabelType.Auto' Type="InputType.Number" @bind-Value="@_booking" />
+				</div>
+				<div class="col-md-6 d-flex align-items-center">
+					<SfCheckBox Label="Status" @bind-Checked="_status" CssClass="me-2" />
+				</div>
+
+				<!-- Payment Information Section -->
+				<div class="col-12 mt-2">
+					<h5 class="section-header">Payment Information</h5>
+				</div>
+				<div class="col-md-4">
+					<SfTextBox Placeholder='Cash' FloatLabelType='@FloatLabelType.Auto' Type="InputType.Number" @bind-Value="@_cash" />
+				</div>
+				<div class="col-md-4">
+					<SfTextBox Placeholder='Card' FloatLabelType='@FloatLabelType.Auto' Type="InputType.Number" @bind-Value="@_card" />
+				</div>
+				<div class="col-md-4">
+					<SfTextBox Placeholder='UPI' FloatLabelType='@FloatLabelType.Auto' Type="InputType.Number" @bind-Value="@_upi" />
+				</div>
+
+				<!-- Action Buttons -->
+				<div class="col-12 mt-4 text-end">
+					<SfButton IconCss="e-icons e-close" OnClick="OnCancelClick" Content="Cancel" CssClass="e-secondary me-3" />
+					<SfButton IconCss="e-icons e-save" OnClick="OnSaveClick" Content="Save Subscription" CssClass="e-primary" />
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

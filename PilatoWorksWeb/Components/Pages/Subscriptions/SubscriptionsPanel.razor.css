@@ -1,0 +1,23 @@
+﻿.section-header {
+	color: #0066cc;
+	padding-bottom: 5px;
+	border-bottom: 2px solid #e0e0e0;
+	margin-bottom: 15px;
+}
+
+.card-header {
+	font-weight: 600;
+	letter-spacing: 0.5px;
+}
+
+.e-control-wrapper {
+	margin-bottom: 15px;
+}
+
+.e-btn.e-secondary {
+	border: 1px solid #6c757d;
+}
+
+.e-checkbox-wrapper {
+	margin-top: 8px;
+}
