@@ -1,0 +1,112 @@
+﻿@page "/Trainers"
+
+<PageTitle>Trainers</PageTitle>
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Trainer Information</h3>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <!-- Search Section -->
+                <div class="col-12">
+                    <h5 class="section-header">Find Trainer</h5>
+                </div>
+                <div class="col-md-6">
+                    <SfTextBox Placeholder='Number' FloatLabelType='@FloatLabelType.Auto' 
+                              Type="InputType.Number" ValueChanged="OnNumberChanged" 
+                              maxlength="10" CssClass="w-100" />
+                </div>
+
+                <!-- Trainer Details Section -->
+                <div class="col-12 mt-2">
+                    <h5 class="section-header">Trainer Details</h5>
+                </div>
+                <div class="col-md-6">
+                    <SfTextBox Placeholder='Name' FloatLabelType='@FloatLabelType.Auto' 
+                              Readonly="true" Value="@_trainerName" CssClass="w-100" />
+                </div>
+                <div class="col-md-6">
+                    <SfTextBox Placeholder='Address' FloatLabelType='@FloatLabelType.Auto' 
+                              Readonly="true" Value="@_trainerAddress" CssClass="w-100" />
+                </div>
+                <div class="col-md-4">
+                    <SfTextBox Placeholder='Salary' FloatLabelType='@FloatLabelType.Auto' 
+                              Readonly="true" Value="@_trainerSalary" CssClass="w-100" />
+                </div>
+                <div class="col-md-4">
+                    <SfTextBox Placeholder='Commision Percentage' FloatLabelType='@FloatLabelType.Auto' 
+                              Readonly="true" Value="@_trainerCommissionPercent" CssClass="w-100" />
+                </div>
+
+                <!-- Performance Summary -->
+                <div class="col-12 mt-2">
+                    <h5 class="section-header">Performance Summary</h5>
+                </div>
+                <div class="col-md-4">
+                    <SfTextBox Placeholder='No Of Sessions' FloatLabelType='@FloatLabelType.Auto' 
+                              Readonly="true" Value="@_noSessions" CssClass="w-100" />
+                </div>
+                <div class="col-md-4">
+                    <SfTextBox Placeholder='Total Sales' FloatLabelType='@FloatLabelType.Auto' 
+                              Readonly="true" Value="@_totalSales" CssClass="w-100" />
+                </div>
+
+                <!-- Date Range Selector -->
+                <div class="col-12 mt-2">
+                    <h5 class="section-header">Sessions History</h5>
+                </div>
+                <div class="col-md-6">
+                    <SfDateRangePicker Placeholder="Get Sessions Between" TValue="DateOnly"
+                                      FloatLabelType='@FloatLabelType.Auto' 
+                                      StartDate="@SessionStartDate" EndDate="@SessionEndDate"
+                                      CssClass="w-100">
+                        <DateRangePickerEvents TValue="DateOnly" ValueChange="@SessionDateChanged" />
+                    </SfDateRangePicker>
+                </div>
+
+                <!-- Sessions Grid -->
+                <div class="col-12 mt-3">
+                    <SfGrid DataSource="@SessionDetailsModels"
+                           ID="_sfGrid"
+                           @ref="_sfGrid"
+                           Height="300"
+                           Width="100%">
+                        <GridColumns>
+                            <GridColumn Field="@nameof(SessionDetailsModel.SessionDate)" HeaderText="Date" Type="ColumnType.DateOnly" Width="100" />
+                            <GridColumn Field="@nameof(SessionDetailsModel.SlotHour)" HeaderText="Time" Type="ColumnType.Number" Width="80" />
+                            <GridColumn Field="@nameof(SessionDetailsModel.PersonName)" HeaderText="Client" Type="ColumnType.String" Width="150" />
+                            <GridColumn Field="@nameof(SessionDetailsModel.PersonNumber)" HeaderText="Phone" Type="ColumnType.Number" Width="120" />
+                            <GridColumn Field="@nameof(SessionDetailsModel.SessionTypeName)" HeaderText="Session Type" Type="ColumnType.String" Width="150" />
+                            <GridColumn Field="@nameof(SessionDetailsModel.PerSessionCost)" HeaderText="Revenue" Type="ColumnType.Decimal" Width="100" Format="C2" />
+                            <GridColumn Field="@nameof(SessionDetailsModel.Trainer1Name)" HeaderText="Trainer 1" Type="ColumnType.String" Width="150" />
+                            <GridColumn Field="@nameof(SessionDetailsModel.Trainer2Name)" HeaderText="Trainer 2" Type="ColumnType.String" Width="150" />
+                        </GridColumns>
+                    </SfGrid>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .section-header {
+        color: #0066cc;
+        padding-bottom: 5px;
+        border-bottom: 1px solid #e0e0e0;
+        margin-bottom: 10px;
+    }
+    .card {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .card-header {
+        background-color: #0066cc !important;
+    }
+    .e-grid {
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+</style>

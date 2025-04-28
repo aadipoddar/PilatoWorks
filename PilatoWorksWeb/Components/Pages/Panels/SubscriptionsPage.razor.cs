@@ -1,6 +1,6 @@
-namespace PilatoWorksWeb.Components.Pages.Subscriptions;
+namespace PilatoWorksWeb.Components.Pages.Panels;
 
-public partial class SubscriptionsPanel
+public partial class SubscriptionsPage
 {
 	[Inject] public NavigationManager NavManager { get; set; }
 	[Inject] public IJSRuntime JS { get; set; }
@@ -190,7 +190,7 @@ public partial class SubscriptionsPanel
 		if (string.IsNullOrEmpty(_card)) _card = "0";
 		if (string.IsNullOrEmpty(_upi)) _upi = "0";
 
-		if ((int.Parse(_cash) + int.Parse(_card) + int.Parse(_upi)) > int.Parse(_booking.Trim()))
+		if (int.Parse(_cash) + int.Parse(_card) + int.Parse(_upi) > int.Parse(_booking.Trim()))
 		{
 			await JS.InvokeVoidAsync("alert", "Amount Collected is greater than booking Amount.");
 			return false;

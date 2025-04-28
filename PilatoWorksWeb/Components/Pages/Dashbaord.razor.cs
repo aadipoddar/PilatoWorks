@@ -32,16 +32,13 @@ public partial class Dashbaord
 	private void OnSessionClick() =>
 		NavManager.NavigateTo("/Sessions");
 
-	private void OnTrainerClick()
-	{
-		// Handle Trainer button click
-		Console.WriteLine("Trainer button clicked");
-	}
+	private void OnTrainerClick() =>
+		NavManager.NavigateTo("/Trainers");
 
 	private void OnSubscriptionClick() =>
 		NavManager.NavigateTo("/Subscriptions");
 
-	private void OnAdminClick()
+	private void OnPeopleClick()
 	{
 		// Handle Admin button click
 		Console.WriteLine("Admin button clicked");

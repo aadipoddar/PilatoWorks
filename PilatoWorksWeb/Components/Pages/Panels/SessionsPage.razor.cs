@@ -2,9 +2,9 @@ using Syncfusion.Blazor.Calendars;
 using Syncfusion.Blazor.DropDowns;
 using Syncfusion.Blazor.Grids;
 
-namespace PilatoWorksWeb.Components.Pages.Sessions;
+namespace PilatoWorksWeb.Components.Pages.Panels;
 
-public partial class SessionsPanel
+public partial class SessionsPage
 {
 	[Inject] public NavigationManager NavManager { get; set; }
 	[Inject] public IJSRuntime JS { get; set; }

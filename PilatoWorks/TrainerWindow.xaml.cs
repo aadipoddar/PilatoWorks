@@ -9,6 +9,7 @@ namespace PilatoWorks;
 public partial class TrainerWindow : Window
 {
 	private TrainerModel _foundTrainer = null;
+
 	public TrainerWindow() => InitializeComponent();
 
 	private void numberTextBox_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e) =>
