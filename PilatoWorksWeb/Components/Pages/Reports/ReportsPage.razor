@@ -1,0 +1,364 @@
+﻿@page "/Reports"
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Inputs
+
+<PageTitle>Reports - Reflex and Reform Pilates</PageTitle>
+
+<div class="reports-container">
+	<div class="reports-overlay"></div>
+
+	<!-- Header Section -->
+	<div class="reports-header">
+		<div class="header-content">
+			<div class="page-title">
+				<svg class="page-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+					<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 16H7V5h10v14zm-2-7H9v-2h6v2zm0-4H9V6h6v2zm0 8H9v-2h6v2z" />
+				</svg>
+				<h1>Business Reports</h1>
+			</div>
+		</div>
+	</div>
+
+	<!-- Tabs for Report Types -->
+	<div class="reports-tabs">
+		<SfButton CssClass="@GetTabClass(1)" @onclick="() => SelectTab(1)">
+			<svg class="tab-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+				<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+			</svg>
+			Clients
+		</SfButton>
+		<SfButton CssClass="@GetTabClass(2)" @onclick="() => SelectTab(2)">
+			<svg class="tab-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+				<path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
+			</svg>
+			Subscriptions
+		</SfButton>
+		<SfButton CssClass="@GetTabClass(3)" @onclick="() => SelectTab(3)">
+			<svg class="tab-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+				<path d="M15 11V5l-3-3-3 3v2H3v14h18V11h-6zm-8 8H5v-2h2v2zm0-4H5v-2h2v2zm0-4H5V9h2v2zm6 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V9h2v2zm0-4h-2V5h2v2zm6 12h-2v-2h2v2zm0-4h-2v-2h2v2z" />
+			</svg>
+			Trainers
+		</SfButton>
+	</div>
+
+	<!-- Main Content -->
+	<div class="reports-content">
+		<!-- Person Report Section -->
+		<div class="content-card @(_currentTab == 1 ? "active" : "")">
+			<div class="card-section">
+				<h5 class="section-header">
+					<svg class="section-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+						<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+					</svg>
+					Client Report
+				</h5>
+				<div class="section-content">
+					<!-- Clients Grid -->
+					<div class="grid-container">
+						<SfGrid DataSource="@_personModels" ID="_sfPersonGrid" @ref="_sfPersonGrid" AllowPaging="true" AllowSorting="true" AllowFiltering="true" AllowResizing="true">
+							<GridPageSettings PageSize="20"></GridPageSettings>
+							<GridColumns>
+								<GridColumn Field=@nameof(PersonModel.Id) HeaderText="ID" Width="80"></GridColumn>
+								<GridColumn Field=@nameof(PersonModel.Name) HeaderText="Name" Width="150"></GridColumn>
+								<GridColumn Field=@nameof(PersonModel.Number) HeaderText="Phone" Width="130"></GridColumn>
+								<GridColumn Field=@nameof(PersonModel.Email) HeaderText="Email" Width="170"></GridColumn>
+								<GridColumn Field=@nameof(PersonModel.EmergencyName) HeaderText="Emergency Name" Width="150"></GridColumn>
+								<GridColumn Field=@nameof(PersonModel.EmergencyNumber) HeaderText="Emergency Phone" Width="130"></GridColumn>
+								<GridColumn Field=@nameof(PersonModel.Address) HeaderText="Address" Width="200"></GridColumn>
+							</GridColumns>
+						</SfGrid>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Subscription Report Section -->
+		<div class="content-card @(_currentTab == 2 ? "active" : "")">
+			<div class="card-section">
+				<h5 class="section-header">
+					<svg class="section-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+						<path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
+					</svg>
+					Subscription Report
+				</h5>
+				<div class="section-content">
+					<!-- Subscriptions Grid -->
+					<div class="grid-container">
+						<SfGrid DataSource="@_validSubscriptionModels" ID="_sfSubscriptionGrid" @ref="_sfSubscriptionGrid" AllowPaging="true" AllowSorting="true" AllowFiltering="true" AllowResizing="true">
+							<GridPageSettings PageSize="20"></GridPageSettings>
+							<GridColumns>
+								<GridColumn Field=@nameof(ValidSubscriptionModel.PersonName) HeaderText="Person Name" />
+								<GridColumn Field=@nameof(ValidSubscriptionModel.PersonNumber) HeaderText="Person Phone" />
+								<GridColumn Field=@nameof(ValidSubscriptionModel.SubscriptionId) HeaderText="Subscription Id" />
+								<GridColumn Field=@nameof(ValidSubscriptionModel.SubscriptionValidFrom) HeaderText="Valid From" />
+								<GridColumn Field=@nameof(ValidSubscriptionModel.SubscriptionValidTo) HeaderText="Valid To" />
+								<GridColumn Field=@nameof(ValidSubscriptionModel.SessionType) HeaderText="Type" />
+								<GridColumn Field=@nameof(ValidSubscriptionModel.BookingAmount) HeaderText="Booking" />
+								<GridColumn Field=@nameof(ValidSubscriptionModel.NoOfSessions) HeaderText="No. of Sessions" />
+								<GridColumn Field=@nameof(ValidSubscriptionModel.RemainingSessions) HeaderText="Remaining Sessions" />
+								<GridColumn Field=@nameof(ValidSubscriptionModel.TotalPaid) HeaderText="Paid" />
+								<GridColumn Field=@nameof(ValidSubscriptionModel.Dues) HeaderText="Dues" />
+								<GridColumn Field=@nameof(ValidSubscriptionModel.UserName) HeaderText="User" />
+								<GridColumn Field=@nameof(ValidSubscriptionModel.SubscriptionDate) HeaderText="Date Time" />
+							</GridColumns>
+						</SfGrid>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Trainer Report Section -->
+		<div class="content-card @(_currentTab == 3 ? "active" : "")">
+			<div class="card-section">
+				<h5 class="section-header">
+					<svg class="section-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+						<path d="M15 11V5l-3-3-3 3v2H3v14h18V11h-6zm-8 8H5v-2h2v2zm0-4H5v-2h2v2zm0-4H5V9h2v2zm6 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V9h2v2zm0-4h-2V5h2v2zm6 12h-2v-2h2v2zm0-4h-2v-2h2v2z" />
+					</svg>
+					Trainer Report
+				</h5>
+				<div class="section-content">
+					<!-- Trainers Grid -->
+					<div class="grid-container">
+						<SfGrid DataSource="@_trainerModels" ID="_sfTrainerGrid" @ref="_sfTrainerGrid" AllowPaging="true" AllowSorting="true" AllowFiltering="true" AllowResizing="true">
+							<GridPageSettings PageSize="20"></GridPageSettings>
+							<GridColumns>
+								<GridColumn Field=@nameof(TrainerModel.Id) />
+								<GridColumn Field=@nameof(TrainerModel.Name) />
+								<GridColumn Field=@nameof(TrainerModel.Number) />
+								<GridColumn Field=@nameof(TrainerModel.Address) />
+								<GridColumn Field=@nameof(TrainerModel.Salary) />
+								<GridColumn Field=@nameof(TrainerModel.CommissionPercent) HeaderText="Commission %" />
+								<GridColumn Field=@nameof(TrainerModel.Status) />
+							</GridColumns>
+						</SfGrid>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="reports-footer">
+		<p>&copy; @DateTime.Now.Year A Product By <a href="https://aadi.vercel.app" target="_blank" class="footer-link">AadiSoft</a>. All rights reserved.</p>
+	</div>
+</div>
+
+<style>
+	:root {
+		--primary-color: #3f51b5; /* Fitness blue/purple */
+		--secondary-color: #8bc34a; /* Fresh green */
+		--dark-color: #303030;
+		--light-color: #f8f8f8;
+		--accent-color: #ff5722; /* Energetic orange */
+		--card-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+	}
+
+	body {
+		margin: 0;
+		padding: 0;
+	}
+
+	.reports-container {
+		min-height: 100vh;
+		display: flex;
+		flex-direction: column;
+		background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%233f51b5" fill-opacity="0.1" d="M0,224L48,218.7C96,213,192,203,288,213.3C384,224,480,256,576,261.3C672,267,768,245,864,208C960,171,1056,117,1152,106.7C1248,96,1344,128,1392,144L1440,160L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"></path></svg>'), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%238bc34a" fill-opacity="0.1" d="M0,64L48,85.3C96,107,192,149,288,165.3C384,181,480,171,576,144C672,117,768,75,864,80C960,85,1056,139,1152,154.7C1248,171,1344,149,1392,138.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+		background-color: #f8f9fa;
+		background-repeat: no-repeat;
+		background-position: top, bottom;
+		padding: 2rem;
+		position: relative;
+	}
+
+	.reports-overlay {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: url('data:image/svg+xml;utf8,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><rect width="20" height="20" fill="none" stroke="%23000" stroke-opacity="0.03" stroke-width="1"/></svg>');
+		opacity: 0.5;
+		pointer-events: none;
+		z-index: 0;
+	}
+
+	.reports-header {
+		margin-bottom: 1.5rem;
+		position: relative;
+		z-index: 1;
+	}
+
+	.header-content {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.page-title {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.page-icon {
+		width: 40px;
+		height: 40px;
+		color: var(--secondary-color);
+		filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
+	}
+
+	.page-title h1 {
+		margin: 0;
+		font-size: 2rem;
+		font-weight: 700;
+		color: var(--dark-color);
+	}
+
+	/* Tabs styling */
+	.reports-tabs {
+		display: flex;
+		gap: 1rem;
+		margin-bottom: 2rem;
+		position: relative;
+		z-index: 1;
+	}
+
+	.tab-button {
+		display: flex;
+		align-items: center;
+		padding: 0.75rem 1.5rem;
+		border-radius: 50px;
+		font-weight: 500;
+		transition: all 0.3s ease;
+		gap: 0.5rem;
+		background-color: white;
+		color: var(--dark-color);
+		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+		border: none !important;
+	}
+
+		.tab-button:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+		}
+
+		.tab-button.active {
+			background: linear-gradient(135deg, var(--secondary-color) 0%, #7cb342 100%);
+			color: white;
+			box-shadow: 0 4px 12px rgba(139, 195, 74, 0.3);
+		}
+
+	.tab-icon {
+		width: 20px;
+		height: 20px;
+		color: inherit;
+	}
+
+	/* Main content styling */
+	.reports-content {
+		flex-grow: 1;
+		position: relative;
+		z-index: 1;
+	}
+
+	.content-card {
+		background-color: white;
+		border-radius: 16px;
+		box-shadow: var(--card-shadow);
+		overflow: hidden;
+		margin-bottom: 2rem;
+		display: none;
+	}
+
+		.content-card.active {
+			display: block;
+		}
+
+	.card-section {
+		padding: 1.5rem 2rem;
+	}
+
+	.section-header {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		margin: 0 0 1.25rem 0;
+		font-size: 1.2rem;
+		font-weight: 600;
+		color: var(--dark-color);
+	}
+
+	.section-icon {
+		width: 24px;
+		height: 24px;
+		color: var(--secondary-color);
+	}
+
+	/* Grid container */
+	.grid-container {
+		margin-top: 1rem;
+	}
+
+	::deep .e-grid {
+		border-radius: 8px;
+		border: none !important;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+	}
+
+	::deep .e-gridheader {
+		background-color: var(--light-color) !important;
+	}
+
+	::deep .e-headercell {
+		background-color: var(--light-color) !important;
+		font-weight: 600 !important;
+	}
+
+	/* Focus states */
+	::deep .e-input:focus,
+	::deep .e-input-group.e-control-wrapper:focus-within {
+		border-color: var(--secondary-color) !important;
+		box-shadow: 0 0 0 3px rgba(139, 195, 74, 0.2) !important;
+	}
+
+	/* Footer */
+	.reports-footer {
+		margin-top: auto;
+		text-align: center;
+		padding: 1rem;
+		position: relative;
+		z-index: 1;
+	}
+
+		.reports-footer p {
+			margin: 0;
+			color: #777;
+			font-size: 0.9rem;
+		}
+
+	/* Responsive adjustments */
+	@@media (max-width: 768px) {
+		.reports-container {
+			padding: 1.5rem 1rem;
+		}
+
+		.page-title h1 {
+			font-size: 1.5rem;
+		}
+
+		.reports-tabs {
+			overflow-x: auto;
+			padding-bottom: 0.5rem;
+		}
+
+		.tab-button {
+			white-space: nowrap;
+			padding: 0.6rem 1rem;
+		}
+
+		.card-section {
+			padding: 1.5rem 1rem;
+		}
+	}
+</style>

@@ -44,10 +44,8 @@ public partial class Dashboard
 	private void OnClearDuesClick() =>
 		NavManager.NavigateTo("/ClearDues");
 
-	private void OnReportsClick()
-	{
-		// Add implementation for Reports functionality
-	}
+	private void OnReportsClick() =>
+		NavManager.NavigateTo("/Reports");
 
 	private async Task OnLogoutClick()
 	{
