@@ -1,142 +1,502 @@
 ﻿@page "/Sessions"
 
-<PageTitle>Sessions</PageTitle>
+<PageTitle>Sessions - Reflex and Reform Pilates</PageTitle>
 
-<div class="container mt-4">
-    <div class="card shadow">
-        <div class="card-header bg-primary text-white">
-            <h3 class="mb-0">Session Management</h3>
-        </div>
-        <div class="card-body">
-            <!-- Session Selection Controls -->
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <h5 class="section-header">Select Session Time</h5>
-                    <div class="d-flex gap-3 mt-3">
-                        <div class="flex-grow-1">
-                            <SfDatePicker TValue="DateOnly"
-                                          Placeholder="Select Session Date"
-                                          Value="_selectedDate">
-                                <DatePickerEvents TValue="DateOnly" ValueChange="OnDateChanged" />
-                            </SfDatePicker>
-                        </div>
-                        <div class="flex-grow-1">
-                            <SfComboBox TValue="int"
-                                        TItem="SlotModel"
-                                        Placeholder="Select a Slot"
-                                        DataSource="@_slots"
-                                        @bind-Value="_selectedSlot">
-                                <ComboBoxEvents TItem="SlotModel" TValue="int" ValueChange="@OnSlotChanged" />
-                                <ComboBoxFieldSettings Value="Id" Text="Hour" />
-                            </SfComboBox>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 d-flex align-items-center justify-content-end">
-                    <div class="card bg-light p-3 session-info-card">
-                        <div class="text-center">
-                            <h6 class="mb-1">Selected Session</h6>
-                            <div class="d-flex gap-2 justify-content-center">
-                                <div class="badge bg-primary">Date: @(_selectedDate.ToString("MMM dd, yyyy"))</div>
-                                <div class="badge bg-success">Time: @(_slots.FirstOrDefault(s => s.Id == _selectedSlot)?.Hour ?? 0):00</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<div class="sessions-container">
+	<div class="sessions-overlay"></div>
 
-            <!-- Sessions Grid -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <h5 class="section-header">Scheduled Sessions</h5>
-                    <div class="mt-3">
-                        <SfGrid DataSource="@SessionDetailsModels"
-                                ID="_sfGrid"
-                                @ref="_sfGrid"
-                                Height="280"
-                                Width="100%"
-                                CssClass="sessions-grid">
-                            <GridEvents RowSelected="RowSelectHandler" TValue="SessionDetailsModel"></GridEvents>
-                            <GridColumns>
-                                <GridColumn Field="@nameof(SessionDetailsModel.PersonName)" HeaderText="Client Name" Width="140"></GridColumn>
-                                <GridColumn Field="@nameof(SessionDetailsModel.PersonNumber)" HeaderText="Phone" Width="120"></GridColumn>
-                                <GridColumn Field="@nameof(SessionDetailsModel.SessionTypeName)" HeaderText="Session Type" Width="140"></GridColumn>
-                                <GridColumn Field="@nameof(SessionDetailsModel.Trainer1Name)" HeaderText="Trainer 1" Width="140"></GridColumn>
-                                <GridColumn Field="@nameof(SessionDetailsModel.Trainer2Name)" HeaderText="Trainer 2" Width="140"></GridColumn>
-                                <GridColumn Field="@nameof(SessionDetailsModel.Confirmed)" HeaderText="Confirmed" DisplayAsCheckBox="true" Width="100"></GridColumn>
-                            </GridColumns>
-                        </SfGrid>
-                    </div>
-                </div>
-            </div>
+	<!-- Header Section -->
+	<div class="sessions-header">
+		<div class="header-content">
+			<div class="page-title">
+				<svg class="page-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+					<path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14a2 2 0 002 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7v-5z" />
+				</svg>
+				<h1>Session Management</h1>
+			</div>
+		</div>
+	</div>
 
-            <!-- Session Details Form -->
-            <div class="row">
-                <div class="col-12">
-                    <h5 class="section-header">@(_isUpdating ? "Update Session" : "Add New Session")</h5>
-                </div>
-                <div class="col-md-12">
-                    <div class="row g-3 mt-1">
-                        <!-- Client Selection -->
-                        <div class="col-md-4">
-                            @if (!_isUpdating)
-                            {
-                                <div class="form-group">
-                                    <label class="form-label">Client</label>
-                                    <SfComboBox TValue="int"
-                                                TItem="ValidSubscriptionModel"
-                                                Placeholder="Select a Person"
-                                                DataSource="@_validSubs"
-                                                @bind-Value="_selectedValidSub">
-                                        <ComboBoxFieldSettings Value="SubscriptionId" Text="PersonName"></ComboBoxFieldSettings>
-                                    </SfComboBox>
-                                </div>
-                            }
-                        </div>
+	<!-- Main Content -->
+	<div class="sessions-content">
+		<div class="content-card">
+			<!-- Session Selection Controls -->
+			<div class="card-section">
+				<h5 class="section-header">
+					<svg class="section-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+						<path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14a2 2 0 002 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zm-5-5h-2v-2h2v2z" />
+					</svg>
+					Select Session Time
+				</h5>
+				<div class="section-content">
+					<div class="selection-controls">
+						<div class="selection-group">
+							<label class="form-label">Session Date</label>
+							<SfDatePicker TValue="DateOnly"
+										  Placeholder="Select Session Date"
+										  Value="_selectedDate"
+										  CssClass="form-control">
+								<DatePickerEvents TValue="DateOnly" ValueChange="OnDateChanged" />
+							</SfDatePicker>
+						</div>
+						<div class="selection-group">
+							<label class="form-label">Session Time</label>
+							<SfComboBox TValue="int"
+										TItem="SlotModel"
+										Placeholder="Select a Slot"
+										DataSource="@_slots"
+										@bind-Value="_selectedSlot"
+										PopupWidth="100%"
+										CssClass="form-control">
+								<ComboBoxEvents TItem="SlotModel" TValue="int" ValueChange="@OnSlotChanged" />
+								<ComboBoxFieldSettings Value="Id" Text="Hour" />
+							</SfComboBox>
+						</div>
 
-                        <!-- Trainer Selection -->
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label class="form-label">Primary Trainer</label>
-                                <SfComboBox TValue="int"
-                                            TItem="TrainerModel"
-                                            Placeholder="Select a Trainer"
-                                            DataSource="@_trainers"
-                                            @bind-Value="_selectedTrainer1">
-                                    <ComboBoxFieldSettings Value="Id" Text="Name"></ComboBoxFieldSettings>
-                                </SfComboBox>
-                            </div>
-                        </div>
+						<div class="summary-card">
+							<div class="summary-header">Selected Session</div>
+							<div class="summary-content">
+								<div class="summary-badge date">
+									@_selectedDate.ToString("MMM dd, yyyy")
+								</div>
+								<div class="summary-badge time">
+									@(_slots.FirstOrDefault(s => s.Id == _selectedSlot)?.Hour ?? 0):00
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 
-                        <!-- Co-Trainer Selection -->
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label class="form-label">Co-Trainer (Optional)</label>
-                                <SfComboBox TValue="int"
-                                            TItem="TrainerModel"
-                                            Placeholder="Select a Trainer"
-                                            DataSource="@_trainers"
-                                            @bind-Value="_selectedTrainer2">
-                                    <ComboBoxFieldSettings Value="Id" Text="Name"></ComboBoxFieldSettings>
-                                </SfComboBox>
-                            </div>
-                        </div>
+			<!-- Sessions Grid -->
+			<div class="card-section">
+				<h5 class="section-header">
+					<svg class="section-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+						<path d="M19 5v14H5V5h14m1.1-2H3.9c-.5 0-.9.4-.9.9v16.2c0 .4.4.9.9.9h16.2c.4 0 .9-.5.9-.9V3.9c0-.5-.5-.9-.9-.9zM11 7h6v2h-6V7zm0 4h6v2h-6v-2zm0 4h6v2h-6v-2zM7 7h2v2H7V7zm0 4h2v2H7v-2zm0 4h2v2H7v-2z" />
+					</svg>
+					Scheduled Sessions
+				</h5>
+				<div class="section-content">
+					<div class="grid-container">
+						<SfGrid DataSource="@SessionDetailsModels"
+								ID="_sfGrid"
+								@ref="_sfGrid"
+								Height="280"
+								Width="100%"
+								CssClass="sessions-grid">
+							<GridEvents RowSelected="RowSelectHandler" TValue="SessionDetailsModel"></GridEvents>
+							<GridColumns>
+								<GridColumn Field="@nameof(SessionDetailsModel.PersonName)" HeaderText="Client Name" Width="140"></GridColumn>
+								<GridColumn Field="@nameof(SessionDetailsModel.PersonNumber)" HeaderText="Phone" Width="120"></GridColumn>
+								<GridColumn Field="@nameof(SessionDetailsModel.SessionTypeName)" HeaderText="Session Type" Width="140"></GridColumn>
+								<GridColumn Field="@nameof(SessionDetailsModel.Trainer1Name)" HeaderText="Primary Trainer" Width="140"></GridColumn>
+								<GridColumn Field="@nameof(SessionDetailsModel.Trainer2Name)" HeaderText="Co-Trainer" Width="140"></GridColumn>
+								<GridColumn Field="@nameof(SessionDetailsModel.Confirmed)" HeaderText="Confirmed" DisplayAsCheckBox="true" Width="100"></GridColumn>
+							</GridColumns>
+						</SfGrid>
+					</div>
+				</div>
+			</div>
 
-                        <!-- Session Status -->
-                        <div class="col-md-4 mt-3">
-                            <div class="form-check">
-                                <SfCheckBox Label="Confirmed" @bind-Checked="_isConfirmed" CssClass="form-check-input" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
+			<!-- Session Details Form -->
+			<div class="card-section">
+				<h5 class="section-header">
+					<svg class="section-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+						<path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-8-2h2v-4h4v-2h-4V7h-2v4H7v2h4z" />
+					</svg>
+					@(_isUpdating ? "Update Session" : "Add New Session")
+				</h5>
+				<div class="section-content">
+					<div class="form-grid">
+						<!-- Client Selection -->
+						@if (!_isUpdating)
+						{
+							<div class="form-group">
+								<label class="form-label">Client</label>
+								<SfComboBox TValue="int"
+											TItem="ValidSubscriptionModel"
+											Placeholder="Select a Person"
+											DataSource="@_validSubs"
+											@bind-Value="_selectedValidSub"
+											PopupWidth="100%"
+											CssClass="form-control">
+									<ComboBoxFieldSettings Value="SubscriptionId" Text="PersonName"></ComboBoxFieldSettings>
+								</SfComboBox>
+							</div>
+						}
 
-                <!-- Action Buttons -->
-                <div class="col-12 mt-4 text-end">
-                    <SfButton IconCss="e-icons e-close" OnClick="OnCancelClick" Content="Cancel" CssClass="e-secondary me-2" />
-                    <SfButton IconCss="e-icons e-save" OnClick="OnSaveClick" Content="@(_isUpdating ? "Update Session" : "Save Session")" CssClass="e-primary" />
-                </div>
-            </div>
-        </div>
-    </div>
+						<!-- Trainer Selection -->
+						<div class="form-group">
+							<label class="form-label">Primary Trainer</label>
+							<SfComboBox TValue="int"
+										TItem="TrainerModel"
+										Placeholder="Select a Trainer"
+										DataSource="@_trainers"
+										@bind-Value="_selectedTrainer1"
+										PopupWidth="100%"
+										CssClass="form-control">
+								<ComboBoxFieldSettings Value="Id" Text="Name"></ComboBoxFieldSettings>
+							</SfComboBox>
+						</div>
+
+						<!-- Co-Trainer Selection -->
+						<div class="form-group">
+							<label class="form-label">Co-Trainer (Optional)</label>
+							<SfComboBox TValue="int"
+										TItem="TrainerModel"
+										Placeholder="Select a Trainer"
+										DataSource="@_trainers"
+										@bind-Value="_selectedTrainer2"
+										PopupWidth="100%"
+										CssClass="form-control">
+								<ComboBoxFieldSettings Value="Id" Text="Name"></ComboBoxFieldSettings>
+							</SfComboBox>
+						</div>
+
+						<!-- Session Status -->
+						<div class="form-group checkbox-group">
+							<SfCheckBox Label="Confirm Session" @bind-Checked="_isConfirmed" CssClass="custom-checkbox" />
+						</div>
+					</div>
+
+					<!-- Action Buttons -->
+					<div class="action-buttons">
+						<SfButton IconCss="e-icons e-close" OnClick="OnCancelClick" Content="Cancel" CssClass="btn-cancel" />
+						<SfButton IconCss="e-icons e-save" OnClick="OnSaveClick" Content="@(_isUpdating ? "Update Session" : "Save Session")" CssClass="btn-save" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="sessions-footer">
+		<p>&copy; @DateTime.Now.Year A Product By <a href="https://aadi.vercel.app" target="_blank" class="footer-link">AadiSoft</a>. All rights reserved.</p>
+	</div>
 </div>
+
+<style>
+	:root {
+		--primary-color: #3f51b5; /* Fitness blue/purple */
+		--secondary-color: #8bc34a; /* Fresh green */
+		--dark-color: #303030;
+		--light-color: #f8f8f8;
+		--accent-color: #ff5722; /* Energetic orange */
+		--card-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+	}
+
+	body {
+		margin: 0;
+		padding: 0;
+	}
+
+	.sessions-container {
+		min-height: 100vh;
+		display: flex;
+		flex-direction: column;
+		background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%233f51b5" fill-opacity="0.1" d="M0,224L48,218.7C96,213,192,203,288,213.3C384,224,480,256,576,261.3C672,267,768,245,864,208C960,171,1056,117,1152,106.7C1248,96,1344,128,1392,144L1440,160L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"></path></svg>'), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%238bc34a" fill-opacity="0.1" d="M0,64L48,85.3C96,107,192,149,288,165.3C384,181,480,171,576,144C672,117,768,75,864,80C960,85,1056,139,1152,154.7C1248,171,1344,149,1392,138.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+		background-color: #f8f9fa;
+		background-repeat: no-repeat;
+		background-position: top, bottom;
+		padding: 2rem;
+		position: relative;
+	}
+
+	.sessions-overlay {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: url('data:image/svg+xml;utf8,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><rect width="20" height="20" fill="none" stroke="%23000" stroke-opacity="0.03" stroke-width="1"/></svg>');
+		opacity: 0.5;
+		pointer-events: none;
+		z-index: 0;
+	}
+
+	.sessions-header {
+		margin-bottom: 2rem;
+		position: relative;
+		z-index: 1;
+	}
+
+	.header-content {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.page-title {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.page-icon {
+		width: 40px;
+		height: 40px;
+		color: var(--secondary-color);
+		filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
+	}
+
+	.page-title h1 {
+		margin: 0;
+		font-size: 2rem;
+		font-weight: 700;
+		color: var(--dark-color);
+	}
+
+	.sessions-content {
+		flex-grow: 1;
+		position: relative;
+		z-index: 1;
+	}
+
+	.content-card {
+		background-color: white;
+		border-radius: 16px;
+		box-shadow: var(--card-shadow);
+		overflow: hidden;
+		margin-bottom: 2rem;
+	}
+
+	.card-section {
+		padding: 1.5rem 2rem;
+		border-bottom: 1px solid rgba(0,0,0,0.06);
+	}
+
+		.card-section:last-child {
+			border-bottom: none;
+		}
+
+	.section-header {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		margin: 0 0 1.25rem 0;
+		font-size: 1.2rem;
+		font-weight: 600;
+		color: var(--dark-color);
+	}
+
+	.section-icon {
+		width: 24px;
+		height: 24px;
+		color: var(--secondary-color);
+	}
+
+	.selection-controls {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+		gap: 1.5rem;
+	}
+
+	.form-label {
+		display: block;
+		margin-bottom: 0.5rem;
+		font-weight: 600;
+		font-size: 0.9rem;
+		color: var(--dark-color);
+		position: relative;
+		padding-left: 0.5rem;
+	}
+
+		.form-label::before {
+			content: '';
+			position: absolute;
+			left: 0;
+			top: 0;
+			height: 100%;
+			width: 3px;
+			background: var(--secondary-color);
+			border-radius: 2px;
+		}
+
+	.form-control {
+		border-radius: 8px !important;
+		border: 2px solid #e0e0e0 !important;
+		transition: all 0.2s ease !important;
+	}
+
+	::deep .e-input:focus,
+	::deep .e-input-group.e-control-wrapper:focus-within {
+		border-color: var(--secondary-color) !important;
+		box-shadow: 0 0 0 3px rgba(139, 195, 74, 0.2) !important;
+	}
+
+	.summary-card {
+		background: linear-gradient(135deg, rgba(139, 195, 74, 0.05) 0%, rgba(139, 195, 74, 0.15) 100%);
+		border-radius: 12px;
+		padding: 1rem;
+		border-left: 4px solid var(--secondary-color);
+	}
+
+	.summary-header {
+		font-weight: 600;
+		color: var(--dark-color);
+		margin-bottom: 0.75rem;
+		font-size: 0.9rem;
+		text-align: center;
+	}
+
+	.summary-content {
+		display: flex;
+		justify-content: center;
+		gap: 0.75rem;
+	}
+
+	.summary-badge {
+		padding: 0.5rem 1rem;
+		border-radius: 50px;
+		font-size: 0.9rem;
+		font-weight: 500;
+		color: white;
+		display: inline-block;
+		box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+	}
+
+		.summary-badge.date {
+			background: linear-gradient(135deg, var(--primary-color) 0%, #5c6bc0 100%);
+		}
+
+		.summary-badge.time {
+			background: linear-gradient(135deg, var(--secondary-color) 0%, #9ccc65 100%);
+		}
+
+	.grid-container {
+		margin: 1rem 0;
+	}
+
+	.sessions-grid {
+		border-radius: 8px;
+		overflow: hidden;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+	}
+
+	::deep .e-grid {
+		border-radius: 8px;
+		border: none !important;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+	}
+
+	::deep .e-gridheader {
+		background-color: var(--light-color) !important;
+	}
+
+	::deep .e-headercell {
+		background-color: var(--light-color) !important;
+		font-weight: 600 !important;
+	}
+
+	.form-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+		gap: 1.5rem;
+		margin-bottom: 2rem;
+	}
+
+	.form-group {
+		margin-bottom: 0;
+	}
+
+	.checkbox-group {
+		display: flex;
+		align-items: flex-end;
+		padding-bottom: 0.5rem;
+	}
+
+	::deep .e-checkbox-wrapper .e-label {
+		font-weight: 500;
+		color: var(--dark-color);
+	}
+
+	.action-buttons {
+		display: flex;
+		justify-content: flex-end;
+		gap: 1rem;
+	}
+
+	.btn-cancel {
+		background-color: #e0e0e0 !important;
+		color: #666 !important;
+		border-color: transparent !important;
+		padding: 0.6rem 1.5rem;
+		border-radius: 50px;
+		font-weight: 500;
+		transition: all 0.3s ease;
+	}
+
+		.btn-cancel:hover {
+			background-color: #d0d0d0 !important;
+			transform: translateY(-2px);
+		}
+
+	.btn-save {
+		background: linear-gradient(135deg, var(--secondary-color) 0%, #7cb342 100%) !important;
+		border-color: transparent !important;
+		padding: 0.6rem 1.5rem;
+		border-radius: 50px;
+		font-weight: 500;
+		transition: all 0.3s ease;
+		box-shadow: 0 2px 5px rgba(139, 195, 74, 0.3);
+	}
+
+		.btn-save:hover {
+			box-shadow: 0 4px 8px rgba(139, 195, 74, 0.4);
+			transform: translateY(-2px);
+		}
+
+	/* ComboBox Dropdown Width Fix */
+	::deep .e-popup.e-dropdown-popup {
+		max-width: 100% !important;
+		width: 100% !important;
+		box-sizing: border-box !important;
+	}
+
+	/* Prevent text overflow in list items */
+	::deep .e-list-item {
+		white-space: normal !important;
+		word-break: break-word !important;
+	}
+
+	.sessions-footer {
+		margin-top: auto;
+		text-align: center;
+		padding: 1rem;
+		position: relative;
+		z-index: 1;
+	}
+
+		.sessions-footer p {
+			margin: 0;
+			color: #777;
+			font-size: 0.9rem;
+		}
+
+	/* Responsive adjustments */
+	@@media (max-width: 768px) {
+		.sessions-container {
+			padding: 1.5rem 1rem;
+		}
+
+		.page-title h1 {
+			font-size: 1.5rem;
+		}
+
+		.card-section {
+			padding: 1.5rem 1rem;
+		}
+
+		.selection-controls {
+			grid-template-columns: 1fr;
+		}
+
+		.action-buttons {
+			flex-direction: column-reverse;
+			gap: 0.75rem;
+		}
+
+		.btn-cancel, .btn-save {
+			width: 100%;
+		}
+	}
+</style>

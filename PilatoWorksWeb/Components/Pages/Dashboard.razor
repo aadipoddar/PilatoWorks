@@ -1,8 +1,10 @@
 ﻿@page "/Dashboard"
 
-<PageTitle>Dashboard</PageTitle>
+<PageTitle>Dashboard - Reflex and Reform Pilates</PageTitle>
 
 <div class="dashboard-container">
+	<div class="dashboard-overlay"></div>
+
 	<div class="dashboard-header">
 		<div class="header-content">
 			<div class="user-welcome">
@@ -22,36 +24,47 @@
 	</div>
 
 	<div class="dashboard-content">
+		<div class="dashboard-title">
+			<h2>Studio Management</h2>
+			<p>Select a module to continue</p>
+		</div>
+
 		<div class="menu-cards">
 			@if (_user?.Session == true)
 			{
 				<div class="menu-card session-card" @onclick="OnSessionClick">
 					<div class="card-icon">
-						<i class="e-icons e-calculate-sheet"></i>
+						<svg class="feature-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+							<path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14a2 2 0 002 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7v-5z" />
+						</svg>
 					</div>
 					<div class="card-content">
 						<h3>Sessions</h3>
-						<p>Manage training sessions</p>
+						<p>Manage training sessions and class schedules</p>
 					</div>
 				</div>
 
 				<div class="menu-card subscription-card" @onclick="OnSubscriptionClick">
 					<div class="card-icon">
-						<i class="e-icons e-lock"></i>
+						<svg class="feature-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+							<path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
+						</svg>
 					</div>
 					<div class="card-content">
 						<h3>Subscriptions</h3>
-						<p>Manage customer subscriptions</p>
+						<p>Manage membership packages and client subscriptions</p>
 					</div>
 				</div>
 
 				<div class="menu-card person-card" @onclick="OnPeopleClick">
 					<div class="card-icon">
-						<i class="e-icons e-people"></i>
+						<svg class="feature-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+							<path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+						</svg>
 					</div>
 					<div class="card-content">
 						<h3>People</h3>
-						<p>Manage customer profiles</p>
+						<p>Manage client profiles and contact information</p>
 					</div>
 				</div>
 			}
@@ -60,31 +73,70 @@
 			{
 				<div class="menu-card trainer-card" @onclick="OnTrainerClick">
 					<div class="card-icon">
-						<i class="e-icons e-activities"></i>
+						<svg class="feature-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+							<path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z" />
+						</svg>
 					</div>
 					<div class="card-content">
 						<h3>Trainers</h3>
-						<p>Manage trainer information</p>
+						<p>Manage trainer profiles, schedules and assignments</p>
 					</div>
 				</div>
 			}
 		</div>
 	</div>
+
+	<div class="dashboard-footer">
+		<p>&copy; @DateTime.Now.Year A Product By <a href="https://aadi.vercel.app" target="_blank" class="footer-link">AadiSoft</a>. All rights reserved.</p>
+	</div>
 </div>
 
 <style>
+	:root {
+		--primary-color: #3f51b5; /* Fitness blue/purple */
+		--secondary-color: #8bc34a; /* Fresh green */
+		--dark-color: #303030;
+		--light-color: #f8f8f8;
+		--accent-color: #ff5722; /* Energetic orange */
+		--card-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+	}
+
+	body {
+		margin: 0;
+		padding: 0;
+		font-family: 'Montserrat', 'Roboto', sans-serif;
+	}
+
 	.dashboard-container {
 		min-height: 100vh;
 		display: flex;
 		flex-direction: column;
+		background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%233f51b5" fill-opacity="0.1" d="M0,224L48,218.7C96,213,192,203,288,213.3C384,224,480,256,576,261.3C672,267,768,245,864,208C960,171,1056,117,1152,106.7C1248,96,1344,128,1392,144L1440,160L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"></path></svg>');
 		background-color: #f8f9fa;
+		background-repeat: no-repeat;
+		background-position: top;
 		padding: 2rem;
+		position: relative;
+	}
+
+	.dashboard-overlay {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: url('data:image/svg+xml;utf8,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><rect width="20" height="20" fill="none" stroke="%23000" stroke-opacity="0.03" stroke-width="1"/></svg>');
+		opacity: 0.5;
+		pointer-events: none;
+		z-index: 0;
 	}
 
 	.dashboard-header {
 		margin-bottom: 2rem;
 		padding-bottom: 1.5rem;
-		border-bottom: 1px solid #e9ecef;
+		border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+		position: relative;
+		z-index: 1;
 	}
 
 	.header-content {
@@ -105,12 +157,14 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		transition: all 0.2s ease;
-		box-shadow: 0 2px 5px rgba(220, 53, 69, 0.2);
+		transition: all 0.3s ease;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+		background: linear-gradient(135deg, #ff5722 0%, #ff9800 100%) !important;
+		border-color: transparent !important;
 	}
 
 		.header-logout-button:hover {
-			box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 			transform: translateY(-2px);
 		}
 
@@ -124,19 +178,23 @@
 		width: 60px;
 		height: 60px;
 		border-radius: 50%;
-		background-color: #0066cc;
+		background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
 		color: white;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		font-size: 24px;
 		font-weight: bold;
+		box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.9), 0 4px 10px rgba(0, 0, 0, 0.1);
+		position: relative;
+		z-index: 1;
 	}
 
 	.welcome-text h4 {
 		margin: 0;
 		font-size: 1.5rem;
-		color: #212529;
+		color: var(--dark-color);
+		font-weight: 600;
 	}
 
 	.welcome-text p {
@@ -148,97 +206,152 @@
 	.dashboard-content {
 		flex-grow: 1;
 		display: flex;
-		justify-content: center;
-		align-items: flex-start;
+		flex-direction: column;
+		align-items: center;
+		position: relative;
+		z-index: 1;
 	}
+
+	.dashboard-title {
+		text-align: center;
+		margin-bottom: 2rem;
+	}
+
+		.dashboard-title h2 {
+			margin: 0;
+			color: var(--dark-color);
+			font-size: 2rem;
+			font-weight: 700;
+		}
+
+		.dashboard-title p {
+			margin: 0.5rem 0 0;
+			color: #6c757d;
+			font-size: 1rem;
+		}
 
 	.menu-cards {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-		gap: 1.5rem;
+		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+		gap: 2rem;
 		width: 100%;
 		max-width: 1200px;
+		margin-top: 1rem;
 	}
 
 	.menu-card {
 		background-color: white;
-		border-radius: 12px;
-		box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-		padding: 1.5rem;
+		border-radius: 16px;
+		box-shadow: var(--card-shadow);
+		padding: 2rem;
 		display: flex;
+		flex-direction: column;
 		cursor: pointer;
 		transition: all 0.3s ease;
-		border-left: 5px solid transparent;
+		position: relative;
+		overflow: hidden;
 	}
 
-		.menu-card:hover {
-			transform: translateY(-5px);
-			box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+		.menu-card::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 6px;
+			background: linear-gradient(90deg, transparent 0%, transparent 100%);
 		}
 
-	.session-card {
-		border-left-color: #28a745;
+		.menu-card:hover {
+			transform: translateY(-10px);
+			box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+		}
+
+	.session-card::before {
+		background: linear-gradient(90deg, var(--secondary-color) 0%, #9ccc65 100%);
 	}
 
-	.subscription-card {
-		border-left-color: #0066cc;
+	.subscription-card::before {
+		background: linear-gradient(90deg, var(--primary-color) 0%, #5c6bc0 100%);
 	}
 
-	.person-card {
-		border-left-color: #17a2b8;
+	.person-card::before {
+		background: linear-gradient(90deg, #03a9f4 0%, #4fc3f7 100%);
 	}
 
-	.trainer-card {
-		border-left-color: #ffc107;
+	.trainer-card::before {
+		background: linear-gradient(90deg, var(--accent-color) 0%, #ff8a65 100%);
 	}
 
 	.card-icon {
-		width: 60px;
-		height: 50px;
+		width: 70px;
+		height: 70px;
 		border-radius: 50%;
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		margin-right: 1rem;
-		font-size: 24px;
+		margin-bottom: 1.5rem;
+		position: relative;
+	}
+
+	.feature-icon {
+		width: 40px;
+		height: 40px;
+		filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.1));
 	}
 
 	.session-card .card-icon {
-		background-color: rgba(40, 167, 69, 0.1);
-		color: #28a745;
+		background: linear-gradient(135deg, rgba(139, 195, 74, 0.1) 0%, rgba(139, 195, 74, 0.3) 100%);
+		color: var(--secondary-color);
 	}
 
 	.subscription-card .card-icon {
-		background-color: rgba(0, 102, 204, 0.1);
-		color: #0066cc;
+		background: linear-gradient(135deg, rgba(63, 81, 181, 0.1) 0%, rgba(63, 81, 181, 0.3) 100%);
+		color: var(--primary-color);
 	}
 
 	.person-card .card-icon {
-		background-color: rgba(23, 162, 184, 0.1);
-		color: #17a2b8;
+		background: linear-gradient(135deg, rgba(3, 169, 244, 0.1) 0%, rgba(3, 169, 244, 0.3) 100%);
+		color: #03a9f4;
 	}
 
 	.trainer-card .card-icon {
-		background-color: rgba(255, 193, 7, 0.1);
-		color: #ffc107;
+		background: linear-gradient(135deg, rgba(255, 87, 34, 0.1) 0%, rgba(255, 87, 34, 0.3) 100%);
+		color: var(--accent-color);
 	}
 
 	.card-content h3 {
 		margin: 0;
-		font-size: 1.25rem;
-		color: #212529;
+		font-size: 1.4rem;
+		font-weight: 600;
+		color: var(--dark-color);
 	}
 
 	.card-content p {
-		margin: 0.5rem 0 0;
+		margin: 0.75rem 0 0;
 		color: #6c757d;
-		font-size: 0.875rem;
+		font-size: 0.95rem;
+		line-height: 1.5;
 	}
+
+	.dashboard-footer {
+		margin-top: 3rem;
+		text-align: center;
+		padding: 1.5rem;
+		position: relative;
+		z-index: 1;
+	}
+
+		.dashboard-footer p {
+			margin: 0;
+			color: #777;
+			font-size: 0.9rem;
+		}
 
 	/* Responsive adjustments */
 	@@media (max-width: 768px) {
 		.dashboard-container {
-			padding: 1rem;
+			padding: 1.5rem;
 		}
 
 		.header-content {
@@ -253,6 +366,10 @@
 
 		.menu-cards {
 			grid-template-columns: 1fr;
+		}
+
+		.dashboard-title h2 {
+			font-size: 1.5rem;
 		}
 	}
 </style>

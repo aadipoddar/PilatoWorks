@@ -38,11 +38,8 @@ public partial class Dashboard
 	private void OnSubscriptionClick() =>
 		NavManager.NavigateTo("/Subscriptions");
 
-	private void OnPeopleClick()
-	{
-		// Handle Admin button click
-		Console.WriteLine("Admin button clicked");
-	}
+	private void OnPeopleClick() =>
+		NavManager.NavigateTo("/People");
 
 	private async Task OnLogoutClick()
 	{
