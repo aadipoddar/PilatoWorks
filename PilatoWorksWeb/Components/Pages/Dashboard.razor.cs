@@ -47,6 +47,9 @@ public partial class Dashboard
 	private void OnReportsClick() =>
 		NavManager.NavigateTo("/Reports");
 
+	private void OnUsersClick() =>
+		NavManager.NavigateTo("/Users");
+
 	private async Task OnLogoutClick()
 	{
 		await JS.InvokeVoidAsync("deleteCookie", "UserId");

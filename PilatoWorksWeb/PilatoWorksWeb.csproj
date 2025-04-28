@@ -27,4 +27,8 @@
     <Using Include="PilatoWorksLibrary.Models" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Components\Pages\Reports\" />
+  </ItemGroup>
+
 </Project>

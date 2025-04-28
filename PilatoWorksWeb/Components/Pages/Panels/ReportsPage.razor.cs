@@ -1,6 +1,6 @@
 using Syncfusion.Blazor.Grids;
 
-namespace PilatoWorksWeb.Components.Pages.Reports;
+namespace PilatoWorksWeb.Components.Pages.Panels;
 
 public partial class ReportsPage
 {
