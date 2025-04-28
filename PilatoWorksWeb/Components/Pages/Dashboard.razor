@@ -1,0 +1,258 @@
+﻿@page "/Dashboard"
+
+<PageTitle>Dashboard</PageTitle>
+
+<div class="dashboard-container">
+	<div class="dashboard-header">
+		<div class="header-content">
+			<div class="user-welcome">
+				<div class="avatar">
+					<span>@(_user?.Name?.Substring(0, 1).ToUpper() ?? "U")</span>
+				</div>
+				<div class="welcome-text">
+					<h4>Welcome, @(_user?.Name ?? "User")</h4>
+					<p>@GetUserRoles()</p>
+				</div>
+			</div>
+
+			<div class="header-actions">
+				<SfButton IconCss="e-icons e-arrow-left" OnClick="OnLogoutClick" Content="Log Out" CssClass="e-danger header-logout-button" />
+			</div>
+		</div>
+	</div>
+
+	<div class="dashboard-content">
+		<div class="menu-cards">
+			@if (_user?.Session == true)
+			{
+				<div class="menu-card session-card" @onclick="OnSessionClick">
+					<div class="card-icon">
+						<i class="e-icons e-calculate-sheet"></i>
+					</div>
+					<div class="card-content">
+						<h3>Sessions</h3>
+						<p>Manage training sessions</p>
+					</div>
+				</div>
+
+				<div class="menu-card subscription-card" @onclick="OnSubscriptionClick">
+					<div class="card-icon">
+						<i class="e-icons e-lock"></i>
+					</div>
+					<div class="card-content">
+						<h3>Subscriptions</h3>
+						<p>Manage customer subscriptions</p>
+					</div>
+				</div>
+
+				<div class="menu-card person-card" @onclick="OnPeopleClick">
+					<div class="card-icon">
+						<i class="e-icons e-people"></i>
+					</div>
+					<div class="card-content">
+						<h3>People</h3>
+						<p>Manage customer profiles</p>
+					</div>
+				</div>
+			}
+
+			@if (_user?.Trainer == true)
+			{
+				<div class="menu-card trainer-card" @onclick="OnTrainerClick">
+					<div class="card-icon">
+						<i class="e-icons e-activities"></i>
+					</div>
+					<div class="card-content">
+						<h3>Trainers</h3>
+						<p>Manage trainer information</p>
+					</div>
+				</div>
+			}
+		</div>
+	</div>
+</div>
+
+<style>
+	.dashboard-container {
+		min-height: 100vh;
+		display: flex;
+		flex-direction: column;
+		background-color: #f8f9fa;
+		padding: 2rem;
+	}
+
+	.dashboard-header {
+		margin-bottom: 2rem;
+		padding-bottom: 1.5rem;
+		border-bottom: 1px solid #e9ecef;
+	}
+
+	.header-content {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.header-actions {
+		display: flex;
+		align-items: center;
+	}
+
+	.header-logout-button {
+		padding: 0.5rem 1.5rem;
+		border-radius: 50px;
+		font-weight: 500;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		transition: all 0.2s ease;
+		box-shadow: 0 2px 5px rgba(220, 53, 69, 0.2);
+	}
+
+		.header-logout-button:hover {
+			box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+			transform: translateY(-2px);
+		}
+
+	.user-welcome {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.avatar {
+		width: 60px;
+		height: 60px;
+		border-radius: 50%;
+		background-color: #0066cc;
+		color: white;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 24px;
+		font-weight: bold;
+	}
+
+	.welcome-text h4 {
+		margin: 0;
+		font-size: 1.5rem;
+		color: #212529;
+	}
+
+	.welcome-text p {
+		margin: 0;
+		color: #6c757d;
+		font-size: 0.9rem;
+	}
+
+	.dashboard-content {
+		flex-grow: 1;
+		display: flex;
+		justify-content: center;
+		align-items: flex-start;
+	}
+
+	.menu-cards {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+		gap: 1.5rem;
+		width: 100%;
+		max-width: 1200px;
+	}
+
+	.menu-card {
+		background-color: white;
+		border-radius: 12px;
+		box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+		padding: 1.5rem;
+		display: flex;
+		cursor: pointer;
+		transition: all 0.3s ease;
+		border-left: 5px solid transparent;
+	}
+
+		.menu-card:hover {
+			transform: translateY(-5px);
+			box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+		}
+
+	.session-card {
+		border-left-color: #28a745;
+	}
+
+	.subscription-card {
+		border-left-color: #0066cc;
+	}
+
+	.person-card {
+		border-left-color: #17a2b8;
+	}
+
+	.trainer-card {
+		border-left-color: #ffc107;
+	}
+
+	.card-icon {
+		width: 60px;
+		height: 50px;
+		border-radius: 50%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		margin-right: 1rem;
+		font-size: 24px;
+	}
+
+	.session-card .card-icon {
+		background-color: rgba(40, 167, 69, 0.1);
+		color: #28a745;
+	}
+
+	.subscription-card .card-icon {
+		background-color: rgba(0, 102, 204, 0.1);
+		color: #0066cc;
+	}
+
+	.person-card .card-icon {
+		background-color: rgba(23, 162, 184, 0.1);
+		color: #17a2b8;
+	}
+
+	.trainer-card .card-icon {
+		background-color: rgba(255, 193, 7, 0.1);
+		color: #ffc107;
+	}
+
+	.card-content h3 {
+		margin: 0;
+		font-size: 1.25rem;
+		color: #212529;
+	}
+
+	.card-content p {
+		margin: 0.5rem 0 0;
+		color: #6c757d;
+		font-size: 0.875rem;
+	}
+
+	/* Responsive adjustments */
+	@@media (max-width: 768px) {
+		.dashboard-container {
+			padding: 1rem;
+		}
+
+		.header-content {
+			flex-direction: column;
+			gap: 1rem;
+		}
+
+		.header-actions {
+			width: 100%;
+			justify-content: center;
+		}
+
+		.menu-cards {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

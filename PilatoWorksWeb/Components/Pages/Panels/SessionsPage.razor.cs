@@ -166,7 +166,7 @@ public partial class SessionsPage
 			await JS.InvokeVoidAsync("alert", "Please select a trainer.");
 			return false;
 		}
-		if (_selectedValidSub == 0)
+		if (_selectedValidSub == 0 && !_isUpdating)
 		{
 			await JS.InvokeVoidAsync("alert", "Please select a valid Person.");
 			return false;
@@ -186,4 +186,7 @@ public partial class SessionsPage
 
 		return true;
 	}
+
+	private void OnCancelClick() =>
+		NavManager.NavigateTo("/");
 }

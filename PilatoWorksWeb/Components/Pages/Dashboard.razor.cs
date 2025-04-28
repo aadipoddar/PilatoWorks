@@ -1,6 +1,6 @@
 namespace PilatoWorksWeb.Components.Pages;
 
-public partial class Dashbaord
+public partial class Dashboard
 {
 	[Inject] public NavigationManager NavManager { get; set; }
 	[Inject] public IJSRuntime JS { get; set; }
@@ -50,5 +50,15 @@ public partial class Dashbaord
 		await JS.InvokeVoidAsync("deleteCookie", "Password");
 
 		NavManager.NavigateTo("/");
+	}
+
+	private string GetUserRoles()
+	{
+		var roles = new List<string>();
+		if (_user?.Session == true) roles.Add("Session Manager");
+		if (_user?.Trainer == true) roles.Add("Trainer Manager");
+		if (_user?.Admin == true) roles.Add("Administrator");
+
+		return roles.Count > 0 ? string.Join(" | ", roles) : "No roles assigned";
 	}
 }

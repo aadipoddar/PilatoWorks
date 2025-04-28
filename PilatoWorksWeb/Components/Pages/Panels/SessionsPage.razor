@@ -2,70 +2,141 @@
 
 <PageTitle>Sessions</PageTitle>
 
-<div class="container">
-	<div class="row justify-content-center">
-		<div class="col-md-6 text-center mt-4">
-			<div class="mb-3">
-				<SfDatePicker TValue="DateOnly"
-							  Placeholder="Select Session Date"
-							  Value="_selectedDate"
-							  Width="200px">
-					<DatePickerEvents TValue="DateOnly" ValueChange="OnDateChanged" />
-				</SfDatePicker>
-			</div>
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Session Management</h3>
+        </div>
+        <div class="card-body">
+            <!-- Session Selection Controls -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h5 class="section-header">Select Session Time</h5>
+                    <div class="d-flex gap-3 mt-3">
+                        <div class="flex-grow-1">
+                            <SfDatePicker TValue="DateOnly"
+                                          Placeholder="Select Session Date"
+                                          Value="_selectedDate">
+                                <DatePickerEvents TValue="DateOnly" ValueChange="OnDateChanged" />
+                            </SfDatePicker>
+                        </div>
+                        <div class="flex-grow-1">
+                            <SfComboBox TValue="int"
+                                        TItem="SlotModel"
+                                        Placeholder="Select a Slot"
+                                        DataSource="@_slots"
+                                        @bind-Value="_selectedSlot">
+                                <ComboBoxEvents TItem="SlotModel" TValue="int" ValueChange="@OnSlotChanged" />
+                                <ComboBoxFieldSettings Value="Id" Text="Hour" />
+                            </SfComboBox>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 d-flex align-items-center justify-content-end">
+                    <div class="card bg-light p-3 session-info-card">
+                        <div class="text-center">
+                            <h6 class="mb-1">Selected Session</h6>
+                            <div class="d-flex gap-2 justify-content-center">
+                                <div class="badge bg-primary">Date: @(_selectedDate.ToString("MMM dd, yyyy"))</div>
+                                <div class="badge bg-success">Time: @(_slots.FirstOrDefault(s => s.Id == _selectedSlot)?.Hour ?? 0):00</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-			<div class="mb-3">
-				<SfComboBox TValue="int" TItem="SlotModel" Placeholder="Select a Slot" DataSource="@_slots" @bind-Value="_selectedSlot" Width="200px">
-					<ComboBoxEvents TItem="SlotModel" TValue="int" ValueChange="@OnSlotChanged" />
-					<ComboBoxFieldSettings Value="Id" Text="Hour" />
-				</SfComboBox>
-			</div>
-		</div>
+            <!-- Sessions Grid -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h5 class="section-header">Scheduled Sessions</h5>
+                    <div class="mt-3">
+                        <SfGrid DataSource="@SessionDetailsModels"
+                                ID="_sfGrid"
+                                @ref="_sfGrid"
+                                Height="280"
+                                Width="100%"
+                                CssClass="sessions-grid">
+                            <GridEvents RowSelected="RowSelectHandler" TValue="SessionDetailsModel"></GridEvents>
+                            <GridColumns>
+                                <GridColumn Field="@nameof(SessionDetailsModel.PersonName)" HeaderText="Client Name" Width="140"></GridColumn>
+                                <GridColumn Field="@nameof(SessionDetailsModel.PersonNumber)" HeaderText="Phone" Width="120"></GridColumn>
+                                <GridColumn Field="@nameof(SessionDetailsModel.SessionTypeName)" HeaderText="Session Type" Width="140"></GridColumn>
+                                <GridColumn Field="@nameof(SessionDetailsModel.Trainer1Name)" HeaderText="Trainer 1" Width="140"></GridColumn>
+                                <GridColumn Field="@nameof(SessionDetailsModel.Trainer2Name)" HeaderText="Trainer 2" Width="140"></GridColumn>
+                                <GridColumn Field="@nameof(SessionDetailsModel.Confirmed)" HeaderText="Confirmed" DisplayAsCheckBox="true" Width="100"></GridColumn>
+                            </GridColumns>
+                        </SfGrid>
+                    </div>
+                </div>
+            </div>
 
-		<div class="col-12">
-			<SfGrid DataSource="@SessionDetailsModels"
-					ID="_sfGrid"
-					@ref="_sfGrid"
-					Height="300"
-					Width="100%"
-					style="margin: 0 auto;">
+            <!-- Session Details Form -->
+            <div class="row">
+                <div class="col-12">
+                    <h5 class="section-header">@(_isUpdating ? "Update Session" : "Add New Session")</h5>
+                </div>
+                <div class="col-md-12">
+                    <div class="row g-3 mt-1">
+                        <!-- Client Selection -->
+                        <div class="col-md-4">
+                            @if (!_isUpdating)
+                            {
+                                <div class="form-group">
+                                    <label class="form-label">Client</label>
+                                    <SfComboBox TValue="int"
+                                                TItem="ValidSubscriptionModel"
+                                                Placeholder="Select a Person"
+                                                DataSource="@_validSubs"
+                                                @bind-Value="_selectedValidSub">
+                                        <ComboBoxFieldSettings Value="SubscriptionId" Text="PersonName"></ComboBoxFieldSettings>
+                                    </SfComboBox>
+                                </div>
+                            }
+                        </div>
 
-				<GridEvents RowSelected="RowSelectHandler" TValue="SessionDetailsModel"></GridEvents>
+                        <!-- Trainer Selection -->
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-label">Primary Trainer</label>
+                                <SfComboBox TValue="int"
+                                            TItem="TrainerModel"
+                                            Placeholder="Select a Trainer"
+                                            DataSource="@_trainers"
+                                            @bind-Value="_selectedTrainer1">
+                                    <ComboBoxFieldSettings Value="Id" Text="Name"></ComboBoxFieldSettings>
+                                </SfComboBox>
+                            </div>
+                        </div>
 
-				<GridColumns>
-					<GridColumn Field="@nameof(SessionDetailsModel.PersonName)" Type="ColumnType.String"></GridColumn>
-					<GridColumn Field="@nameof(SessionDetailsModel.PersonNumber)" Type="ColumnType.String"></GridColumn>
-					<GridColumn Field="@nameof(SessionDetailsModel.SessionTypeName)" Type="ColumnType.String"></GridColumn>
-					<GridColumn Field="@nameof(SessionDetailsModel.Trainer1Name)" Type="ColumnType.String"></GridColumn>
-					<GridColumn Field="@nameof(SessionDetailsModel.Trainer2Name)" Type="ColumnType.String"></GridColumn>
-					<GridColumn Field="@nameof(SessionDetailsModel.Confirmed)" DisplayAsCheckBox="true"></GridColumn>
-				</GridColumns>
-			</SfGrid>
-		</div>
+                        <!-- Co-Trainer Selection -->
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-label">Co-Trainer (Optional)</label>
+                                <SfComboBox TValue="int"
+                                            TItem="TrainerModel"
+                                            Placeholder="Select a Trainer"
+                                            DataSource="@_trainers"
+                                            @bind-Value="_selectedTrainer2">
+                                    <ComboBoxFieldSettings Value="Id" Text="Name"></ComboBoxFieldSettings>
+                                </SfComboBox>
+                            </div>
+                        </div>
 
-		<div class="combo-box-row">
-			@if (!_isUpdating)
-			{
-				<SfComboBox TValue="int" TItem="ValidSubscriptionModel" Placeholder="Select a Person" DataSource="@_validSubs" @bind-Value="_selectedValidSub">
-					<ComboBoxFieldSettings Value="SubscriptionId" Text="PersonName"></ComboBoxFieldSettings>
-				</SfComboBox>
-			}
+                        <!-- Session Status -->
+                        <div class="col-md-4 mt-3">
+                            <div class="form-check">
+                                <SfCheckBox Label="Confirmed" @bind-Checked="_isConfirmed" CssClass="form-check-input" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-			<SfComboBox TValue="int" TItem="TrainerModel" Placeholder="Select a Trainer" DataSource="@_trainers" @bind-Value="_selectedTrainer1">
-				<ComboBoxFieldSettings Value="Id" Text="Name"></ComboBoxFieldSettings>
-			</SfComboBox>
-
-			<SfComboBox TValue="int" TItem="TrainerModel" Placeholder="Select a Trainer" DataSource="@_trainers" @bind-Value="_selectedTrainer2">
-				<ComboBoxFieldSettings Value="Id" Text="Name"></ComboBoxFieldSettings>
-			</SfComboBox>
-		</div>
-
-		<div class="checkbox-row">
-			<SfCheckBox Label="Confirmed" @bind-Checked="_isConfirmed" />
-		</div>
-
-		<div class="save-button-row">
-			<SfButton IconCss="e-icons e-save" OnClick="OnSaveClick" Content="Save" CssClass="e-primary" />
-		</div>
-	</div>
+                <!-- Action Buttons -->
+                <div class="col-12 mt-4 text-end">
+                    <SfButton IconCss="e-icons e-close" OnClick="OnCancelClick" Content="Cancel" CssClass="e-secondary me-2" />
+                    <SfButton IconCss="e-icons e-save" OnClick="OnSaveClick" Content="@(_isUpdating ? "Update Session" : "Save Session")" CssClass="e-primary" />
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
