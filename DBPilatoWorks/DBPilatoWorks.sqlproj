@@ -97,6 +97,7 @@
     <Build Include="StoredProcedures\LoadData\Common\Load_TableData_By_Status.sql" />
     <Build Include="StoredProcedures\LoadData\Sessions\Load_SessionDetails_By_Date_Trainer.sql" />
     <Build Include="StoredProcedures\Insert\Insert_Slot.sql" />
+    <Build Include="StoredProcedures\LoadData\Sessions\Load_SessionDetails_By_PersonNumber.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="DBPilatoWorks.refactorlog" />

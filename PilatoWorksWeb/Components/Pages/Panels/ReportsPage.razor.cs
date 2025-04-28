@@ -10,10 +10,14 @@ public partial class ReportsPage
 	private List<PersonModel> _personModels = [];
 	private List<ValidSubscriptionModel> _validSubscriptionModels = [];
 	private List<TrainerModel> _trainerModels = [];
+	private List<SessionDetailsModel> _sessionDetailsModels = [];
 
 	private SfGrid<PersonModel> _sfPersonGrid;
 	private SfGrid<ValidSubscriptionModel> _sfSubscriptionGrid;
 	private SfGrid<TrainerModel> _sfTrainerGrid;
+	private SfGrid<SessionDetailsModel> _sfSessionGrid;
+
+	private string _searchPhoneNumber = string.Empty;
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
@@ -60,5 +64,19 @@ public partial class ReportsPage
 		await _sfSubscriptionGrid.Refresh();
 		await _sfTrainerGrid.Refresh();
 		StateHasChanged();
+	}
+
+	private async Task SearchSessionsByPhoneNumber()
+	{
+		if (string.IsNullOrEmpty(_searchPhoneNumber)) return;
+
+		var person = _personModels.FirstOrDefault(p => p.Number == _searchPhoneNumber);
+		if (person is null)
+		{
+			await JS.InvokeVoidAsync("alert", "Person not found. Please check the phone number.");
+			return;
+		}
+		_sessionDetailsModels = await SessionData.LoadSessionDetailsByPersonId(person.Id);
+		await _sfSessionGrid.Refresh();
 	}
 }

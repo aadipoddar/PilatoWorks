@@ -1,8 +1,4 @@
 ﻿@page "/Reports"
-@using Syncfusion.Blazor.Grids
-@using Syncfusion.Blazor.Buttons
-@using Syncfusion.Blazor.DropDowns
-@using Syncfusion.Blazor.Inputs
 
 <PageTitle>Reports - Reflex and Reform Pilates</PageTitle>
 
@@ -40,6 +36,12 @@
 				<path d="M15 11V5l-3-3-3 3v2H3v14h18V11h-6zm-8 8H5v-2h2v2zm0-4H5v-2h2v2zm0-4H5V9h2v2zm6 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V9h2v2zm0-4h-2V5h2v2zm6 12h-2v-2h2v2zm0-4h-2v-2h2v2z" />
 			</svg>
 			Trainers
+		</SfButton>
+		<SfButton CssClass="@GetTabClass(4)" @onclick="() => SelectTab(4)">
+			<svg class="tab-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+				<path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14a2 2 0 002 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7v-5z" />
+			</svg>
+			Sessions
 		</SfButton>
 	</div>
 
@@ -131,6 +133,61 @@
 								<GridColumn Field=@nameof(TrainerModel.Salary) />
 								<GridColumn Field=@nameof(TrainerModel.CommissionPercent) HeaderText="Commission %" />
 								<GridColumn Field=@nameof(TrainerModel.Status) />
+							</GridColumns>
+						</SfGrid>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Sessions Report Section -->
+		<div class="content-card @(_currentTab == 4 ? "active" : "")">
+			<div class="card-section">
+				<h5 class="section-header">
+					<svg class="section-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+						<path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14a2 2 0 002 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7v-5z" />
+					</svg>
+					Sessions Report
+				</h5>
+				<div class="section-content">
+					<!-- Search by Person Number -->
+					<div class="filter-controls">
+						<div class="filter-group search-group">
+							<label class="form-label">Search by Client Phone</label>
+							<div class="search-container">
+								<SfTextBox CssClass="form-control"
+										   Placeholder="Enter client phone number"
+										   @bind-Value="@_searchPhoneNumber"  />
+								<SfButton CssClass="search-button" @onclick="@SearchSessionsByPhoneNumber">
+									<svg class="search-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+										<path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+									</svg>
+									Search
+								</SfButton>
+							</div>
+						</div>
+					</div>
+
+					<!-- Sessions Grid -->
+					<div class="grid-container">
+						<SfGrid DataSource="@_sessionDetailsModels"
+								ID="_sfSessionGrid"
+								@ref="_sfSessionGrid"
+								AllowPaging="true"
+								AllowSorting="true"
+								AllowFiltering="true"
+								AllowResizing="true">
+							<GridPageSettings PageSize="20"></GridPageSettings>
+							<GridColumns>
+								<GridColumn Field=@nameof(SessionDetailsModel.SessionDate) HeaderText="Date" Width="120" Format="d"></GridColumn>
+								<GridColumn Field=@nameof(SessionDetailsModel.SlotHour) HeaderText="Time" Width="80"></GridColumn>
+								<GridColumn Field=@nameof(SessionDetailsModel.PersonName) HeaderText="Client Name" Width="150"></GridColumn>
+								<GridColumn Field=@nameof(SessionDetailsModel.PersonNumber) HeaderText="Phone" Width="120"></GridColumn>
+								<GridColumn Field=@nameof(SessionDetailsModel.SessionTypeName) HeaderText="Session Type" Width="150"></GridColumn>
+								<GridColumn Field=@nameof(SessionDetailsModel.Trainer1Name) HeaderText="Primary Trainer" Width="150"></GridColumn>
+								<GridColumn Field=@nameof(SessionDetailsModel.Trainer2Name) HeaderText="Co-Trainer" Width="150"></GridColumn>
+								<GridColumn Field=@nameof(SessionDetailsModel.Confirmed) HeaderText="Confirmed" DisplayAsCheckBox="true" Width="100" TextAlign="TextAlign.Center"></GridColumn>
+								<GridColumn Field=@nameof(SessionDetailsModel.UserName) HeaderText="Created By" Width="130"></GridColumn>
 							</GridColumns>
 						</SfGrid>
 					</div>
@@ -295,6 +352,78 @@
 		color: var(--secondary-color);
 	}
 
+	/* Filter controls for sessions */
+	.filter-controls {
+		display: flex;
+		gap: 1.5rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.filter-group {
+		flex: 1;
+	}
+
+	.search-group {
+		max-width: 600px;
+	}
+
+	.form-label {
+		display: block;
+		margin-bottom: 0.5rem;
+		font-weight: 600;
+		font-size: 0.9rem;
+		color: var(--dark-color);
+		position: relative;
+		padding-left: 0.5rem;
+	}
+
+		.form-label::before {
+			content: '';
+			position: absolute;
+			left: 0;
+			top: 0;
+			height: 100%;
+			width: 3px;
+			background: var(--secondary-color);
+			border-radius: 2px;
+		}
+
+	.form-control {
+		border-radius: 8px !important;
+		border: 2px solid #e0e0e0 !important;
+		transition: all 0.2s ease !important;
+	}
+
+	/* Search styling */
+	.search-container {
+		display: flex;
+		gap: 0.5rem;
+	}
+
+	.search-button {
+		background: linear-gradient(135deg, var(--secondary-color) 0%, #7cb342 100%) !important;
+		border-color: transparent !important;
+		border-radius: 8px;
+		padding: 0.4rem 1rem;
+		transition: all 0.3s ease;
+		color: white;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		box-shadow: 0 2px 5px rgba(139, 195, 74, 0.3);
+	}
+
+		.search-button:hover {
+			box-shadow: 0 4px 8px rgba(139, 195, 74, 0.4);
+			transform: translateY(-2px);
+		}
+
+	.search-icon {
+		width: 18px;
+		height: 18px;
+		fill: white;
+	}
+
 	/* Grid container */
 	.grid-container {
 		margin-top: 1rem;
@@ -359,6 +488,15 @@
 
 		.card-section {
 			padding: 1.5rem 1rem;
+		}
+
+		.filter-controls {
+			flex-direction: column;
+			gap: 1rem;
+		}
+
+		.search-group {
+			max-width: none;
 		}
 	}
 </style>

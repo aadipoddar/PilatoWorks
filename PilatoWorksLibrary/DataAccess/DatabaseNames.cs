@@ -29,6 +29,7 @@ public static class StoredProcedureNames
 
 	public static string LoadSessionDetailsByDateSlot => "Load_SessionDetails_By_Date_Slot";
 	public static string LoadSessionDetailsByDateTrainer => "Load_SessionDetails_By_Date_Trainer";
+	public static string LoadSessionDetailsByPersonId => "Load_SessionDetails_By_PersonId";
 
 	public static string InsertSlot => "Insert_Slot";
 	public static string InsertUser => "Insert_User";

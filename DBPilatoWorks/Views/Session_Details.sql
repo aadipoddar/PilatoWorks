@@ -17,7 +17,7 @@ SELECT
     [sb].[Booking] / [sb].[NoSessions] AS PerSessionCost,
     [s].[Confirmed],
     [s].[UserId],
-    [u].[Name],
+    [u].[Name] AS UserName,
     [s].CreatedDate
 FROM dbo.[Session] s
 INNER JOIN
