@@ -1,4 +1,4 @@
-namespace PilatoWorksWeb.Components.Pages.Panels;
+namespace PilatoWorksWeb.Components.Pages.Subscriptions;
 
 public partial class SubscriptionsPage
 {
@@ -74,9 +74,15 @@ public partial class SubscriptionsPage
 				await JS.InvokeVoidAsync("alert", "Person Already has a Valid Subscription");
 
 				MinValidDate = validSubscriptions.SubscriptionValidTo.ToDateTime(new TimeOnly(0, 0));
-
 				ValidStartDate = DateOnly.FromDateTime(validSubscriptions.SubscriptionValidTo.ToDateTime(new TimeOnly(0, 0)));
 				ValidEndDate = DateOnly.FromDateTime(validSubscriptions.SubscriptionValidTo.ToDateTime(new TimeOnly(0, 0)).AddMonths(1));
+			}
+
+			else
+			{
+				MinValidDate = DateTime.Now.AddMonths(-10);
+				ValidStartDate = DateOnly.FromDateTime(DateTime.Now);
+				ValidEndDate = DateOnly.FromDateTime(DateTime.Now.AddMonths(1));
 			}
 		}
 
@@ -85,7 +91,6 @@ public partial class SubscriptionsPage
 			_personName = "";
 
 			MinValidDate = DateTime.Now.AddMonths(-10);
-
 			ValidStartDate = DateOnly.FromDateTime(DateTime.Now);
 			ValidEndDate = DateOnly.FromDateTime(DateTime.Now.AddMonths(1));
 
@@ -138,26 +143,32 @@ public partial class SubscriptionsPage
 			return;
 		}
 
-		for (int i = 3; i <= 5; i++)
+		for (int i = 1; i <= 3; i++)
 		{
+			int amount = int.Parse(i switch
+			{
+				1 => _cash,
+				2 => _card,
+				3 => _upi,
+				_ => "0"
+			});
+
+			// Skip insertion if the amount is zero
+			if (amount == 0)
+				continue;
+
 			await SubscriptionData.InsertSubscriptionPaymentDetails(new SubscriptionPaymentDetailsModel
 			{
 				Id = 0,
 				PaymentModeId = i,
 				SubscriptionId = subscription.Id,
-				Amount = int.Parse(i switch
-				{
-					3 => _cash,
-					4 => _card,
-					5 => _upi,
-					_ => "0"
-				}),
+				Amount = amount,
 				PaymentDate = DateTime.Now,
 				Status = true
 			});
-
-			NavManager.NavigateTo("/Subscriptions");
 		}
+
+		NavManager.NavigateTo(NavManager.Uri, forceLoad: true);
 	}
 
 	private async Task<bool> ValidateForm()

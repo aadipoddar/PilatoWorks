@@ -41,6 +41,14 @@ public partial class Dashboard
 	private void OnPeopleClick() =>
 		NavManager.NavigateTo("/People");
 
+	private void OnClearDuesClick() =>
+		NavManager.NavigateTo("/ClearDues");
+
+	private void OnReportsClick()
+	{
+		// Add implementation for Reports functionality
+	}
+
 	private async Task OnLogoutClick()
 	{
 		await JS.InvokeVoidAsync("deleteCookie", "UserId");

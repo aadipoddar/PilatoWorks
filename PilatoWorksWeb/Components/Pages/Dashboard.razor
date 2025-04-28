@@ -67,6 +67,32 @@
 						<p>Manage client profiles and contact information</p>
 					</div>
 				</div>
+
+				<!-- New Clear Dues Button -->
+				<div class="menu-card dues-card" @onclick="OnClearDuesClick">
+					<div class="card-icon">
+						<svg class="feature-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+							<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11H7v-2h10v2z" />
+						</svg>
+					</div>
+					<div class="card-content">
+						<h3>Clear Dues</h3>
+						<p>Manage and clear outstanding client payments</p>
+					</div>
+				</div>
+
+				<!-- New Reports Button -->
+				<div class="menu-card reports-card" @onclick="OnReportsClick">
+					<div class="card-icon">
+						<svg class="feature-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+							<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+						</svg>
+					</div>
+					<div class="card-content">
+						<h3>Reports</h3>
+						<p>View and generate business performance reports</p>
+					</div>
+				</div>
 			}
 
 			@if (_user?.Trainer == true)
@@ -372,4 +398,24 @@
 			font-size: 1.5rem;
 		}
 	}
+
+	/* Add these styles to the existing style section */
+	.dues-card::before {
+		background: linear-gradient(90deg, #9c27b0 0%, #ba68c8 100%);
+	}
+
+	.reports-card::before {
+		background: linear-gradient(90deg, #00bcd4 0%, #4dd0e1 100%);
+	}
+
+	.dues-card .card-icon {
+		background: linear-gradient(135deg, rgba(156, 39, 176, 0.1) 0%, rgba(156, 39, 176, 0.3) 100%);
+		color: #9c27b0;
+	}
+
+	.reports-card .card-icon {
+		background: linear-gradient(135deg, rgba(0, 188, 212, 0.1) 0%, rgba(0, 188, 212, 0.3) 100%);
+		color: #00bcd4;
+	}
+
 </style>
