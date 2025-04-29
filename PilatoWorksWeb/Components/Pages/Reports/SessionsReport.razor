@@ -1,6 +1,6 @@
-﻿@page "/ValidSubscriptionReport"
+﻿@page "/SessionsReport"
 
-<PageTitle>Active Subscriptions Report - Reflex and Reform Pilates</PageTitle>
+<PageTitle>Sessions Report - Reflex and Reform Pilates</PageTitle>
 
 <div class="reports-container">
 	<div class="reports-overlay"></div>
@@ -10,9 +10,9 @@
 		<div class="header-content">
 			<div class="page-title">
 				<svg class="page-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-					<path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
+					<path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14a2 2 0 002 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7v-5z" />
 				</svg>
-				<h1>Active Subscriptions Report</h1>
+				<h1>Sessions Report</h1>
 			</div>
 			<div class="header-actions">
 				<SfButton IconCss="e-icons e-arrow-left" OnClick="OnBackClick" Content="Back to Reports" CssClass="btn-back" />
@@ -22,20 +22,31 @@
 
 	<!-- Main Content -->
 	<div class="reports-content">
-		<!-- Summary Cards - Moved above the grid -->
-		<div class="summary-cards">
-			<div class="summary-card active-subs">
-				<div class="summary-icon">
-					<svg class="feature-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-						<path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm-2 14H7v-2h3v2zm0-4H7v-2h3v2zm0-4H7V7h3v2zm7 8h-4v-2h4v2zm0-4h-4v-2h4v2zm0-4h-4V7h4v2z" />
+		<!-- Date Range Filter -->
+		<div class="content-card filter-card">
+			<div class="card-section">
+				<h5 class="section-header">
+					<svg class="section-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+						<path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z" />
 					</svg>
-				</div>
-				<div class="summary-content">
-					<h3>@(_validSubscriptionModels?.Count ?? 0)</h3>
-					<p>Active Subscriptions</p>
+					Filter Sessions
+				</h5>
+				<div class="section-content">
+					<div class="filter-container">
+						<div class="date-range-container">
+							<SfDateRangePicker Placeholder="Get Sessions Between" TValue="DateOnly"
+											   FloatLabelType='@FloatLabelType.Auto' CssClass="date-range-picker"
+											   StartDate="SessionsStartDate" EndDate="SessionsEndDate">
+								<DateRangePickerEvents TValue="DateOnly" ValueChange="@SessionDateChanged" />
+							</SfDateRangePicker>
+						</div>
+					</div>
 				</div>
 			</div>
+		</div>
 
+		<!-- Session Summary Cards -->
+		<div class="summary-cards">
 			<div class="summary-card total-sessions">
 				<div class="summary-icon">
 					<svg class="feature-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -43,176 +54,155 @@
 					</svg>
 				</div>
 				<div class="summary-content">
-					<h3>@CalculateTotalSessions()</h3>
+					<h3>@(_sessionModels?.Count ?? 0)</h3>
 					<p>Total Sessions</p>
 				</div>
 			</div>
 
-			<div class="summary-card total-revenue">
+			<div class="summary-card total-clients">
 				<div class="summary-icon">
 					<svg class="feature-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-						<path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" />
+						<path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
 					</svg>
 				</div>
 				<div class="summary-content">
-					<h3>@CalculateTotalRevenue().FormatIndianCurrency()</h3>
-					<p>Total Revenue</p>
+					<h3>@(_sessionModels?.Select(s => s.PersonName).Distinct().Count() ?? 0)</h3>
+					<p>Unique Clients</p>
 				</div>
 			</div>
 
-			<div class="summary-card dues-amount">
+			<div class="summary-card session-types">
 				<div class="summary-icon">
 					<svg class="feature-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-						<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+						<path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-2 8c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm4 8H8v-1c0-1.33 2.67-2 4-2s4 .67 4 2v1z" />
 					</svg>
 				</div>
 				<div class="summary-content">
-					<h3>@CalculateTotalDues().FormatIndianCurrency()</h3>
-					<p>Outstanding Dues</p>
+					<h3>@(_sessionModels?.Select(s => s.SessionTypeName).Distinct().Count() ?? 0)</h3>
+					<p>Session Types</p>
+				</div>
+			</div>
+
+			<div class="summary-card confirmed-sessions">
+				<div class="summary-icon">
+					<svg class="feature-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+						<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+					</svg>
+				</div>
+				<div class="summary-content">
+					<h3>@(_sessionModels?.Count(s => s.Confirmed) ?? 0)</h3>
+					<p>Confirmed Sessions</p>
 				</div>
 			</div>
 		</div>
 
+		<!-- Sessions Grid -->
 		<div class="content-card">
 			<div class="card-section">
 				<h5 class="section-header">
 					<svg class="section-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-						<path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
+						<path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14a2 2 0 002 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7v-5z" />
 					</svg>
-					Active Subscription Details
+					Session Details
 				</h5>
 				<div class="section-content">
 					<div class="grid-wrapper">
-						<SfGrid DataSource="@_validSubscriptionModels" ID="_sfSubscriptionGrid" @ref="_sfSubscriptionGrid"
-								AllowPaging="true" AllowSorting="true" AllowFiltering="true" AllowResizing="true" AllowExcelExport="true" AllowPdfExport="true"
+						<SfGrid DataSource="@_sessionModels"
+								ID="_sfSessionGrid"
+								@ref="_sfSessionGrid"
+								AllowPaging="true"
+								AllowSorting="true"
+								AllowFiltering="true"
+								AllowResizing="true"
+								AllowExcelExport="true" AllowPdfExport="true"
 								Toolbar="@(new List<string>() { "ExcelExport", "PdfExport" })">
+
 							<GridPageSettings PageSize="10" PageSizes="@_pageSizes"></GridPageSettings>
 
 							<GridSortSettings AllowUnsort="true">
 								<GridSortColumns>
-									<GridSortColumn Field="PersonName" Direction="SortDirection.Ascending"></GridSortColumn>
+									<GridSortColumn Field="SessionDate" Direction="SortDirection.Descending"></GridSortColumn>
 								</GridSortColumns>
 							</GridSortSettings>
 
-							<GridEvents OnToolbarClick="ToolbarClickHandler" TValue="SubscriptionDetailsModel"></GridEvents>
+							<GridEvents OnToolbarClick="ToolbarClickHandler" TValue="SessionDetailsModel"></GridEvents>
 
 							<GridColumns>
-								<GridColumn Field=@nameof(SubscriptionDetailsModel.PersonName) HeaderText="Person Name" Width="150">
+								<GridColumn Field=@nameof(SessionDetailsModel.SessionDate) HeaderText="Date" Width="120" Format="dd MMM yyyy">
 									<HeaderTemplate>
 										<div class="column-header">
-											<span>Person Name</span>
+											<span>Session Date</span>
 										</div>
 									</HeaderTemplate>
 								</GridColumn>
-								<GridColumn Field=@nameof(SubscriptionDetailsModel.PersonNumber) HeaderText="Person Phone" Width="150">
+								<GridColumn Field=@nameof(SessionDetailsModel.SlotHour) HeaderText="Time" Width="90">
 									<HeaderTemplate>
 										<div class="column-header">
-											<span>Person Phone</span>
+											<span>Time Slot</span>
 										</div>
 									</HeaderTemplate>
 								</GridColumn>
-								<GridColumn Field=@nameof(SubscriptionDetailsModel.SubscriptionId) HeaderText="Subscription Id" Width="120">
+								<GridColumn Field=@nameof(SessionDetailsModel.PersonName) HeaderText="Client" Width="160">
 									<HeaderTemplate>
 										<div class="column-header">
-											<span>Subscription Id</span>
+											<span>Client Name</span>
 										</div>
 									</HeaderTemplate>
 								</GridColumn>
-								<GridColumn Field=@nameof(SubscriptionDetailsModel.SubscriptionValidFrom) HeaderText="Valid From" Width="130" Format="d">
+								<GridColumn Field=@nameof(SessionDetailsModel.PersonNumber) HeaderText="Phone" Width="130">
 									<HeaderTemplate>
 										<div class="column-header">
-											<span>Valid From</span>
+											<span>Phone Number</span>
 										</div>
 									</HeaderTemplate>
 								</GridColumn>
-								<GridColumn Field=@nameof(SubscriptionDetailsModel.SubscriptionValidTo) HeaderText="Valid To" Width="130" Format="d">
+								<GridColumn Field=@nameof(SessionDetailsModel.SessionTypeName) HeaderText="Type" Width="120">
 									<HeaderTemplate>
 										<div class="column-header">
-											<span>Valid To</span>
+											<span>Session Type</span>
 										</div>
 									</HeaderTemplate>
 								</GridColumn>
-								<GridColumn Field=@nameof(SubscriptionDetailsModel.SessionType) HeaderText="Type" Width="100">
+								<GridColumn Field=@nameof(SessionDetailsModel.Trainer1Name) HeaderText="Trainer 1" Width="140">
 									<HeaderTemplate>
 										<div class="column-header">
-											<span>Type</span>
+											<span>Primary Trainer</span>
 										</div>
 									</HeaderTemplate>
 								</GridColumn>
-								<GridColumn Field=@nameof(SubscriptionDetailsModel.BookingAmount) HeaderText="Booking" Width="120" TextAlign="TextAlign.Right">
+								<GridColumn Field=@nameof(SessionDetailsModel.Trainer2Name) HeaderText="Trainer 2" Width="140">
 									<HeaderTemplate>
-										<div class="column-header text-right">
-											<span>Booking</span>
+										<div class="column-header">
+											<span>Secondary Trainer</span>
+										</div>
+									</HeaderTemplate>
+								</GridColumn>
+								<GridColumn Field=@nameof(SessionDetailsModel.Confirmed) HeaderText="Confirmed" Width="110">
+									<HeaderTemplate>
+										<div class="column-header">
+											<span>Confirmed</span>
 										</div>
 									</HeaderTemplate>
 									<Template>
 										@{
-											var data = (context as SubscriptionDetailsModel);
-											<span class="text-right">@data.BookingAmount.FormatIndianCurrency()</span>
-										}
-									</Template>
-								</GridColumn>
-								<GridColumn Field=@nameof(SubscriptionDetailsModel.NoOfSessions) HeaderText="No. of Sessions" Width="130">
-									<HeaderTemplate>
-										<div class="column-header">
-											<span>No. of Sessions</span>
-										</div>
-									</HeaderTemplate>
-								</GridColumn>
-								<GridColumn Field=@nameof(SubscriptionDetailsModel.RemainingSessions) HeaderText="Remaining" Width="120">
-									<HeaderTemplate>
-										<div class="column-header">
-											<span>Remaining</span>
-										</div>
-									</HeaderTemplate>
-									<Template>
-										@{
-											var data = (context as SubscriptionDetailsModel);
-											<span class="@(data.RemainingSessions == 0 ? "sessions-none" : data.RemainingSessions <= 3 ? "sessions-low" : "sessions-good")">
-												@data.RemainingSessions
+											var data = (context as SessionDetailsModel);
+											<span class="@(data.Confirmed ? "confirmed" : "not-confirmed")">
+												@(data.Confirmed ? "Yes" : "No")
 											</span>
 										}
 									</Template>
 								</GridColumn>
-								<GridColumn Field=@nameof(SubscriptionDetailsModel.TotalPaid) HeaderText="Paid" Width="120" TextAlign="TextAlign.Right">
-									<HeaderTemplate>
-										<div class="column-header text-right">
-											<span>Paid</span>
-										</div>
-									</HeaderTemplate>
-									<Template>
-										@{
-											var data = (context as SubscriptionDetailsModel);
-											<span class="text-right">@data.TotalPaid.FormatIndianCurrency()</span>
-										}
-									</Template>
-								</GridColumn>
-								<GridColumn Field=@nameof(SubscriptionDetailsModel.Dues) HeaderText="Dues" Width="120" TextAlign="TextAlign.Right">
-									<HeaderTemplate>
-										<div class="column-header text-right">
-											<span>Dues</span>
-										</div>
-									</HeaderTemplate>
-									<Template>
-										@{
-											var data = (context as SubscriptionDetailsModel);
-											<span class="@(data.Dues > 0 ? "dues-pending" : "dues-cleared") text-right">
-												@data.Dues.FormatIndianCurrency()
-											</span>
-										}
-									</Template>
-								</GridColumn>
-								<GridColumn Field=@nameof(SubscriptionDetailsModel.UserName) HeaderText="User" Width="130">
+								<GridColumn Field=@nameof(SessionDetailsModel.UserName) HeaderText="Created By" Width="130">
 									<HeaderTemplate>
 										<div class="column-header">
-											<span>User</span>
+											<span>Created By</span>
 										</div>
 									</HeaderTemplate>
 								</GridColumn>
-								<GridColumn Field=@nameof(SubscriptionDetailsModel.SubscriptionDate) HeaderText="Date Time" Width="150" Format="dd MMM yyyy">
+								<GridColumn Field=@nameof(SessionDetailsModel.CreatedDate) HeaderText="Created On" Width="150" Format="dd MMM yyyy HH:mm">
 									<HeaderTemplate>
 										<div class="column-header">
-											<span>Date Time</span>
+											<span>Created On</span>
 										</div>
 									</HeaderTemplate>
 								</GridColumn>
@@ -246,7 +236,6 @@
 		<p>&copy; @DateTime.Now.Year A Product By <a href="https://aadi.vercel.app" target="_blank" class="footer-link">AadiSoft</a>. All rights reserved.</p>
 	</div>
 </div>
-
 
 <style>
 	:root {
@@ -309,7 +298,7 @@
 	.page-icon {
 		width: 40px;
 		height: 40px;
-		color: var(--primary-color);
+		color: var(--secondary-color);
 		fill: currentColor;
 		filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.1));
 	}
@@ -352,7 +341,7 @@
 	.section-icon {
 		width: 24px;
 		height: 24px;
-		color: var(--primary-color);
+		color: var(--secondary-color);
 		fill: currentColor;
 	}
 
@@ -381,21 +370,29 @@
 			background: linear-gradient(135deg, #e0e0e0 0%, #d0d0d0 100%) !important;
 		}
 
+	/* Filter Section */
+	.filter-container {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+
+	.date-range-container {
+		display: flex;
+		align-items: flex-end;
+		gap: 1rem;
+		max-width: 600px;
+	}
+
+	.date-range-picker {
+		flex-grow: 1;
+	}
+
 	/* Grid Styling */
 	.grid-wrapper {
 		border-radius: 8px;
 		overflow: hidden;
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-	}
-
-	.text-right {
-		text-align: right;
-		width: 100%;
-		display: block;
-	}
-
-	.column-header.text-right {
-		justify-content: flex-end;
 	}
 
 	::deep .e-grid {
@@ -406,7 +403,7 @@
 
 	::deep .e-gridheader {
 		background-color: #f8f9fa;
-		border-bottom: 2px solid rgba(63, 81, 181, 0.1);
+		border-bottom: 2px solid rgba(139, 195, 74, 0.1);
 	}
 
 	::deep .e-headercell {
@@ -428,7 +425,7 @@
 	}
 
 		::deep .e-row:hover {
-			background-color: rgba(63, 81, 181, 0.05) !important;
+			background-color: rgba(139, 195, 74, 0.05) !important;
 		}
 
 	::deep .e-altrow {
@@ -456,7 +453,7 @@
 	}
 
 	::deep .e-currentitem {
-		background-color: var(--primary-color);
+		background-color: var(--secondary-color);
 		color: white;
 	}
 
@@ -473,30 +470,14 @@
 		padding: 0.5rem;
 	}
 
-	/* Status colors for remaining sessions */
-	.sessions-none {
-		color: #f44336;
-		font-weight: 600;
-	}
-
-	.sessions-low {
-		color: #ff9800;
-		font-weight: 600;
-	}
-
-	.sessions-good {
+	/* Status colors */
+	.confirmed {
 		color: #4caf50;
 		font-weight: 600;
 	}
 
-	/* Status colors for dues */
-	.dues-pending {
+	.not-confirmed {
 		color: #f44336;
-		font-weight: 600;
-	}
-
-	.dues-cleared {
-		color: #4caf50;
 		font-weight: 600;
 	}
 
@@ -529,20 +510,20 @@
 			width: 6px;
 		}
 
-	.active-subs::before {
-		background: linear-gradient(to bottom, var(--primary-color), #5c6bc0);
-	}
-
 	.total-sessions::before {
 		background: linear-gradient(to bottom, var(--secondary-color), #9ccc65);
 	}
 
-	.total-revenue::before {
-		background: linear-gradient(to bottom, #00bcd4, #4dd0e1);
+	.total-clients::before {
+		background: linear-gradient(to bottom, #03a9f4, #4fc3f7);
 	}
 
-	.dues-amount::before {
-		background: linear-gradient(to bottom, var(--accent-color), #ff8a65);
+	.session-types::before {
+		background: linear-gradient(to bottom, #9c27b0, #ba68c8);
+	}
+
+	.confirmed-sessions::before {
+		background: linear-gradient(to bottom, #4caf50, #81c784);
 	}
 
 	.summary-icon {
@@ -555,36 +536,36 @@
 		flex-shrink: 0;
 	}
 
-	.active-subs .summary-icon {
-		background-color: rgba(63, 81, 181, 0.1);
-	}
-
 	.total-sessions .summary-icon {
 		background-color: rgba(139, 195, 74, 0.1);
 	}
 
-	.total-revenue .summary-icon {
-		background-color: rgba(0, 188, 212, 0.1);
+	.total-clients .summary-icon {
+		background-color: rgba(3, 169, 244, 0.1);
 	}
 
-	.dues-amount .summary-icon {
-		background-color: rgba(255, 87, 34, 0.1);
+	.session-types .summary-icon {
+		background-color: rgba(156, 39, 176, 0.1);
 	}
 
-	.active-subs .summary-icon svg {
-		fill: var(--primary-color);
+	.confirmed-sessions .summary-icon {
+		background-color: rgba(76, 175, 80, 0.1);
 	}
 
 	.total-sessions .summary-icon svg {
 		fill: var(--secondary-color);
 	}
 
-	.total-revenue .summary-icon svg {
-		fill: #00bcd4;
+	.total-clients .summary-icon svg {
+		fill: #03a9f4;
 	}
 
-	.dues-amount .summary-icon svg {
-		fill: var(--accent-color);
+	.session-types .summary-icon svg {
+		fill: #9c27b0;
+	}
+
+	.confirmed-sessions .summary-icon svg {
+		fill: #4caf50;
 	}
 
 	.summary-content h3 {
@@ -609,7 +590,7 @@
 	.reports-footer {
 		margin-top: auto;
 		text-align: center;
-		padding: 1rem 0;
+		padding: 1.5rem;
 		position: relative;
 		z-index: 1;
 	}
@@ -649,6 +630,11 @@
 
 		.card-section {
 			padding: 1.5rem 1rem;
+		}
+
+		.date-range-container {
+			flex-direction: column;
+			width: 100%;
 		}
 
 		.summary-cards {

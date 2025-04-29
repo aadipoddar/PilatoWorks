@@ -9,8 +9,8 @@ public partial class ValidSubscriptionReport
 
 	private readonly string[] _pageSizes = ["5", "10", "15", "20"];
 
-	private List<ValidSubscriptionModel> _validSubscriptionModels = [];
-	private SfGrid<ValidSubscriptionModel> _sfSubscriptionGrid;
+	private List<SubscriptionDetailsModel> _validSubscriptionModels = [];
+	private SfGrid<SubscriptionDetailsModel> _sfSubscriptionGrid;
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
@@ -37,7 +37,7 @@ public partial class ValidSubscriptionReport
 
 	private async Task LoadData()
 	{
-		_validSubscriptionModels = await CommonData.LoadTableData<ValidSubscriptionModel>(ViewNames.ValidSubscriptionsDetails);
+		_validSubscriptionModels = await CommonData.LoadTableData<SubscriptionDetailsModel>(ViewNames.ValidSubscriptionsDetails);
 		await _sfSubscriptionGrid.Refresh();
 		StateHasChanged();
 	}

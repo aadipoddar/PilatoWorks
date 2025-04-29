@@ -13,4 +13,7 @@ public static class SessionData
 
 	public static async Task<List<SessionDetailsModel>> LoadSessionDetailsByPersonId(int PersonId) =>
 			await SqlDataAccess.LoadData<SessionDetailsModel, dynamic>(StoredProcedureNames.LoadSessionDetailsByPersonId, new { PersonId });
+
+	public static async Task<List<SessionDetailsModel>> LoadSessionDetailsByDateRange(DateOnly BeginDate, DateOnly EndDate) =>
+			await SqlDataAccess.LoadData<SessionDetailsModel, dynamic>(StoredProcedureNames.LoadSessionDetailsByDateRange, new { BeginDate, EndDate });
 }

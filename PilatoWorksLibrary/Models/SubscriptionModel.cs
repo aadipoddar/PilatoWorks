@@ -14,7 +14,7 @@ public class SubscriptionModel
 	public DateTime SubscriptionDate { get; set; }
 }
 
-public class ValidSubscriptionModel
+public class SubscriptionDetailsModel
 {
 	public int PersonId { get; set; }
 	public string PersonName { get; set; }

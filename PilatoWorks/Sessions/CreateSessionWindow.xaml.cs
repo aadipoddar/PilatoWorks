@@ -103,8 +103,8 @@ public partial class CreateSessionWindow : Window
 		}
 
 		personSubscriptionComboBox.ItemsSource = filteredSubs;
-		personSubscriptionComboBox.DisplayMemberPath = nameof(ValidSubscriptionModel.PersonName);
-		personSubscriptionComboBox.SelectedValuePath = nameof(ValidSubscriptionModel.SubscriptionId);
+		personSubscriptionComboBox.DisplayMemberPath = nameof(SubscriptionDetailsModel.PersonName);
+		personSubscriptionComboBox.SelectedValuePath = nameof(SubscriptionDetailsModel.SubscriptionId);
 
 		personSubscriptionComboBox.Items.Refresh();
 	}

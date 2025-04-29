@@ -21,7 +21,7 @@ public partial class SubscriptionPage : Page
 
 	private async void Page_Loaded(object sender, RoutedEventArgs e)
 	{
-		validSubscriptionsDataGrid.ItemsSource = await CommonData.LoadTableData<ValidSubscriptionModel>(ViewNames.ValidSubscriptionsDetails);
+		validSubscriptionsDataGrid.ItemsSource = await CommonData.LoadTableData<SubscriptionDetailsModel>(ViewNames.ValidSubscriptionsDetails);
 
 		subscriptionTypeComboBox.ItemsSource = await CommonData.LoadTableDataByStatus<SessionTypeModel>(TableNames.SessionType);
 		subscriptionTypeComboBox.DisplayMemberPath = nameof(SessionTypeModel.Name);
@@ -208,7 +208,7 @@ public partial class SubscriptionPage : Page
 
 		personNumberTextBox.Clear();
 
-		validSubscriptionsDataGrid.ItemsSource = await CommonData.LoadTableData<ValidSubscriptionModel>(ViewNames.ValidSubscriptionsDetails);
+		validSubscriptionsDataGrid.ItemsSource = await CommonData.LoadTableData<SubscriptionDetailsModel>(ViewNames.ValidSubscriptionsDetails);
 	}
 
 	private bool ValidateForm()
@@ -262,6 +262,6 @@ public partial class SubscriptionPage : Page
 	{
 		if (validSubscriptionsDataGrid.SelectedItem is null) return;
 
-		personNumberTextBox.Text = ((ValidSubscriptionModel)validSubscriptionsDataGrid.SelectedItem).PersonNumber;
+		personNumberTextBox.Text = ((SubscriptionDetailsModel)validSubscriptionsDataGrid.SelectedItem).PersonNumber;
 	}
 }

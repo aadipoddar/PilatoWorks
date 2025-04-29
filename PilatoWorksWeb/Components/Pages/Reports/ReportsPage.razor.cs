@@ -39,4 +39,11 @@ public partial class ReportsPage
 
 	private void OnSubscriptionDetailsClick() =>
 		NavManager.NavigateTo("/SubscriptionDetailReport");
+
+	private void OnSessionsReportClick() =>
+		NavManager.NavigateTo("/SessionsReport");
+
+	private void NavigateToDashboard() =>
+		NavManager.NavigateTo("/dashboard");
+
 }

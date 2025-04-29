@@ -167,16 +167,16 @@
 								Height="280"
 								Width="100%"
 								CssClass="sessions-grid">
-							<GridEvents RowSelected="RowSelectHandler" TValue="ValidSubscriptionModel"></GridEvents>
+							<GridEvents RowSelected="RowSelectHandler" TValue="SubscriptionDetailsModel"></GridEvents>
 							<GridColumns>
-								<GridColumn Field="@nameof(ValidSubscriptionModel.SubscriptionId)" HeaderText="Subscription ID" Width="120" />
-								<GridColumn Field="@nameof(ValidSubscriptionModel.PersonName)" HeaderText="Client Name" Width="140" />
-								<GridColumn Field="@nameof(ValidSubscriptionModel.PersonNumber)" HeaderText="Phone" Width="120" />
-								<GridColumn Field="@nameof(ValidSubscriptionModel.SessionType)" HeaderText="Session Type" Width="140" />
-								<GridColumn Field="@nameof(ValidSubscriptionModel.BookingAmount)" HeaderText="Booking Amount" Width="120" />
-								<GridColumn Field="@nameof(ValidSubscriptionModel.TotalPaid)" HeaderText="Total Paid" Width="120" />
-								<GridColumn Field="@nameof(ValidSubscriptionModel.Dues)" HeaderText="Dues" Width="100" />
-								<GridColumn Field="@nameof(ValidSubscriptionModel.SubscriptionDate)" HeaderText="Date" Format="MMM dd, yyyy" Width="120" />
+								<GridColumn Field="@nameof(SubscriptionDetailsModel.SubscriptionId)" HeaderText="Subscription ID" Width="120" />
+								<GridColumn Field="@nameof(SubscriptionDetailsModel.PersonName)" HeaderText="Client Name" Width="140" />
+								<GridColumn Field="@nameof(SubscriptionDetailsModel.PersonNumber)" HeaderText="Phone" Width="120" />
+								<GridColumn Field="@nameof(SubscriptionDetailsModel.SessionType)" HeaderText="Session Type" Width="140" />
+								<GridColumn Field="@nameof(SubscriptionDetailsModel.BookingAmount)" HeaderText="Booking Amount" Width="120" />
+								<GridColumn Field="@nameof(SubscriptionDetailsModel.TotalPaid)" HeaderText="Total Paid" Width="120" />
+								<GridColumn Field="@nameof(SubscriptionDetailsModel.Dues)" HeaderText="Dues" Width="100" />
+								<GridColumn Field="@nameof(SubscriptionDetailsModel.SubscriptionDate)" HeaderText="Date" Format="MMM dd, yyyy" Width="120" />
 							</GridColumns>
 						</SfGrid>
 					</div>

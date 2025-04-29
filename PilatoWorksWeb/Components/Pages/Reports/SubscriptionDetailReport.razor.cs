@@ -13,8 +13,8 @@ public partial class SubscriptionDetailReport
 
 	private readonly string[] _pageSizes = ["5", "10", "15", "20"];
 
-	private List<ValidSubscriptionModel> _subscriptionModels = [];
-	private SfGrid<ValidSubscriptionModel> _sfSubscriptionGrid;
+	private List<SubscriptionDetailsModel> _subscriptionModels = [];
+	private SfGrid<SubscriptionDetailsModel> _sfSubscriptionGrid;
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{

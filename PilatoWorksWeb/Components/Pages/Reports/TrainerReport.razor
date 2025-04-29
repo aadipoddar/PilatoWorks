@@ -126,29 +126,30 @@
 										</div>
 									</HeaderTemplate>
 								</GridColumn>
-								<GridColumn Field=@nameof(TrainerModel.Salary) HeaderText="Salary" Width="140">
+								<GridColumn Field=@nameof(TrainerModel.Salary) HeaderText="Salary" Width="140" TextAlign="TextAlign.Right">
 									<HeaderTemplate>
-										<div class="column-header">
+										<div class="column-header text-right">
 											<span>Salary</span>
 										</div>
 									</HeaderTemplate>
 									<Template>
 										@{
 											var data = (context as TrainerModel);
-											<span>@data.Salary.FormatIndianCurrency()</span>
+											<span class="text-right">@data.Salary.FormatIndianCurrency()</span>
 										}
 									</Template>
 								</GridColumn>
-								<GridColumn Field=@nameof(TrainerModel.CommissionPercent) HeaderText="Commission %" Width="130">
+
+								<GridColumn Field=@nameof(TrainerModel.CommissionPercent) HeaderText="Commission %" Width="130" TextAlign="TextAlign.Right">
 									<HeaderTemplate>
-										<div class="column-header">
+										<div class="column-header text-right">
 											<span>Commission %</span>
 										</div>
 									</HeaderTemplate>
 									<Template>
 										@{
 											var data = (context as TrainerModel);
-											<span>@data.CommissionPercent%</span>
+											<span class="text-right">@data.CommissionPercent%</span>
 										}
 									</Template>
 								</GridColumn>
@@ -336,6 +337,16 @@
 		border-radius: 8px;
 		overflow: hidden;
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+	}
+
+	.text-right {
+		text-align: right;
+		width: 100%;
+		display: block;
+	}
+
+	.column-header.text-right {
+		justify-content: flex-end;
 	}
 
 	::deep .e-grid {

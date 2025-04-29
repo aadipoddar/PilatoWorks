@@ -207,6 +207,27 @@ public partial class SubscriptionsPage
 			return false;
 		}
 
+		var person = await PersonData.LoadPersonByNumber(_personNumber.Trim());
+		if (person is null)
+		{
+			await JS.InvokeVoidAsync("alert", "Person not found.");
+			return false;
+		}
+
+		// Check for overlapping subscriptions
+		var existingSubscriptions = await SubscriptionData.LoadSubscriptionByPerson(person.Id);
+		foreach (var subscription in existingSubscriptions)
+		{
+			// Check if new subscription dates overlap with any existing subscription
+			if (ValidStartDate <= subscription.SubscriptionValidTo && ValidEndDate >= subscription.SubscriptionValidFrom)
+			{
+				await JS.InvokeVoidAsync("alert",
+					$"This person already has a subscription that overlaps with the selected date range " +
+					$"(existing subscription: {subscription.SubscriptionValidFrom} to {subscription.SubscriptionValidTo})");
+				return false;
+			}
+		}
+
 		return true;
 	}
 

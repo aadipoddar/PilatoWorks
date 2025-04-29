@@ -19,8 +19,8 @@ public partial class ClearDuesPage
 	private string _newCard;
 	private string _newUPI;
 
-	private List<ValidSubscriptionModel> _validSubs = [];
-	private SfGrid<ValidSubscriptionModel> _sfGrid;
+	private List<SubscriptionDetailsModel> _validSubs = [];
+	private SfGrid<SubscriptionDetailsModel> _sfGrid;
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
@@ -47,14 +47,14 @@ public partial class ClearDuesPage
 
 	private async Task LoadGrid()
 	{
-		var subscriptions = await CommonData.LoadTableData<ValidSubscriptionModel>(ViewNames.ValidSubscriptionsDetails);
+		var subscriptions = await CommonData.LoadTableData<SubscriptionDetailsModel>(ViewNames.SubscriptionDetails);
 		_validSubs = [.. subscriptions.Where(x => x.Dues > 0)];
 
 		await _sfGrid.Refresh();
 		StateHasChanged();
 	}
 
-	public async Task RowSelectHandler(RowSelectEventArgs<ValidSubscriptionModel> args)
+	public async Task RowSelectHandler(RowSelectEventArgs<SubscriptionDetailsModel> args)
 	{
 		var selectedRow = args.Data;
 

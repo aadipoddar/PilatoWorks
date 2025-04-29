@@ -39,7 +39,6 @@
 											   StartDate="SubscriptionsStartDate" EndDate="SubscriptionsEndDate">
 								<DateRangePickerEvents TValue="DateOnly" ValueChange="@SubscriptionDateChanged" />
 							</SfDateRangePicker>
-							<!-- Date filter button removed -->
 						</div>
 					</div>
 				</div>
@@ -126,59 +125,59 @@
 								</GridSortColumns>
 							</GridSortSettings>
 
-							<GridEvents OnToolbarClick="ToolbarClickHandler" TValue="ValidSubscriptionModel"></GridEvents>
+							<GridEvents OnToolbarClick="ToolbarClickHandler" TValue="SubscriptionDetailsModel"></GridEvents>
 
 							<GridColumns>
-								<GridColumn Field=@nameof(ValidSubscriptionModel.PersonName) HeaderText="Client Name" Width="180">
+								<GridColumn Field=@nameof(SubscriptionDetailsModel.PersonName) HeaderText="Client Name" Width="180">
 									<HeaderTemplate>
 										<div class="column-header">
 											<span>Client Name</span>
 										</div>
 									</HeaderTemplate>
 								</GridColumn>
-								<GridColumn Field=@nameof(ValidSubscriptionModel.PersonNumber) HeaderText="Phone" Width="140">
+								<GridColumn Field=@nameof(SubscriptionDetailsModel.PersonNumber) HeaderText="Phone" Width="140">
 									<HeaderTemplate>
 										<div class="column-header">
 											<span>Phone Number</span>
 										</div>
 									</HeaderTemplate>
 								</GridColumn>
-								<GridColumn Field=@nameof(ValidSubscriptionModel.SubscriptionId) HeaderText="ID" Width="80">
+								<GridColumn Field=@nameof(SubscriptionDetailsModel.SubscriptionId) HeaderText="ID" Width="80">
 									<HeaderTemplate>
 										<div class="column-header">
 											<span>ID</span>
 										</div>
 									</HeaderTemplate>
 								</GridColumn>
-								<GridColumn Field=@nameof(ValidSubscriptionModel.SubscriptionValidFrom) HeaderText="Valid From" Width="120" Format="dd MMM yyyy">
+								<GridColumn Field=@nameof(SubscriptionDetailsModel.SubscriptionValidFrom) HeaderText="Valid From" Width="120" Format="dd MMM yyyy">
 									<HeaderTemplate>
 										<div class="column-header">
 											<span>Valid From</span>
 										</div>
 									</HeaderTemplate>
 								</GridColumn>
-								<GridColumn Field=@nameof(ValidSubscriptionModel.SubscriptionValidTo) HeaderText="Valid To" Width="120" Format="dd MMM yyyy">
+								<GridColumn Field=@nameof(SubscriptionDetailsModel.SubscriptionValidTo) HeaderText="Valid To" Width="120" Format="dd MMM yyyy">
 									<HeaderTemplate>
 										<div class="column-header">
 											<span>Valid To</span>
 										</div>
 									</HeaderTemplate>
 								</GridColumn>
-								<GridColumn Field=@nameof(ValidSubscriptionModel.SessionType) HeaderText="Type" Width="100">
+								<GridColumn Field=@nameof(SubscriptionDetailsModel.SessionType) HeaderText="Type" Width="100">
 									<HeaderTemplate>
 										<div class="column-header">
 											<span>Type</span>
 										</div>
 									</HeaderTemplate>
 								</GridColumn>
-								<GridColumn Field=@nameof(ValidSubscriptionModel.NoOfSessions) HeaderText="Total Sessions" Width="120">
+								<GridColumn Field=@nameof(SubscriptionDetailsModel.NoOfSessions) HeaderText="Total Sessions" Width="120">
 									<HeaderTemplate>
 										<div class="column-header">
 											<span>Total Sessions</span>
 										</div>
 									</HeaderTemplate>
 								</GridColumn>
-								<GridColumn Field=@nameof(ValidSubscriptionModel.RemainingSessions) HeaderText="Remaining" Width="120">
+								<GridColumn Field=@nameof(SubscriptionDetailsModel.RemainingSessions) HeaderText="Remaining" Width="120">
 									<HeaderTemplate>
 										<div class="column-header">
 											<span>Remaining</span>
@@ -186,62 +185,62 @@
 									</HeaderTemplate>
 									<Template>
 										@{
-											var data = (context as ValidSubscriptionModel);
+											var data = (context as SubscriptionDetailsModel);
 											<span class="@(data.RemainingSessions == 0 ? "sessions-none" : data.RemainingSessions <= 3 ? "sessions-low" : "sessions-good")">
 												@data.RemainingSessions
 											</span>
 										}
 									</Template>
 								</GridColumn>
-								<GridColumn Field=@nameof(ValidSubscriptionModel.BookingAmount) HeaderText="Booking" Width="120">
+								<GridColumn Field=@nameof(SubscriptionDetailsModel.BookingAmount) HeaderText="Booking" Width="120" TextAlign="TextAlign.Right">
 									<HeaderTemplate>
-										<div class="column-header">
+										<div class="column-header text-right">
 											<span>Booking</span>
 										</div>
 									</HeaderTemplate>
 									<Template>
 										@{
-											var data = (context as ValidSubscriptionModel);
-											<span>@data.BookingAmount.FormatIndianCurrency()</span>
+											var data = (context as SubscriptionDetailsModel);
+											<span class="text-right">@data.BookingAmount.FormatIndianCurrency()</span>
 										}
 									</Template>
 								</GridColumn>
-								<GridColumn Field=@nameof(ValidSubscriptionModel.TotalPaid) HeaderText="Paid" Width="120">
+								<GridColumn Field=@nameof(SubscriptionDetailsModel.TotalPaid) HeaderText="Paid" Width="120" TextAlign="TextAlign.Right">
 									<HeaderTemplate>
-										<div class="column-header">
+										<div class="column-header text-right">
 											<span>Paid</span>
 										</div>
 									</HeaderTemplate>
 									<Template>
 										@{
-											var data = (context as ValidSubscriptionModel);
-											<span>@data.TotalPaid.FormatIndianCurrency()</span>
+											var data = (context as SubscriptionDetailsModel);
+											<span class="text-right">@data.TotalPaid.FormatIndianCurrency()</span>
 										}
 									</Template>
 								</GridColumn>
-								<GridColumn Field=@nameof(ValidSubscriptionModel.Dues) HeaderText="Dues" Width="120">
+								<GridColumn Field=@nameof(SubscriptionDetailsModel.Dues) HeaderText="Dues" Width="120" TextAlign="TextAlign.Right">
 									<HeaderTemplate>
-										<div class="column-header">
+										<div class="column-header text-right">
 											<span>Dues</span>
 										</div>
 									</HeaderTemplate>
 									<Template>
 										@{
-											var data = (context as ValidSubscriptionModel);
-											<span class="@(data.Dues > 0 ? "dues-pending" : "dues-cleared")">
+											var data = (context as SubscriptionDetailsModel);
+											<span class="@(data.Dues > 0 ? "dues-pending" : "dues-cleared") text-right">
 												@data.Dues.FormatIndianCurrency()
 											</span>
 										}
 									</Template>
 								</GridColumn>
-								<GridColumn Field=@nameof(ValidSubscriptionModel.UserName) HeaderText="Created By" Width="130">
+								<GridColumn Field=@nameof(SubscriptionDetailsModel.UserName) HeaderText="Created By" Width="130">
 									<HeaderTemplate>
 										<div class="column-header">
 											<span>Created By</span>
 										</div>
 									</HeaderTemplate>
 								</GridColumn>
-								<GridColumn Field=@nameof(ValidSubscriptionModel.SubscriptionDate) HeaderText="Date Time" Width="150" Format="dd MMM yyyy">
+								<GridColumn Field=@nameof(SubscriptionDetailsModel.SubscriptionDate) HeaderText="Date Time" Width="150" Format="dd MMM yyyy">
 									<HeaderTemplate>
 										<div class="column-header">
 											<span>Created On</span>
@@ -450,6 +449,16 @@
 		border-radius: 8px;
 		overflow: hidden;
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+	}
+
+	.text-right {
+		text-align: right;
+		width: 100%;
+		display: block;
+	}
+
+	::deep .e-headertext {
+		text-align: right;
 	}
 
 	::deep .e-grid {

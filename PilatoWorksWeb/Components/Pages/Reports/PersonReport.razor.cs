@@ -13,10 +13,10 @@ public partial class PersonReport
 	private readonly string[] _pageSizes = ["5", "10", "15", "20"];
 
 	private List<SessionDetailsModel> _sessionDetailsModels = [];
-	private List<ValidSubscriptionModel> _personSubscriptionModels = [];
+	private List<SubscriptionDetailsModel> _personSubscriptionModels = [];
 
 	private SfGrid<SessionDetailsModel> _sfSessionGrid;
-	private SfGrid<ValidSubscriptionModel> _sfPersonSubscriptionGrid;
+	private SfGrid<SubscriptionDetailsModel> _sfPersonSubscriptionGrid;
 
 	private string _searchPhoneNumber;
 	private string _clientName;

@@ -23,7 +23,7 @@ public partial class SessionsPage
 
 	private List<SlotModel> _slots = [];
 	private List<TrainerModel> _trainers = [];
-	private List<ValidSubscriptionModel> _validSubs = [];
+	private List<SubscriptionDetailsModel> _validSubs = [];
 
 	private SessionDetailsModel _selectedSession = null;
 
