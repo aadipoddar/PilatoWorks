@@ -16,4 +16,10 @@ public static class SubscriptionData
 
 	public static async Task<List<SubscriptionPaymentDetailsModel>> LoadSubscriptionPaymentDetailsBySubscriptionId(int SubscriptionId) =>
 		await SqlDataAccess.LoadData<SubscriptionPaymentDetailsModel, dynamic>(StoredProcedureNames.LoadSubscriptionPaymentDetailsBySubscriptionId, new { SubscriptionId });
+
+	public static async Task<List<ValidSubscriptionModel>> LoadSubscriptionByPerson(int PersonId) =>
+		await SqlDataAccess.LoadData<ValidSubscriptionModel, dynamic>(StoredProcedureNames.LoadSubscriptionByPerson, new { PersonId });
+
+	public static async Task<List<ValidSubscriptionModel>> LoadSubscriptionByDateRange(DateOnly StartDate, DateOnly EndDate) =>
+		await SqlDataAccess.LoadData<ValidSubscriptionModel, dynamic>(StoredProcedureNames.LoadSubscriptionByDateRange, new { StartDate, EndDate });
 }

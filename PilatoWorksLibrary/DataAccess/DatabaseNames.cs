@@ -23,9 +23,11 @@ public static class StoredProcedureNames
 	public static string LoadPersonByNumber => "Load_Person_By_Number";
 	public static string LoadPersonByNameNumber => "Load_Person_By_Name_Number";
 
+	public static string LoadSubscriptionByPerson => "Load_Subscription_By_Person";
 	public static string LoadValidSubscriptionByPerson => "Load_Valid_Subscription_By_Person";
 	public static string LoadValidSubscriptionByDate => "Load_Valid_Subscription_By_Date";
 	public static string LoadSubscriptionPaymentDetailsBySubscriptionId => "Load_SubscriptionPaymentDetails_By_SubscriptionId";
+	public static string LoadSubscriptionByDateRange => "Load_Subscription_By_Date_Range";
 
 	public static string LoadSessionDetailsByDateSlot => "Load_SessionDetails_By_Date_Slot";
 	public static string LoadSessionDetailsByDateTrainer => "Load_SessionDetails_By_Date_Trainer";

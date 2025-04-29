@@ -1,0 +1,923 @@
+﻿@page "/PersonReport"
+@page "/PersonReport/{PhoneNumber}"
+
+<PageTitle>Person Report - Reflex and Reform Pilates</PageTitle>
+
+<div class="reports-container">
+	<div class="reports-overlay"></div>
+
+	<!-- Header Section -->
+	<div class="reports-header">
+		<div class="header-content">
+			<div class="page-title">
+				<svg class="page-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+					<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+				</svg>
+				<h1>Person Report</h1>
+			</div>
+			<div class="header-actions">
+				<SfButton IconCss="e-icons e-arrow-left" OnClick="OnBackClick" Content="Back to Reports" CssClass="btn-back" />
+			</div>
+		</div>
+	</div>
+
+	<!-- Main Content -->
+	<div class="reports-content">
+		<!-- Search Section -->
+		<div class="content-card search-card">
+			<div class="card-section">
+				<h5 class="section-header">
+					<svg class="section-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+						<path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+					</svg>
+					Search Client
+				</h5>
+				<div class="section-content">
+					<div class="search-container">
+						<div class="search-input-group">
+							<SfTextBox Placeholder="Enter client phone number" @bind-Value="@_searchPhoneNumber" CssClass="search-input" />
+							<SfButton @onclick="@SearchSessionsByPhoneNumber" Content="Search" CssClass="search-button" IconCss="e-icons e-search" />
+						</div>
+						@if (!string.IsNullOrEmpty(_clientName))
+						{
+							<div class="client-info">
+								<div class="client-avatar">
+									<span>@(_clientName?.Substring(0, 1).ToUpper() ?? "C")</span>
+								</div>
+								<div class="client-details">
+									<h4>@_clientName</h4>
+									<p>@_searchPhoneNumber</p>
+								</div>
+							</div>
+						}
+					</div>
+				</div>
+			</div>
+		</div>
+
+		@if (!string.IsNullOrEmpty(_searchPhoneNumber) && _hasSearched && _personSubscriptionModels != null)
+		{
+			<!-- Summary Cards -->
+			<div class="summary-cards">
+				<div class="summary-card sessions-card">
+					<div class="summary-icon">
+						<svg class="feature-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+							<path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14a2 2 0 002 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7v-5z" />
+						</svg>
+					</div>
+					<div class="summary-content">
+						<h3>@(_sessionDetailsModels?.Count ?? 0)</h3>
+						<p>Total Sessions</p>
+					</div>
+				</div>
+
+				<div class="summary-card subscriptions-card">
+					<div class="summary-icon">
+						<svg class="feature-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+							<path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
+						</svg>
+					</div>
+					<div class="summary-content">
+						<h3>@(_personSubscriptionModels?.Count ?? 0)</h3>
+						<p>Active Subscriptions</p>
+					</div>
+				</div>
+
+				<div class="summary-card remaining-card">
+					<div class="summary-icon">
+						<svg class="feature-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+							<path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm-.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
+						</svg>
+					</div>
+					<div class="summary-content">
+						<h3>@CalculateRemainingSessionsTotal()</h3>
+						<p>Remaining Sessions</p>
+					</div>
+				</div>
+
+				<div class="summary-card dues-card">
+					<div class="summary-icon">
+						<svg class="feature-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+							<path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" />
+						</svg>
+					</div>
+					<div class="summary-content">
+						<h3>@CalculateDuesTotal().FormatIndianCurrency()</h3>
+						<p>Total Dues</p>
+					</div>
+				</div>
+			</div>
+
+			<!-- Subscription Details Section -->
+			<div class="content-card">
+				<div class="card-section">
+					<h5 class="section-header">
+						<svg class="section-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+							<path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
+						</svg>
+						Subscription Details
+					</h5>
+					<div class="section-content">
+						<div class="grid-wrapper">
+							<SfGrid DataSource="@_personSubscriptionModels" ID="_sfPersonSubscriptionGrid" @ref="_sfPersonSubscriptionGrid"
+									AllowPaging="true" AllowSorting="true" AllowFiltering="true" AllowResizing="true" AllowExcelExport="true" AllowPdfExport="true"
+									Toolbar="@(new List<string>() { "ExcelExport", "PdfExport" })">
+
+								<GridPageSettings PageSize="5" PageSizes="@_pageSizes"></GridPageSettings>
+
+								<GridSortSettings AllowUnsort="true">
+									<GridSortColumns>
+										<GridSortColumn Field="SubscriptionDate" Direction="SortDirection.Descending"></GridSortColumn>
+									</GridSortColumns>
+								</GridSortSettings>
+
+								<GridEvents OnToolbarClick="ToolbarClickHandler" TValue="ValidSubscriptionModel"></GridEvents>
+
+								<GridColumns>
+									<GridColumn Field=@nameof(ValidSubscriptionModel.SubscriptionId) HeaderText="ID" Width="80">
+										<HeaderTemplate>
+											<div class="column-header">
+												<span>ID</span>
+											</div>
+										</HeaderTemplate>
+									</GridColumn>
+									<GridColumn Field=@nameof(ValidSubscriptionModel.SubscriptionValidFrom) HeaderText="Valid From" Format="d" Width="120">
+										<HeaderTemplate>
+											<div class="column-header">
+												<span>Valid From</span>
+											</div>
+										</HeaderTemplate>
+									</GridColumn>
+									<GridColumn Field=@nameof(ValidSubscriptionModel.SubscriptionValidTo) HeaderText="Valid To" Format="d" Width="120">
+										<HeaderTemplate>
+											<div class="column-header">
+												<span>Valid To</span>
+											</div>
+										</HeaderTemplate>
+									</GridColumn>
+									<GridColumn Field=@nameof(ValidSubscriptionModel.SessionType) HeaderText="Type" Width="100">
+										<HeaderTemplate>
+											<div class="column-header">
+												<span>Type</span>
+											</div>
+										</HeaderTemplate>
+									</GridColumn>
+									<GridColumn Field=@nameof(ValidSubscriptionModel.NoOfSessions) HeaderText="Sessions" Width="90">
+										<HeaderTemplate>
+											<div class="column-header">
+												<span>Sessions</span>
+											</div>
+										</HeaderTemplate>
+									</GridColumn>
+									<GridColumn Field=@nameof(ValidSubscriptionModel.RemainingSessions) HeaderText="Remaining" Width="110">
+										<HeaderTemplate>
+											<div class="column-header">
+												<span>Remaining</span>
+											</div>
+										</HeaderTemplate>
+										<Template>
+											@{
+												var data = (context as ValidSubscriptionModel);
+												<span class="@(data.RemainingSessions == 0 ? "sessions-none" : data.RemainingSessions <= 3 ? "sessions-low" : "sessions-good")">
+													@data.RemainingSessions
+												</span>
+											}
+										</Template>
+									</GridColumn>
+									<GridColumn Field=@nameof(ValidSubscriptionModel.BookingAmount) HeaderText="Booking" Width="110">
+										<HeaderTemplate>
+											<div class="column-header">
+												<span>Booking</span>
+											</div>
+										</HeaderTemplate>
+										<Template>
+											@{
+												var data = (context as ValidSubscriptionModel);
+												<span>@data.BookingAmount.FormatIndianCurrency()</span>
+											}
+										</Template>
+									</GridColumn>
+									<GridColumn Field=@nameof(ValidSubscriptionModel.TotalPaid) HeaderText="Paid" Width="110">
+										<HeaderTemplate>
+											<div class="column-header">
+												<span>Paid</span>
+											</div>
+										</HeaderTemplate>
+										<Template>
+											@{
+												var data = (context as ValidSubscriptionModel);
+												<span>@data.TotalPaid.FormatIndianCurrency()</span>
+											}
+										</Template>
+									</GridColumn>
+									<GridColumn Field=@nameof(ValidSubscriptionModel.Dues) HeaderText="Dues" Width="110">
+										<HeaderTemplate>
+											<div class="column-header">
+												<span>Dues</span>
+											</div>
+										</HeaderTemplate>
+										<Template>
+											@{
+												var data = (context as ValidSubscriptionModel);
+												<span class="@(data.Dues > 0 ? "dues-pending" : "dues-cleared")">
+													@data.Dues.FormatIndianCurrency()
+												</span>
+											}
+										</Template>
+									</GridColumn>
+									<GridColumn Field=@nameof(ValidSubscriptionModel.UserName) HeaderText="User" Width="120">
+										<HeaderTemplate>
+											<div class="column-header">
+												<span>User</span>
+											</div>
+										</HeaderTemplate>
+									</GridColumn>
+									<GridColumn Field=@nameof(ValidSubscriptionModel.SubscriptionDate) HeaderText="Date Time" Format="dd MMM yyyy" Width="120">
+										<HeaderTemplate>
+											<div class="column-header">
+												<span>Date Time</span>
+											</div>
+										</HeaderTemplate>
+									</GridColumn>
+								</GridColumns>
+								<GridTemplates>
+									<ToolbarTemplate>
+										<div class="grid-toolbar">
+											<button class="e-btn e-tbar-btn e-tbtn-txt e-control e-primary" type="button" id="sub-excel">
+												<span class="e-btn-icon e-icons e-export e-icon-left"></span>
+												<span class="e-tbar-btn-text">Excel</span>
+											</button>
+											<button class="e-btn e-tbar-btn e-tbtn-txt e-control e-secondary" type="button" id="sub-pdf">
+												<span class="e-btn-icon e-icons e-export e-icon-left"></span>
+												<span class="e-tbar-btn-text">PDF</span>
+											</button>
+										</div>
+									</ToolbarTemplate>
+								</GridTemplates>
+							</SfGrid>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Session History Section -->
+			<div class="content-card">
+				<div class="card-section">
+					<h5 class="section-header">
+						<svg class="section-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+							<path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14a2 2 0 002 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7v-5z" />
+						</svg>
+						Session History
+					</h5>
+					<div class="section-content">
+						<div class="grid-wrapper">
+							<SfGrid DataSource="@_sessionDetailsModels"
+									ID="_sfSessionGrid"
+									@ref="_sfSessionGrid"
+									AllowPaging="true"
+									AllowSorting="true"
+									AllowFiltering="true"
+									AllowResizing="true" AllowExcelExport="true" AllowPdfExport="true"
+									Toolbar="@(new List<string>() { "ExcelExport", "PdfExport" })">
+								<GridPageSettings PageSize="10" PageSizes="@_pageSizes"></GridPageSettings>
+
+								<GridSortSettings AllowUnsort="true">
+									<GridSortColumns>
+										<GridSortColumn Field="SessionDate" Direction="SortDirection.Descending"></GridSortColumn>
+									</GridSortColumns>
+								</GridSortSettings>
+
+								<GridEvents OnToolbarClick="SessionToolbarClickHandler" TValue="SessionDetailsModel"></GridEvents>
+
+								<GridColumns>
+									<GridColumn Field=@nameof(SessionDetailsModel.SessionDate) HeaderText="Date" Width="120" Format="dd MMM yyyy">
+										<HeaderTemplate>
+											<div class="column-header">
+												<span>Date</span>
+											</div>
+										</HeaderTemplate>
+									</GridColumn>
+									<GridColumn Field=@nameof(SessionDetailsModel.SlotHour) HeaderText="Time" Width="90">
+										<HeaderTemplate>
+											<div class="column-header">
+												<span>Time</span>
+											</div>
+										</HeaderTemplate>
+										<Template>
+											@{
+												var data = (context as SessionDetailsModel);
+												<span>@FormatTimeSlot(data.SlotHour)</span>
+											}
+										</Template>
+									</GridColumn>
+									<GridColumn Field=@nameof(SessionDetailsModel.SessionTypeName) HeaderText="Session Type" Width="140">
+										<HeaderTemplate>
+											<div class="column-header">
+												<span>Session Type</span>
+											</div>
+										</HeaderTemplate>
+									</GridColumn>
+									<GridColumn Field=@nameof(SessionDetailsModel.Trainer1Name) HeaderText="Primary Trainer" Width="150">
+										<HeaderTemplate>
+											<div class="column-header">
+												<span>Primary Trainer</span>
+											</div>
+										</HeaderTemplate>
+									</GridColumn>
+									<GridColumn Field=@nameof(SessionDetailsModel.Trainer2Name) HeaderText="Co-Trainer" Width="150">
+										<HeaderTemplate>
+											<div class="column-header">
+												<span>Co-Trainer</span>
+											</div>
+										</HeaderTemplate>
+									</GridColumn>
+									<GridColumn Field=@nameof(SessionDetailsModel.Confirmed) HeaderText="Confirmed" Width="110">
+										<HeaderTemplate>
+											<div class="column-header">
+												<span>Status</span>
+											</div>
+										</HeaderTemplate>
+										<Template>
+											@{
+												var data = (context as SessionDetailsModel);
+												if (data.Confirmed)
+												{
+													<span class="status-confirmed">Confirmed</span>
+												}
+												else
+												{
+													<span class="status-pending">Pending</span>
+												}
+											}
+										</Template>
+									</GridColumn>
+									<GridColumn Field=@nameof(SessionDetailsModel.UserName) HeaderText="Created By" Width="130">
+										<HeaderTemplate>
+											<div class="column-header">
+												<span>Created By</span>
+											</div>
+										</HeaderTemplate>
+									</GridColumn>
+								</GridColumns>
+								<GridTemplates>
+									<ToolbarTemplate>
+										<div class="grid-toolbar">
+											<button class="e-btn e-tbar-btn e-tbtn-txt e-control e-primary" type="button" id="session-excel">
+												<span class="e-btn-icon e-icons e-export e-icon-left"></span>
+												<span class="e-tbar-btn-text">Excel</span>
+											</button>
+											<button class="e-btn e-tbar-btn e-tbtn-txt e-control e-secondary" type="button" id="session-pdf">
+												<span class="e-btn-icon e-icons e-export e-icon-left"></span>
+												<span class="e-tbar-btn-text">PDF</span>
+											</button>
+										</div>
+									</ToolbarTemplate>
+								</GridTemplates>
+							</SfGrid>
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+		else if (!string.IsNullOrEmpty(_searchPhoneNumber) && _hasSearched)
+		{
+			<div class="content-card">
+				<div class="card-section">
+					<div class="no-results">
+						<svg class="no-results-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+							<path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+						</svg>
+						<h4>No results found</h4>
+						<p>We couldn't find any client with phone number "@_searchPhoneNumber"</p>
+					</div>
+				</div>
+			</div>
+		}
+	</div>
+
+	<div class="reports-footer">
+		<p>&copy; @DateTime.Now.Year A Product By <a href="https://aadi.vercel.app" target="_blank" class="footer-link">AadiSoft</a>. All rights reserved.</p>
+	</div>
+</div>
+
+<style>
+	:root {
+		--primary-color: #3f51b5; /* Fitness blue/purple */
+		--secondary-color: #8bc34a; /* Fresh green */
+		--dark-color: #303030;
+		--light-color: #f8f8f8;
+		--accent-color: #ff5722; /* Energetic orange */
+		--card-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+		--blue-color: #03a9f4; /* Person-specific theme */
+	}
+
+	body {
+		margin: 0;
+		padding: 0;
+		font-family: 'Montserrat', 'Roboto', sans-serif;
+	}
+
+	.reports-container {
+		min-height: 100vh;
+		display: flex;
+		flex-direction: column;
+		background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%233f51b5" fill-opacity="0.1" d="M0,224L48,218.7C96,213,192,203,288,213.3C384,224,480,256,576,261.3C672,267,768,245,864,208C960,171,1056,117,1152,106.7C1248,96,1344,128,1392,144L1440,160L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"></path></svg>');
+		background-color: #f8f9fa;
+		background-repeat: no-repeat;
+		background-position: top;
+		padding: 2rem;
+		position: relative;
+	}
+
+	.reports-overlay {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: url('data:image/svg+xml;utf8,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><rect width="20" height="20" fill="none" stroke="%23000" stroke-opacity="0.03" stroke-width="1"/></svg>');
+		opacity: 0.5;
+		pointer-events: none;
+		z-index: 0;
+	}
+
+	.reports-header {
+		margin-bottom: 2rem;
+		position: relative;
+		z-index: 1;
+	}
+
+	.header-content {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.page-title {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.page-icon {
+		width: 40px;
+		height: 40px;
+		color: var(--blue-color);
+		fill: currentColor;
+		filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.1));
+	}
+
+	.page-title h1 {
+		margin: 0;
+		font-size: 2rem;
+		font-weight: 700;
+		color: var(--dark-color);
+	}
+
+	.reports-content {
+		flex-grow: 1;
+		position: relative;
+		z-index: 1;
+	}
+
+	.content-card {
+		background-color: white;
+		border-radius: 16px;
+		box-shadow: var(--card-shadow);
+		overflow: hidden;
+		margin-bottom: 2rem;
+	}
+
+	.card-section {
+		padding: 2rem;
+	}
+
+	.section-header {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		margin: 0 0 1.5rem 0;
+		font-size: 1.25rem;
+		font-weight: 600;
+		color: var(--dark-color);
+	}
+
+	.section-icon {
+		width: 24px;
+		height: 24px;
+		color: var(--blue-color);
+		fill: currentColor;
+	}
+
+	.header-actions {
+		display: flex;
+		align-items: center;
+	}
+
+	.btn-back {
+		background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%) !important;
+		border-color: transparent !important;
+		color: #555 !important;
+		padding: 0.5rem 1.25rem;
+		border-radius: 50px;
+		font-weight: 500;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		transition: all 0.3s ease;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+	}
+
+		.btn-back:hover {
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+			transform: translateY(-2px);
+			background: linear-gradient(135deg, #e0e0e0 0%, #d0d0d0 100%) !important;
+		}
+
+	/* Search Section */
+	.search-container {
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
+	}
+
+	.search-input-group {
+		display: flex;
+		gap: 1rem;
+		max-width: 600px;
+	}
+
+	.search-input {
+		flex-grow: 1;
+		border-radius: 8px !important;
+	}
+
+	.search-button {
+		background: linear-gradient(135deg, var(--blue-color) 0%, #4fc3f7 100%) !important;
+		border-color: transparent !important;
+		padding: 0 1.5rem;
+		border-radius: 8px;
+		font-weight: 500;
+		transition: all 0.3s ease;
+		box-shadow: 0 2px 5px rgba(3, 169, 244, 0.3);
+	}
+
+		.search-button:hover {
+			box-shadow: 0 4px 8px rgba(3, 169, 244, 0.4);
+			transform: translateY(-2px);
+		}
+
+	.client-info {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		background-color: rgba(3, 169, 244, 0.08);
+		border-radius: 12px;
+		padding: 1rem;
+		border-left: 4px solid var(--blue-color);
+	}
+
+	.client-avatar {
+		width: 48px;
+		height: 48px;
+		border-radius: 50%;
+		background: linear-gradient(135deg, var(--blue-color) 0%, #4fc3f7 100%);
+		color: white;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 20px;
+		font-weight: bold;
+		box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.9), 0 3px 8px rgba(0, 0, 0, 0.1);
+	}
+
+	.client-details h4 {
+		margin: 0;
+		font-size: 1.1rem;
+		color: var(--dark-color);
+	}
+
+	.client-details p {
+		margin: 0.25rem 0 0;
+		font-size: 0.9rem;
+		color: #666;
+	}
+
+	/* No Results */
+	.no-results {
+		text-align: center;
+		padding: 2rem 1rem;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.no-results-icon {
+		width: 60px;
+		height: 60px;
+		color: #9e9e9e;
+		opacity: 0.6;
+	}
+
+	.no-results h4 {
+		margin: 0;
+		font-size: 1.25rem;
+		color: #666;
+	}
+
+	.no-results p {
+		margin: 0;
+		font-size: 0.95rem;
+		color: #888;
+		max-width: 400px;
+	}
+
+	/* Grid Styling */
+	.grid-wrapper {
+		border-radius: 8px;
+		overflow: hidden;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+	}
+
+	::deep .e-grid {
+		border: none;
+		border-radius: 8px;
+		font-family: 'Montserrat', 'Roboto', sans-serif;
+	}
+
+	::deep .e-gridheader {
+		background-color: #f8f9fa;
+		border-bottom: 2px solid rgba(3, 169, 244, 0.1);
+	}
+
+	::deep .e-headercell {
+		background-color: #f8f9fa;
+		color: var(--dark-color);
+		font-weight: 600;
+		border-right: 1px solid rgba(0, 0, 0, 0.05);
+	}
+
+	::deep .column-header {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0 0.25rem;
+	}
+
+	::deep .e-row {
+		border: none;
+	}
+
+		::deep .e-row:hover {
+			background-color: rgba(3, 169, 244, 0.05) !important;
+		}
+
+	::deep .e-altrow {
+		background-color: rgba(248, 249, 250, 0.5);
+	}
+
+	::deep .e-rowcell {
+		color: #333;
+		border-right: 1px solid rgba(0, 0, 0, 0.05);
+		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+	}
+
+	::deep .e-pager {
+		background-color: #f8f9fa;
+		border-top: 1px solid rgba(0, 0, 0, 0.05);
+		padding: 0.75rem;
+	}
+
+	::deep .e-pagercontainer {
+		border: none;
+	}
+
+	::deep .e-numericitem {
+		border-radius: 4px;
+	}
+
+	::deep .e-currentitem {
+		background-color: var(--blue-color);
+		color: white;
+	}
+
+	/* Toolbar styling */
+	::deep .e-toolbar {
+		background-color: #f8f9fa;
+		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+		padding: 0.5rem;
+	}
+
+	.grid-toolbar {
+		display: flex;
+		gap: 0.75rem;
+		padding: 0.5rem;
+	}
+
+	/* Status styling */
+	.status-confirmed {
+		color: #4caf50;
+		font-weight: 600;
+	}
+
+	.status-pending {
+		color: #ff9800;
+		font-weight: 600;
+	}
+
+	/* Sessions styling */
+	.sessions-none {
+		color: #f44336;
+		font-weight: 600;
+	}
+
+	.sessions-low {
+		color: #ff9800;
+		font-weight: 600;
+	}
+
+	.sessions-good {
+		color: #4caf50;
+		font-weight: 600;
+	}
+
+	/* Dues styling */
+	.dues-pending {
+		color: #f44336;
+		font-weight: 600;
+	}
+
+	.dues-cleared {
+		color: #4caf50;
+		font-weight: 600;
+	}
+
+	/* Summary Cards */
+	.summary-cards {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+		gap: 1.5rem;
+		margin-bottom: 2rem;
+	}
+
+	.summary-card {
+		background-color: white;
+		border-radius: 12px;
+		box-shadow: var(--card-shadow);
+		padding: 1.5rem;
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		position: relative;
+		overflow: hidden;
+	}
+
+		.summary-card::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			height: 100%;
+			width: 6px;
+		}
+
+	.sessions-card::before {
+		background: linear-gradient(to bottom, var(--secondary-color), #9ccc65);
+	}
+
+	.subscriptions-card::before {
+		background: linear-gradient(to bottom, var(--primary-color), #5c6bc0);
+	}
+
+	.remaining-card::before {
+		background: linear-gradient(to bottom, #00bcd4, #4dd0e1);
+	}
+
+	.dues-card::before {
+		background: linear-gradient(to bottom, var(--accent-color), #ff8a65);
+	}
+
+	.summary-icon {
+		width: 50px;
+		height: 50px;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+	}
+
+	.sessions-card .summary-icon {
+		background-color: rgba(139, 195, 74, 0.1);
+	}
+
+	.subscriptions-card .summary-icon {
+		background-color: rgba(63, 81, 181, 0.1);
+	}
+
+	.remaining-card .summary-icon {
+		background-color: rgba(0, 188, 212, 0.1);
+	}
+
+	.dues-card .summary-icon {
+		background-color: rgba(255, 87, 34, 0.1);
+	}
+
+	.sessions-card .summary-icon svg {
+		fill: var(--secondary-color);
+	}
+
+	.subscriptions-card .summary-icon svg {
+		fill: var(--primary-color);
+	}
+
+	.remaining-card .summary-icon svg {
+		fill: #00bcd4;
+	}
+
+	.dues-card .summary-icon svg {
+		fill: var(--accent-color);
+	}
+
+	.summary-content h3 {
+		margin: 0;
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: var(--dark-color);
+	}
+
+	.summary-content p {
+		margin: 0.25rem 0 0;
+		font-size: 0.85rem;
+		color: #666;
+	}
+
+	.feature-icon {
+		width: 28px;
+		height: 28px;
+		filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.1));
+	}
+
+	.reports-footer {
+		margin-top: auto;
+		text-align: center;
+		padding: 1rem 0;
+		position: relative;
+		z-index: 1;
+	}
+
+		.reports-footer p {
+			margin: 0;
+			color: #777;
+			font-size: 0.9rem;
+		}
+
+	.footer-link {
+		color: var(--primary-color);
+		text-decoration: none;
+		font-weight: 500;
+		transition: color 0.2s ease;
+	}
+
+		.footer-link:hover {
+			color: var(--accent-color);
+		}
+
+	/* Responsive adjustments */
+	@@media (max-width: 768px) {
+		.reports-container {
+			padding: 1.5rem 1rem;
+		}
+
+		.page-title h1 {
+			font-size: 1.5rem;
+		}
+
+		.header-content {
+			flex-direction: column;
+			gap: 1rem;
+			align-items: flex-start;
+		}
+
+		.card-section {
+			padding: 1.5rem 1rem;
+		}
+
+		.summary-cards {
+			grid-template-columns: 1fr;
+		}
+
+		.search-input-group {
+			flex-direction: column;
+		}
+
+		::deep .e-toolbar {
+			padding: 0.25rem;
+		}
+
+		.grid-toolbar {
+			flex-wrap: wrap;
+		}
+	}
+</style>
