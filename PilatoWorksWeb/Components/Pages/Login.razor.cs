@@ -33,7 +33,7 @@ public partial class Login
 		if (_password.Length != 4) return;
 
 		var user = await UserData.LoadUserByPassword(_password);
-		if (user is null) return;
+		if (user is null || !user.Status) return;
 
 		await JS.InvokeVoidAsync("setCookie", "UserId", user.Id, 1);
 		await JS.InvokeVoidAsync("setCookie", "Password", BCrypt.Net.BCrypt.EnhancedHashPassword(user.Password.ToString(), 13), 1);

@@ -86,6 +86,13 @@ public partial class UsersManagementPage
 			_userModel.Trainer = true;
 		}
 
+		var user = await UserData.LoadUserByPassword(_userModel.Password.ToString().RemoveSpace());
+		if (user is not null)
+		{
+			await JS.InvokeVoidAsync("alert", "Users Cannot have the same Password.");
+			return false;
+		}
+
 		return true;
 	}
 
