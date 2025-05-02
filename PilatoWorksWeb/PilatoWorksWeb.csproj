@@ -8,11 +8,12 @@
 
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
-    <PackageReference Include="Syncfusion.Blazor.Calendars" Version="29.1.39" />
-    <PackageReference Include="Syncfusion.Blazor.DropDowns" Version="29.1.39" />
-    <PackageReference Include="Syncfusion.Blazor.Grid" Version="29.1.39" />
-    <PackageReference Include="Syncfusion.Blazor.Inputs" Version="29.1.39" />
-    <PackageReference Include="Syncfusion.Blazor.Themes" Version="29.1.39" />
+    <PackageReference Include="Syncfusion.Blazor.Calendars" Version="29.1.40" />
+    <PackageReference Include="Syncfusion.Blazor.DropDowns" Version="29.1.40" />
+    <PackageReference Include="Syncfusion.Blazor.Grid" Version="29.1.40" />
+    <PackageReference Include="Syncfusion.Blazor.Inputs" Version="29.1.40" />
+    <PackageReference Include="Syncfusion.Blazor.Themes" Version="29.1.40" />
+    <PackageReference Include="Syncfusion.XlsIO.NET" Version="29.1.40" />
   </ItemGroup>
 
   <ItemGroup>

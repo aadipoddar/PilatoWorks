@@ -1,4 +1,4 @@
-using Syncfusion.Blazor.Calendars;
+﻿using Syncfusion.Blazor.Calendars;
 using Syncfusion.Blazor.Grids;
 
 namespace PilatoWorksWeb.Components.Pages.Reports;
@@ -51,10 +51,20 @@ public partial class SubscriptionDetailReport
 	private async Task ToolbarClickHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
 	{
 		if (args.Item.Id == "_sfSubscriptionGrid_excelexport")
-			await _sfSubscriptionGrid?.ExportToExcelAsync();
+		{
+			// Create a custom decorated Excel file instead of the default export
+			var stream = await SubscriptionExcelExporter.ExportSubscriptionDetailsToExcel(_subscriptionModels, SubscriptionsStartDate, SubscriptionsEndDate);
+
+			// Save the file with a descriptive name
+			var fileName = $"Subscription_Report_{SubscriptionsStartDate:yyyy-MM-dd}_to_{SubscriptionsEndDate:yyyy-MM-dd}.xlsx";
+			await JS.InvokeVoidAsync("saveAs", Convert.ToBase64String(stream.ToArray()), fileName);
+		}
 		else if (args.Item.Id == "_sfSubscriptionGrid_pdfexport")
+		{
 			await _sfSubscriptionGrid?.ExportToPdfAsync();
+		}
 	}
+
 
 	private async Task LoadSubscriptionData()
 	{

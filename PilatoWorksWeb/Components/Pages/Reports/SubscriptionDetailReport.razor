@@ -233,39 +233,21 @@
 										}
 									</Template>
 								</GridColumn>
-								<GridColumn Field=@nameof(SubscriptionDetailsModel.UserName) HeaderText="Created By" Width="130">
-									<HeaderTemplate>
-										<div class="column-header">
-											<span>Created By</span>
-										</div>
-									</HeaderTemplate>
-								</GridColumn>
-								<GridColumn Field=@nameof(SubscriptionDetailsModel.SubscriptionDate) HeaderText="Date Time" Width="150" Format="dd MMM yyyy">
-									<HeaderTemplate>
-										<div class="column-header">
-											<span>Created On</span>
-										</div>
-									</HeaderTemplate>
-								</GridColumn>
 							</GridColumns>
-							<GridTemplates>
-								<ToolbarTemplate>
-									<div class="grid-toolbar">
-										<button class="e-btn e-tbar-btn e-tbtn-txt e-control e-primary" type="button" id="export-excel">
-											<span class="e-btn-icon e-icons e-export e-icon-left"></span>
-											<span class="e-tbar-btn-text">Excel</span>
-										</button>
-										<button class="e-btn e-tbar-btn e-tbtn-txt e-control e-secondary" type="button" id="export-pdf">
-											<span class="e-btn-icon e-icons e-export e-icon-left"></span>
-											<span class="e-tbar-btn-text">PDF</span>
-										</button>
-										<button class="e-btn e-tbar-btn e-tbtn-txt e-control" type="button" id="print">
-											<span class="e-btn-icon e-icons e-print e-icon-left"></span>
-											<span class="e-tbar-btn-text">Print</span>
-										</button>
-									</div>
-								</ToolbarTemplate>
-							</GridTemplates>
+								<GridTemplates>
+									<ToolbarTemplate>
+										<div class="grid-toolbar">
+											<button class="e-btn e-tbar-btn e-tbtn-txt e-control e-primary" type="button" id="export-excel">
+												<span class="e-btn-icon e-icons e-export e-icon-left"></span>
+												<span class="e-tbar-btn-text">Excel</span>
+											</button>
+											<button class="e-btn e-tbar-btn e-tbtn-txt e-control e-secondary" type="button" id="export-pdf">
+												<span class="e-btn-icon e-icons e-export e-icon-left"></span>
+												<span class="e-tbar-btn-text">PDF</span>
+											</button>
+										</div>
+									</ToolbarTemplate>
+								</GridTemplates>
 						</SfGrid>
 					</div>
 				</div>
