@@ -94,17 +94,53 @@ public partial class PersonReport
 	private async Task ToolbarClickHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
 	{
 		if (args.Item.Id == "_sfPersonSubscriptionGrid_excelexport")
-			await _sfPersonSubscriptionGrid.ExportToExcelAsync();
-		else if (args.Item.Id == "_sfPersonSubscriptionGrid_pdfexport")
-			await _sfPersonSubscriptionGrid.ExportToPdfAsync();
+		{
+			// Create summary items for report
+			var summaryItems = new Dictionary<string, object>
+			{
+				{ "Total Sessions", _sessionDetailsModels?.Count ?? 0},
+				{ "Active Subscriptions", _personSubscriptionModels?.Count ?? 0},
+				{ "Remainig Sessions", CalculateRemainingSessionsTotal() },
+				{ "Total Dues", CalculateDuesTotal() }
+			};
+
+			// Use the generalized Excel exporter
+			var stream = ExcelExportUtil.ExportToExcel(
+				data: _personSubscriptionModels,
+				reportTitle: "CLIENT SUBSCRIPTION REPORT",
+				worksheetName: "Client Subscription Details",
+				summaryItems: summaryItems);
+
+			// Save the file with a descriptive name
+			var fileName = $"Client_Subscription_Report.xlsx";
+			await JS.InvokeVoidAsync("saveAs", Convert.ToBase64String(stream.ToArray()), fileName);
+		}
 	}
 
 	private async Task SessionToolbarClickHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
 	{
 		if (args.Item.Id == "_sfSessionGrid_excelexport")
-			await _sfSessionGrid.ExportToExcelAsync();
-		else if (args.Item.Id == "_sfSessionGrid_pdfexport")
-			await _sfSessionGrid.ExportToPdfAsync();
+		{
+			// Create summary items for report
+			var summaryItems = new Dictionary<string, object>
+			{
+				{ "Total Sessions", _sessionDetailsModels?.Count ?? 0},
+				{ "Active Subscriptions", _personSubscriptionModels?.Count ?? 0},
+				{ "Remainig Sessions", CalculateRemainingSessionsTotal() },
+				{ "Total Dues", CalculateDuesTotal() }
+			};
+
+			// Use the generalized Excel exporter
+			var stream = ExcelExportUtil.ExportToExcel(
+				data: _sessionDetailsModels,
+				reportTitle: "CLIENT SESSION REPORT",
+				worksheetName: "Client Session Details",
+				summaryItems: summaryItems);
+
+			// Save the file with a descriptive name
+			var fileName = $"Client_Session_Report.xlsx";
+			await JS.InvokeVoidAsync("saveAs", Convert.ToBase64String(stream.ToArray()), fileName);
+		}
 	}
 
 	private static string FormatTimeSlot(int hour)
