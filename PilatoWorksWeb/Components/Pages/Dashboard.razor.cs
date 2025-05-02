@@ -47,8 +47,11 @@ public partial class Dashboard
 	private void OnReportsClick() =>
 		NavManager.NavigateTo("/Reports");
 
+	private void OnTrainerManagementClick() =>
+		NavManager.NavigateTo("/TrainerManagement");
+
 	private void OnUsersClick() =>
-		NavManager.NavigateTo("/Users");
+		NavManager.NavigateTo("/UserManagement");
 
 	private async Task OnLogoutClick()
 	{

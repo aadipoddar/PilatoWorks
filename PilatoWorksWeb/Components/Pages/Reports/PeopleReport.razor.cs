@@ -48,9 +48,26 @@ public partial class PeopleReport
 	private async Task ToolbarClickHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
 	{
 		if (args.Item.Id == "_sfPersonGrid_excelexport")
-			await _sfPersonGrid.ExportToExcelAsync();
-		else if (args.Item.Id == "_sfPersonGrid_pdfexport")
-			await _sfPersonGrid.ExportToPdfAsync();
+		{
+			var summaryItems = new Dictionary<string, object>
+			{
+				{ "Registered Clients", _personModels.Count },
+				{ "Clients With Email", CountClientsWithEmail() },
+				{ "Clients With Emergency Contact", CountClientsWithEmergencyContact() },
+				{ "Clients With Address Details Contact", CountClientsWithAddress() }
+			};
+
+			// Use the generalized Excel exporter
+			var stream = ExcelExportUtil.ExportToExcel(
+				data: _personModels,
+				reportTitle: "Client DETAIL REPORT",
+				worksheetName: "Client Details",
+				summaryItems: summaryItems);
+
+			// Save the file with a descriptive name
+			var fileName = $"Client_Report.xlsx";
+			await JS.InvokeVoidAsync("saveAs", Convert.ToBase64String(stream.ToArray()), fileName);
+		}
 	}
 
 	private void OpenPersonReport(string phoneNumber)

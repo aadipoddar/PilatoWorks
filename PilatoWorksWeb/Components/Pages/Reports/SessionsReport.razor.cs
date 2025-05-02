@@ -50,9 +50,27 @@ public partial class SessionsReport
 	private async Task ToolbarClickHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
 	{
 		if (args.Item.Id == "_sfSessionGrid_excelexport")
-			await _sfSessionGrid?.ExportToExcelAsync();
-		else if (args.Item.Id == "_sfSessionGrid_pdfexport")
-			await _sfSessionGrid?.ExportToPdfAsync();
+		{
+			var summaryItems = new Dictionary<string, object>
+			{
+				{ "Total Sessions", _sessionModels.Count },
+				{ "Unique Clients", _sessionModels?.Select(s => s.PersonName).Distinct().Count() ?? 0 },
+				{ "Confirmed Sessions", _sessionModels?.Count(s => s.Confirmed) ?? 0 }
+			};
+
+			// Use the generalized Excel exporter
+			var stream = ExcelExportUtil.ExportToExcel(
+				data: _sessionModels,
+				reportTitle: "SESSIONS DETAIL REPORT",
+				worksheetName: "Session Details",
+				dateRangeStart: SessionsStartDate,
+				dateRangeEnd: SessionsEndDate,
+				summaryItems: summaryItems);
+
+			// Save the file with a descriptive name
+			var fileName = $"Session_Report_{SessionsStartDate:yyyy-MM-dd}_to_{SessionsEndDate:yyyy-MM-dd}.xlsx";
+			await JS.InvokeVoidAsync("saveAs", Convert.ToBase64String(stream.ToArray()), fileName);
+		}
 	}
 
 	private async Task LoadSessionData()

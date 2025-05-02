@@ -48,9 +48,26 @@ public partial class TrainerReport
 	private async Task ToolbarClickHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
 	{
 		if (args.Item.Id == "_sfTrainerGrid_excelexport")
-			await _sfTrainerGrid.ExportToExcelAsync();
-		else if (args.Item.Id == "_sfTrainerGrid_pdfexport")
-			await _sfTrainerGrid.ExportToPdfAsync();
+		{
+			var summaryItems = new Dictionary<string, object>
+			{
+				{ "Total Trainers", _trainerModels.Count },
+				{ "Active Trainers", CalculateActiveTrainers() },
+				{ "Total Salary", CalculateTotalSalary() },
+				{ "Average Commission", CalculateAvgCommission() }
+			};
+
+			// Use the generalized Excel exporter
+			var stream = ExcelExportUtil.ExportToExcel(
+				data: _trainerModels,
+				reportTitle: "TRAINER DETAIL REPORT",
+				worksheetName: "Trainer Details",
+				summaryItems: summaryItems);
+
+			// Save the file with a descriptive name
+			var fileName = $"Trainer_Report.xlsx";
+			await JS.InvokeVoidAsync("saveAs", Convert.ToBase64String(stream.ToArray()), fileName);
+		}
 	}
 
 	private int CalculateActiveTrainers()

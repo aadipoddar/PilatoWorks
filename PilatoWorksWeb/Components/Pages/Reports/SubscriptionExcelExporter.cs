@@ -1,75 +1,341 @@
-﻿using Syncfusion.Drawing;
+﻿using System.Collections;
+using System.Reflection;
+using System.Text.RegularExpressions;
+
+using Syncfusion.Drawing;
 using Syncfusion.XlsIO;
 
 namespace PilatoWorksWeb.Components.Pages.Reports;
 
-public static class SubscriptionExcelExporter
+/// <summary>
+/// Generic Excel exporter for all report types in the application
+/// </summary>
+public static class ExcelExportUtil
 {
-	public static async Task<MemoryStream> ExportSubscriptionDetailsToExcel(List<SubscriptionDetailsModel> subscriptions, DateOnly startDate, DateOnly endDate)
+	#region Public Methods
+
+	/// <summary>
+	/// Exports any data collection to an Excel file with professional formatting
+	/// </summary>
+	/// <typeparam name="T">The type of data being exported</typeparam>
+	/// <param name="data">The collection of data to export</param>
+	/// <param name="reportTitle">The title of the report</param>
+	/// <param name="worksheetName">The name of the worksheet</param>
+	/// <param name="dateRangeStart">Optional start date for date range reports</param>
+	/// <param name="dateRangeEnd">Optional end date for date range reports</param>
+	/// <param name="summaryItems">Optional dictionary of summary values to display</param>
+	/// <param name="columnSettings">Optional custom column settings</param>
+	/// <param name="columnOrder">Optional custom column display order</param>
+	/// <returns>MemoryStream containing the Excel file</returns>
+	public static MemoryStream ExportToExcel<T>(
+		IEnumerable<T> data,
+		string reportTitle,
+		string worksheetName,
+		DateOnly? dateRangeStart = null,
+		DateOnly? dateRangeEnd = null,
+		Dictionary<string, object> summaryItems = null,
+		Dictionary<string, ColumnSetting> columnSettings = null,
+		List<string> columnOrder = null)
 	{
 		MemoryStream ms = new();
-		using (ExcelEngine excelEngine = new())
+
+		try
 		{
-			IApplication application = excelEngine.Excel;
-			application.DefaultVersion = ExcelVersion.Xlsx;
+			using (ExcelEngine excelEngine = new())
+			{
+				IApplication application = excelEngine.Excel;
+				application.DefaultVersion = ExcelVersion.Xlsx;
 
-			// Create a workbook with a worksheet
-			IWorkbook workbook = application.Workbooks.Create(1);
-			IWorksheet worksheet = workbook.Worksheets[0];
-			worksheet.Name = "Subscription Details";
+				// Create a workbook with a worksheet
+				IWorkbook workbook = application.Workbooks.Create(1);
+				IWorksheet worksheet = workbook.Worksheets[0];
+				worksheet.Name = worksheetName;
 
-			// Apply document properties
-			workbook.BuiltInDocumentProperties.Title = "Subscription Detail Report";
-			workbook.BuiltInDocumentProperties.Subject = "Subscription Details";
-			workbook.BuiltInDocumentProperties.Author = "Reflex and Reform Pilates";
+				// Apply document properties
+				workbook.BuiltInDocumentProperties.Title = reportTitle;
+				workbook.BuiltInDocumentProperties.Subject = worksheetName;
+				workbook.BuiltInDocumentProperties.Author = "Reflex and Reform Pilates";
 
-			// Set up the header section
-			SetupHeader(worksheet, startDate, endDate);
+				// Get column info from data type if not provided
+				if (columnSettings == null)
+				{
+					columnSettings = GetDefaultColumnSettings<T>();
+				}
 
-			// Add summary statistics section
-			int currentRow = AddSummarySection(worksheet, subscriptions);
+				// Determine column order
+				List<string> effectiveColumnOrder = DetermineColumnOrder<T>(data, columnSettings, columnOrder);
 
-			// Add subscription data table
-			currentRow = FillSubscriptionData(worksheet, subscriptions, currentRow);
+				// Setup the worksheet
+				int currentRow = SetupHeader(worksheet, reportTitle, effectiveColumnOrder.Count, dateRangeStart, dateRangeEnd);
 
-			// Apply final formatting and save
-			ApplyFinalFormatting(worksheet);
-			workbook.SaveAs(ms);
+				// Add summary section if provided
+				if (summaryItems != null && summaryItems.Count > 0)
+				{
+					currentRow = AddSummarySection(worksheet, summaryItems, effectiveColumnOrder.Count, currentRow);
+				}
+
+				// Add data to worksheet
+				currentRow = AddDataSection(worksheet, data, effectiveColumnOrder, columnSettings, currentRow);
+
+				// Apply final formatting
+				ApplyFinalFormatting(worksheet, effectiveColumnOrder.Count);
+
+				// Save workbook to stream
+				workbook.SaveAs(ms);
+			}
+
+			ms.Position = 0;
+			return ms;
 		}
+		catch (Exception ex)
+		{
+			// Log exception
+			Console.WriteLine($"Error exporting Excel: {ex.Message}");
 
-		ms.Position = 0;
-		return ms;
+			// Clean up stream on error
+			ms.Dispose();
+			throw;
+		}
 	}
 
-	private static void SetupHeader(IWorksheet worksheet, DateOnly startDate, DateOnly endDate)
+	/// <summary>
+	/// Column setting information for customizing Excel export
+	/// </summary>
+	public class ColumnSetting
 	{
-		string dateRange = $"{startDate:dd MMM yyyy} - {endDate:dd MMM yyyy}";
+		/// <summary>
+		/// Display name for the column header
+		/// </summary>
+		public string DisplayName { get; set; }
 
-		// Company Logo Placeholder (Could be added if you have a logo file)
-		// worksheet.Pictures.AddPicture(1, 1, "path/to/logo.png");
+		/// <summary>
+		/// Format string for the cell data
+		/// </summary>
+		public string Format { get; set; }
 
-		// Main header with date range
-		IRange headerRange = worksheet.Range["A1:J1"];
+		/// <summary>
+		/// Width of the column in Excel
+		/// </summary>
+		public double Width { get; set; } = 15;
+
+		/// <summary>
+		/// Horizontal alignment of the cell content
+		/// </summary>
+		public ExcelHAlign Alignment { get; set; } = ExcelHAlign.HAlignCenter;
+
+		/// <summary>
+		/// Whether the column is a currency column
+		/// </summary>
+		public bool IsCurrency { get; set; }
+
+		/// <summary>
+		/// Whether to highlight negative values
+		/// </summary>
+		public bool HighlightNegative { get; set; }
+
+		/// <summary>
+		/// Threshold for warning highlight
+		/// </summary>
+		public double? WarningThreshold { get; set; }
+
+		/// <summary>
+		/// Threshold for critical highlight
+		/// </summary>
+		public double? CriticalThreshold { get; set; }
+
+		/// <summary>
+		/// Whether the column should be included in totals
+		/// </summary>
+		public bool IncludeInTotal { get; set; }
+
+		/// <summary>
+		/// Custom validation function
+		/// </summary>
+		public Func<object, FormatInfo> FormatCallback { get; set; }
+	}
+
+	/// <summary>
+	/// Format information returned by format callbacks
+	/// </summary>
+	public class FormatInfo
+	{
+		public Color? FontColor { get; set; }
+		public bool Bold { get; set; }
+		public string FormattedText { get; set; }
+	}
+
+	#endregion
+
+	#region Private Methods
+
+	/// <summary>
+	/// Get default column settings from type T
+	/// </summary>
+	private static Dictionary<string, ColumnSetting> GetDefaultColumnSettings<T>()
+	{
+		var settings = new Dictionary<string, ColumnSetting>();
+
+		// Use reflection to get properties of T
+		var properties = typeof(T).GetProperties();
+
+		foreach (var prop in properties)
+		{
+			// Skip certain property types that don't make sense in Excel
+			if (prop.PropertyType == typeof(byte[]) ||
+				typeof(IEnumerable).IsAssignableFrom(prop.PropertyType) && prop.PropertyType != typeof(string))
+				continue;
+
+			var setting = new ColumnSetting
+			{
+				DisplayName = SplitCamelCase(prop.Name),
+			};
+
+			// Set appropriate format and alignment based on property type
+			var propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+
+			if (prop.Name.Contains("Amount") || prop.Name.Contains("Price") ||
+					prop.Name.Contains("Cost") || prop.Name.Contains("Value") ||
+					prop.Name.Contains("Paid") || prop.Name.Contains("Dues") ||
+					prop.Name.Contains("Salary") || prop.Name.Contains("Revenue") ||
+					prop.Name.Contains("Total") || prop.Name.Contains("BookingAmount") ||
+					prop.Name.Contains("TotalPaid"))
+			{
+				setting.Alignment = ExcelHAlign.HAlignRight;
+				setting.IncludeInTotal = true;
+				setting.IsCurrency = true;
+				setting.Format = propType == typeof(int) ? "₹#,##0" : "₹#,##0.00";
+				setting.HighlightNegative = true;
+			}
+
+			else if (propType == typeof(int) || propType == typeof(long) || propType == typeof(short))
+			{
+				setting.Alignment = ExcelHAlign.HAlignCenter;
+			}
+			else if (propType == typeof(decimal) || propType == typeof(double) || propType == typeof(float))
+			{
+				setting.Alignment = ExcelHAlign.HAlignRight;
+			}
+			else if (propType == typeof(DateTime) || propType == typeof(DateOnly))
+			{
+				setting.Alignment = ExcelHAlign.HAlignCenter;
+				setting.Format = "dd-MMM-yyyy";
+			}
+			else if (propType == typeof(TimeOnly) ||
+					(propType == typeof(DateTime) &&
+					 (prop.Name.Contains("Time") || prop.Name.EndsWith("At"))))
+			{
+				setting.Alignment = ExcelHAlign.HAlignCenter;
+				setting.Format = "hh:mm tt";
+			}
+			else if (propType == typeof(bool))
+			{
+				setting.Alignment = ExcelHAlign.HAlignCenter;
+
+				// For status-related properties, add conditional formatting
+				if (prop.Name.Contains("Status") || prop.Name.Contains("Active"))
+				{
+					setting.FormatCallback = (value) => new FormatInfo
+					{
+						Bold = true,
+						FontColor = ((bool)value) ? Color.FromArgb(56, 142, 60) : Color.FromArgb(198, 40, 40),
+						FormattedText = ((bool)value) ? "Active" : "Inactive"
+					};
+				}
+			}
+			else
+			{
+				// Default for strings and other types
+				setting.Alignment = ExcelHAlign.HAlignLeft;
+			}
+
+			// Handle specific property names we know about
+			if (prop.Name.Contains("Remaining") && (propType == typeof(int) || propType == typeof(decimal)))
+			{
+				setting.FormatCallback = (value) =>
+				{
+					if (value == null) return null;
+
+					var numValue = Convert.ToDouble(value);
+					return new FormatInfo
+					{
+						Bold = numValue <= 3,
+						FontColor = numValue == 0 ? Color.FromArgb(198, 40, 40) :
+								   numValue <= 3 ? Color.FromArgb(239, 108, 0) :
+												  Color.FromArgb(56, 142, 60)
+					};
+				};
+			}
+
+			// Add to collection
+			settings[prop.Name] = setting;
+		}
+
+		return settings;
+	}
+
+	/// <summary>
+	/// Determine effective column order for the report
+	/// </summary>
+	private static List<string> DetermineColumnOrder<T>(
+		IEnumerable<T> data,
+		Dictionary<string, ColumnSetting> columnSettings,
+		List<string> columnOrder)
+	{
+		// If explicit column order is provided, use it
+		if (columnOrder != null && columnOrder.Count > 0)
+		{
+			return columnOrder;
+		}
+
+		// Otherwise use all available columns in natural order
+		return columnSettings.Keys.ToList();
+	}
+
+	/// <summary>
+	/// Set up the header section of the worksheet
+	/// </summary>
+	private static int SetupHeader(
+		IWorksheet worksheet,
+		string reportTitle,
+		int columnCount,
+		DateOnly? dateRangeStart,
+		DateOnly? dateRangeEnd)
+	{
+		// Set column range based on data width
+		string colLetter = GetExcelColumnName(columnCount);
+
+		// Build date range string if dates are provided
+		string dateRangeText = "";
+		if (dateRangeStart.HasValue && dateRangeEnd.HasValue)
+		{
+			dateRangeText = $"{dateRangeStart:dd MMM yyyy} - {dateRangeEnd:dd MMM yyyy}";
+		}
+
+		// Main header with report title
+		IRange headerRange = worksheet.Range[$"A1:{colLetter}1"];
 		headerRange.Merge();
-		headerRange.Text = "SUBSCRIPTION DETAIL REPORT";
+		headerRange.Text = reportTitle.ToUpper();
 		headerRange.CellStyle.Font.Bold = true;
 		headerRange.CellStyle.Font.Size = 20;
 		headerRange.CellStyle.Font.FontName = "Calibri";
 		headerRange.CellStyle.Font.RGBColor = Color.FromArgb(63, 81, 181); // Primary color
 		headerRange.CellStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
 
-		// Date range subtitle
-		IRange dateRange1 = worksheet.Range["A2:J2"];
-		dateRange1.Merge();
-		dateRange1.Text = dateRange;
-		dateRange1.CellStyle.Font.Size = 12;
-		dateRange1.CellStyle.Font.FontName = "Calibri";
-		dateRange1.CellStyle.Font.Bold = true;
-		dateRange1.CellStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
-		dateRange1.CellStyle.Font.RGBColor = Color.FromArgb(96, 125, 139); // Bluish gray
+		// Row 2: Date range if available
+		if (!string.IsNullOrEmpty(dateRangeText))
+		{
+			IRange dateRange = worksheet.Range[$"A2:{colLetter}2"];
+			dateRange.Merge();
+			dateRange.Text = dateRangeText;
+			dateRange.CellStyle.Font.Size = 12;
+			dateRange.CellStyle.Font.FontName = "Calibri";
+			dateRange.CellStyle.Font.Bold = true;
+			dateRange.CellStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
+			dateRange.CellStyle.Font.RGBColor = Color.FromArgb(96, 125, 139); // Bluish gray
+		}
 
-		// Company Name
-		IRange companyRange = worksheet.Range["A3:J3"];
+		// Row 3: Company Name
+		IRange companyRange = worksheet.Range[$"A{(string.IsNullOrEmpty(dateRangeText) ? 2 : 3)}:{colLetter}{(string.IsNullOrEmpty(dateRangeText) ? 2 : 3)}"];
 		companyRange.Merge();
 		companyRange.Text = "Reflex and Reform Pilates";
 		companyRange.CellStyle.Font.Size = 14;
@@ -79,24 +345,35 @@ public static class SubscriptionExcelExporter
 		companyRange.CellStyle.Font.RGBColor = Color.FromArgb(0, 150, 136); // Teal accent
 
 		// Add decorative header background
-		IRange headerBackgroundRange = worksheet.Range["A1:J3"];
+		int lastHeaderRow = string.IsNullOrEmpty(dateRangeText) ? 2 : 3;
+		IRange headerBackgroundRange = worksheet.Range[$"A1:{colLetter}{lastHeaderRow}"];
 		headerBackgroundRange.CellStyle.Color = Color.FromArgb(240, 244, 255); // Light blue background
 
 		// Add border bottom for header section
-		IRange borderRange = worksheet.Range["A3:J3"];
+		IRange borderRange = worksheet.Range[$"A{lastHeaderRow}:{colLetter}{lastHeaderRow}"];
 		borderRange.CellStyle.Borders[ExcelBordersIndex.EdgeBottom].LineStyle = ExcelLineStyle.Medium;
 		borderRange.CellStyle.Borders[ExcelBordersIndex.EdgeBottom].ColorRGB = Color.FromArgb(63, 81, 181);
 
 		// Space after header
-		worksheet.Range["A4:J4"].RowHeight = 10;
+		worksheet.Range[$"A{lastHeaderRow + 1}:{colLetter}{lastHeaderRow + 1}"].RowHeight = 10;
+
+		return lastHeaderRow + 2; // Return the next row to use
 	}
 
-	private static int AddSummarySection(IWorksheet worksheet, List<SubscriptionDetailsModel> subscriptions)
+	/// <summary>
+	/// Add summary section to the worksheet
+	/// </summary>
+	private static int AddSummarySection(
+		IWorksheet worksheet,
+		Dictionary<string, object> summaryItems,
+		int columnCount,
+		int startRow)
 	{
-		int startRow = 5;
+		// Get the column letter for the spreadsheet width
+		string colLetter = GetExcelColumnName(columnCount);
 
 		// Summary Title
-		IRange summaryTitleRange = worksheet.Range[$"A{startRow}:J{startRow}"];
+		IRange summaryTitleRange = worksheet.Range[$"A{startRow}:{colLetter}{startRow}"];
 		summaryTitleRange.Merge();
 		summaryTitleRange.Text = "SUMMARY INFORMATION";
 		summaryTitleRange.CellStyle.Font.Bold = true;
@@ -107,75 +384,116 @@ public static class SubscriptionExcelExporter
 
 		startRow++;
 
-		// Calculate summary values
-		int totalSubscriptions = subscriptions.Count;
-		int totalSessions = subscriptions.Sum(s => s.NoOfSessions);
-		int remainingSessions = subscriptions.Sum(s => s.RemainingSessions);
-		decimal totalRevenue = subscriptions.Sum(s => s.TotalPaid);
-		decimal totalDues = subscriptions.Sum(s => s.Dues);
+		// Determine layout based on number of summary items
+		int columns = Math.Min(3, summaryItems.Count);
+		int rows = (int)Math.Ceiling(summaryItems.Count / (double)columns);
 
-		// Summary Statistics Layout - Create a 3x3 grid
-		string[,] summaryLabels = new string[,] {
-			{ "Total Subscriptions", "Total Sessions", "Total Remaining" },
-			{ totalSubscriptions.ToString(), totalSessions.ToString(), remainingSessions.ToString() },
-			{ "Total Revenue (₹)", "Outstanding Dues (₹)", "" },
-			{ totalRevenue.ToString("N2"), totalDues.ToString("N2"), "" }
-		};
+		// Calculate cell width based on spreadsheet width
+		int cellWidth = (columnCount / columns);
 
-		// Create a nice summary grid
-		for (int row = 0; row < summaryLabels.GetLength(0); row++)
+		// Track current position
+		int currentItemIndex = 0;
+
+		// Create summary grid
+		for (int row = 0; row < rows; row++)
 		{
-			for (int col = 0; col < summaryLabels.GetLength(1); col++)
+			for (int col = 0; col < columns && currentItemIndex < summaryItems.Count; col++)
 			{
-				IRange cell = worksheet.Range[startRow + row, (col * 3) + 1, startRow + row, (col * 3) + 3];
-				cell.Merge();
-				cell.Text = summaryLabels[row, col];
+				var item = summaryItems.ElementAt(currentItemIndex);
+				currentItemIndex++;
 
-				// Style header rows
-				if (row == 0 || row == 2)
+				// Calculate cell coordinates
+				int startCol = col * cellWidth + 1;
+				int endCol = (col + 1) * cellWidth;
+				if (col == columns - 1) endCol = columnCount; // Last column takes remaining space
+
+				string startColLetter = GetExcelColumnName(startCol);
+				string endColLetter = GetExcelColumnName(endCol);
+
+				// Label cell
+				IRange labelCell = worksheet.Range[$"{startColLetter}{startRow + row * 2}:{endColLetter}{startRow + row * 2}"];
+				labelCell.Merge();
+				labelCell.Text = item.Key;
+				labelCell.CellStyle.Font.Bold = true;
+				labelCell.CellStyle.Font.Size = 11;
+				labelCell.CellStyle.Color = Color.FromArgb(232, 234, 246); // Light indigo
+				labelCell.CellStyle.Font.RGBColor = Color.FromArgb(63, 81, 181); // Indigo
+				labelCell.CellStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
+
+				// Value cell
+				IRange valueCell = worksheet.Range[$"{startColLetter}{startRow + row * 2 + 1}:{endColLetter}{startRow + row * 2 + 1}"];
+				valueCell.Merge();
+
+				// Format value based on type
+				if (item.Value is decimal decimalValue)
 				{
-					cell.CellStyle.Font.Bold = true;
-					cell.CellStyle.Font.Size = 11;
-					cell.CellStyle.Color = Color.FromArgb(232, 234, 246); // Light indigo
-					cell.CellStyle.Font.RGBColor = Color.FromArgb(63, 81, 181); // Indigo
+					valueCell.Number = (double)decimalValue;
+
+					// Check if this might be currency
+					if (item.Key.Contains("Revenue") || item.Key.Contains("Salary") ||
+						item.Key.Contains("Dues") || item.Key.Contains("Paid") ||
+						item.Key.Contains("Amount"))
+					{
+						valueCell.CellStyle.NumberFormat = "₹#,##0.00";
+						valueCell.CellStyle.Font.RGBColor = Color.FromArgb(46, 125, 50); // Green for money
+
+						// Highlight negative values in red
+						if (decimalValue < 0)
+						{
+							valueCell.CellStyle.Font.RGBColor = Color.FromArgb(198, 40, 40); // Red
+						}
+					}
 				}
-				// Style value rows
+				else if (item.Value is double doubleValue)
+				{
+					valueCell.Number = doubleValue;
+					valueCell.CellStyle.NumberFormat = "#,##0.00";
+				}
+				else if (item.Value is int intValue)
+				{
+					valueCell.Number = intValue;
+					valueCell.CellStyle.Font.RGBColor = Color.FromArgb(21, 101, 192); // Blue for counts
+				}
 				else
 				{
-					cell.CellStyle.Font.Size = 14;
-					cell.CellStyle.Font.Bold = true;
-					cell.CellStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
-
-					// Add specific styling based on values
-					if (row == 3 && col == 1 && totalDues > 0) // Outstanding dues
-					{
-						cell.CellStyle.Font.RGBColor = Color.FromArgb(198, 40, 40); // Red for dues
-					}
-					else if (row == 1) // Count values
-					{
-						cell.CellStyle.Font.RGBColor = Color.FromArgb(21, 101, 192); // Blue for counts
-					}
-					else if (row == 3) // Amount values
-					{
-						cell.CellStyle.Font.RGBColor = Color.FromArgb(46, 125, 50); // Green for money
-					}
+					valueCell.Text = item.Value?.ToString() ?? "";
 				}
+
+				// Common value cell styling
+				valueCell.CellStyle.Font.Size = 14;
+				valueCell.CellStyle.Font.Bold = true;
+				valueCell.CellStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
 			}
 		}
 
-		// Add space after summary section
-		startRow += 5;
-		worksheet.Range[$"A{startRow}:J{startRow}"].RowHeight = 15;
+		// Calculate the last row used
+		int lastRowUsed = startRow + (rows * 2) - 1;
 
-		return startRow + 1;
+		// Add space after summary section
+		worksheet.Range[$"A{lastRowUsed + 1}:{colLetter}{lastRowUsed + 1}"].RowHeight = 15;
+
+		return lastRowUsed + 2; // Return the next row to use
 	}
 
-	private static int FillSubscriptionData(IWorksheet worksheet, List<SubscriptionDetailsModel> subscriptions, int startRow)
+	/// <summary>
+	/// Add data section to the worksheet
+	/// </summary>
+	private static int AddDataSection<T>(
+		IWorksheet worksheet,
+		IEnumerable<T> data,
+		List<string> columnOrder,
+		Dictionary<string, ColumnSetting> columnSettings,
+		int startRow)
 	{
+		if (data == null || !data.Any())
+			return startRow + 1;
+
+		string colLetter = GetExcelColumnName(columnOrder.Count);
+
 		// Create table title
-		IRange tableTitleRange = worksheet.Range[$"A{startRow}:J{startRow}"];
+		IRange tableTitleRange = worksheet.Range[$"A{startRow}:{colLetter}{startRow}"];
 		tableTitleRange.Merge();
-		tableTitleRange.Text = "DETAILED SUBSCRIPTION DATA";
+		tableTitleRange.Text = "DETAILED DATA";
 		tableTitleRange.CellStyle.Font.Bold = true;
 		tableTitleRange.CellStyle.Font.Size = 12;
 		tableTitleRange.CellStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
@@ -184,18 +502,15 @@ public static class SubscriptionExcelExporter
 
 		startRow++;
 
-		// Define column headers
-		string[] headers = new string[]
+		// Create header row
+		for (int i = 0; i < columnOrder.Count; i++)
 		{
-			"Client Name", "Phone Number", "Subscription ID", "Valid From", "Valid To",
-			"Session Type", "Total Sessions", "Remaining", "Amount Paid (₹)", "Dues (₹)"
-		};
+			string columnName = columnOrder[i];
+			var setting = columnSettings[columnName];
 
-		// Apply header styles
-		for (int i = 0; i < headers.Length; i++)
-		{
-			IRange headerCell = worksheet.Range[startRow, i + 1];
-			headerCell.Text = headers[i];
+			string cellAddress = GetExcelColumnName(i + 1) + startRow;
+			IRange headerCell = worksheet.Range[cellAddress];
+			headerCell.Text = setting.DisplayName;
 			headerCell.CellStyle.Font.Bold = true;
 			headerCell.CellStyle.Color = Color.FromArgb(63, 81, 181); // Primary color background
 			headerCell.CellStyle.Font.RGBColor = Color.White;
@@ -205,26 +520,119 @@ public static class SubscriptionExcelExporter
 
 		startRow++;
 
-		// Fill data rows
+		// Data rows
 		int rowIndex = startRow;
-		foreach (var subscription in subscriptions)
+		var properties = typeof(T).GetProperties().ToDictionary(p => p.Name);
+
+		// Keep track of which columns are valid for totals
+		var columnsToTotal = new HashSet<string>();
+
+		foreach (var item in data)
 		{
-			// Set data in each cell
-			worksheet.Range[$"A{rowIndex}"].Text = subscription.PersonName;
-			worksheet.Range[$"B{rowIndex}"].Text = subscription.PersonNumber;
-			worksheet.Range[$"C{rowIndex}"].Number = subscription.SubscriptionId;
-			worksheet.Range[$"D{rowIndex}"].DateTime = subscription.SubscriptionValidFrom.ToDateTime(TimeOnly.MinValue);
-			worksheet.Range[$"D{rowIndex}"].CellStyle.NumberFormat = "dd-MMM-yyyy";
-			worksheet.Range[$"E{rowIndex}"].DateTime = subscription.SubscriptionValidTo.ToDateTime(TimeOnly.MinValue);
-			worksheet.Range[$"E{rowIndex}"].CellStyle.NumberFormat = "dd-MMM-yyyy";
-			worksheet.Range[$"F{rowIndex}"].Text = subscription.SessionType;
-			worksheet.Range[$"G{rowIndex}"].Number = subscription.NoOfSessions;
-			worksheet.Range[$"H{rowIndex}"].Number = subscription.RemainingSessions;
-			worksheet.Range[$"I{rowIndex}"].Number = subscription.TotalPaid;
-			worksheet.Range[$"J{rowIndex}"].Number = subscription.Dues;
+			for (int i = 0; i < columnOrder.Count; i++)
+			{
+				string columnName = columnOrder[i];
+				string cellAddress = GetExcelColumnName(i + 1) + rowIndex;
+				IRange cell = worksheet.Range[cellAddress];
+
+				if (properties.TryGetValue(columnName, out PropertyInfo property))
+				{
+					var setting = columnSettings[columnName];
+					object value = property.GetValue(item);
+
+					// Apply the value to the cell based on its type
+					if (value == null)
+					{
+						cell.Text = "";
+					}
+					else if (value is decimal decimalValue)
+					{
+						cell.Number = (double)decimalValue;
+						if (!string.IsNullOrEmpty(setting.Format))
+						{
+							cell.CellStyle.NumberFormat = setting.Format;
+						}
+
+						// Track this column for totals if appropriate
+						if (setting.IncludeInTotal)
+						{
+							columnsToTotal.Add(columnName);
+						}
+					}
+					else if (value is double doubleValue)
+					{
+						cell.Number = doubleValue;
+						if (!string.IsNullOrEmpty(setting.Format))
+						{
+							cell.CellStyle.NumberFormat = setting.Format;
+						}
+
+						if (setting.IncludeInTotal)
+						{
+							columnsToTotal.Add(columnName);
+						}
+					}
+					else if (value is int intValue)
+					{
+						cell.Number = intValue;
+						if (!string.IsNullOrEmpty(setting.Format))
+						{
+							cell.CellStyle.NumberFormat = setting.Format;
+						}
+
+						if (setting.IncludeInTotal)
+						{
+							columnsToTotal.Add(columnName);
+						}
+					}
+					else if (value is DateTime dateTimeValue)
+					{
+						cell.DateTime = dateTimeValue;
+						cell.CellStyle.NumberFormat = setting.Format ?? "dd-MMM-yyyy";
+					}
+					else if (value is DateOnly dateOnlyValue)
+					{
+						cell.DateTime = dateOnlyValue.ToDateTime(TimeOnly.MinValue);
+						cell.CellStyle.NumberFormat = setting.Format ?? "dd-MMM-yyyy";
+					}
+					else if (value is TimeOnly timeOnlyValue)
+					{
+						cell.DateTime = DateTime.Today.Add(timeOnlyValue.ToTimeSpan());
+						cell.CellStyle.NumberFormat = setting.Format ?? "hh:mm tt";
+					}
+					else if (value is bool boolValue)
+					{
+						cell.Text = boolValue.ToString();
+					}
+					else
+					{
+						cell.Text = value.ToString();
+					}
+
+					// Apply formatting callback if available
+					if (setting.FormatCallback != null)
+					{
+						var formatInfo = setting.FormatCallback(value);
+						if (formatInfo != null)
+						{
+							if (formatInfo.FontColor.HasValue)
+								cell.CellStyle.Font.RGBColor = formatInfo.FontColor.Value;
+
+							if (formatInfo.Bold)
+								cell.CellStyle.Font.Bold = true;
+
+							if (!string.IsNullOrEmpty(formatInfo.FormattedText))
+								cell.Text = formatInfo.FormattedText;
+						}
+					}
+
+					// Apply alignment
+					cell.CellStyle.HorizontalAlignment = setting.Alignment;
+				}
+			}
 
 			// Style data row
-			IRange dataRow = worksheet.Range[$"A{rowIndex}:J{rowIndex}"];
+			IRange dataRow = worksheet.Range[$"A{rowIndex}:{colLetter}{rowIndex}"];
 			dataRow.CellStyle.Borders[ExcelBordersIndex.EdgeBottom].LineStyle = ExcelLineStyle.Thin;
 			dataRow.CellStyle.Borders[ExcelBordersIndex.EdgeBottom].ColorRGB = Color.LightGray;
 
@@ -234,101 +642,82 @@ public static class SubscriptionExcelExporter
 				dataRow.CellStyle.Color = Color.FromArgb(248, 249, 250);
 			}
 
-			// Style remaining sessions with conditional formatting
-			if (subscription.RemainingSessions == 0)
-			{
-				worksheet.Range[$"H{rowIndex}"].CellStyle.Font.RGBColor = Color.FromArgb(198, 40, 40); // Red
-				worksheet.Range[$"H{rowIndex}"].CellStyle.Font.Bold = true;
-			}
-			else if (subscription.RemainingSessions <= 3)
-			{
-				worksheet.Range[$"H{rowIndex}"].CellStyle.Font.RGBColor = Color.FromArgb(239, 108, 0); // Orange
-				worksheet.Range[$"H{rowIndex}"].CellStyle.Font.Bold = true;
-			}
-			else
-			{
-				worksheet.Range[$"H{rowIndex}"].CellStyle.Font.RGBColor = Color.FromArgb(56, 142, 60); // Green
-			}
+			rowIndex++;
+		}
 
-			// Style dues with conditional formatting
-			if (subscription.Dues > 0)
+		// Create table with borders
+		if (rowIndex > startRow)
+		{
+			IRange tableRange = worksheet.Range[$"A{startRow - 1}:{colLetter}{rowIndex - 1}"];
+			tableRange.CellStyle.Borders[ExcelBordersIndex.EdgeLeft].LineStyle = ExcelLineStyle.Thin;
+			tableRange.CellStyle.Borders[ExcelBordersIndex.EdgeRight].LineStyle = ExcelLineStyle.Thin;
+			tableRange.CellStyle.Borders[ExcelBordersIndex.EdgeTop].LineStyle = ExcelLineStyle.Thin;
+			tableRange.CellStyle.Borders[ExcelBordersIndex.EdgeBottom].LineStyle = ExcelLineStyle.Thin;
+		}
+
+		// Add totals row if there are numeric columns
+		if (columnsToTotal.Count > 0)
+		{
+			// Add grand total row
+			rowIndex += 1;
+
+			// Find where to start the total label based on the number of columns to total
+			int totalLabelColumnCount = Math.Max(1, columnOrder.Count - columnsToTotal.Count);
+			string totalLabelStartCol = "A";
+			string totalLabelEndCol = GetExcelColumnName(totalLabelColumnCount);
+
+			// Create the total label
+			IRange totalLabelRange = worksheet.Range[$"{totalLabelStartCol}{rowIndex}:{totalLabelEndCol}{rowIndex}"];
+			//totalLabelRange.Merge();
+			//totalLabelRange.Text = "GRAND TOTAL";
+			totalLabelRange.CellStyle.Font.Bold = true;
+			totalLabelRange.CellStyle.HorizontalAlignment = ExcelHAlign.HAlignRight;
+			totalLabelRange.CellStyle.Color = Color.FromArgb(232, 234, 246); // Light indigo
+			totalLabelRange.CellStyle.Font.RGBColor = Color.FromArgb(40, 53, 147); // Dark indigo
+
+			// Add the total formulas
+			foreach (var columnName in columnsToTotal)
 			{
-				worksheet.Range[$"J{rowIndex}"].CellStyle.Font.RGBColor = Color.FromArgb(198, 40, 40); // Red
-				worksheet.Range[$"J{rowIndex}"].CellStyle.Font.Bold = true;
+				int colIndex = columnOrder.IndexOf(columnName);
+				if (colIndex >= 0)
+				{
+					colLetter = GetExcelColumnName(colIndex + 1);
+					string cellAddress = $"{colLetter}{rowIndex}";
+
+					worksheet.Range[cellAddress].Formula = $"=SUM({colLetter}{startRow}:{colLetter}{rowIndex - 1})";
+
+					// Apply appropriate formatting
+					var setting = columnSettings[columnName];
+					worksheet.Range[cellAddress].CellStyle.NumberFormat = setting.Format;
+
+					// Style total cells
+					worksheet.Range[cellAddress].CellStyle.Font.Bold = true;
+					worksheet.Range[cellAddress].CellStyle.Color = Color.FromArgb(232, 234, 246);
+					worksheet.Range[cellAddress].CellStyle.Font.RGBColor = Color.FromArgb(40, 53, 147);
+				}
 			}
 
 			rowIndex++;
 		}
 
-		// Create table with borders
-		IRange tableRange = worksheet.Range[$"A{startRow}:J{rowIndex - 1}"];
-		tableRange.CellStyle.Borders[ExcelBordersIndex.EdgeLeft].LineStyle = ExcelLineStyle.Thin;
-		tableRange.CellStyle.Borders[ExcelBordersIndex.EdgeRight].LineStyle = ExcelLineStyle.Thin;
-		tableRange.CellStyle.Borders[ExcelBordersIndex.EdgeTop].LineStyle = ExcelLineStyle.Thin;
-		tableRange.CellStyle.Borders[ExcelBordersIndex.EdgeBottom].LineStyle = ExcelLineStyle.Thin;
-
-		// Apply number format for currency columns
-		worksheet.Range[$"I{startRow}:J{rowIndex - 1}"].CellStyle.NumberFormat = "₹#,##0.00";
-
-		// Set alignment for specific columns
-		worksheet.Range[$"A{startRow}:A{rowIndex - 1}"].CellStyle.HorizontalAlignment = ExcelHAlign.HAlignLeft;
-		worksheet.Range[$"B{startRow}:C{rowIndex - 1}"].CellStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
-		worksheet.Range[$"D{startRow}:E{rowIndex - 1}"].CellStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
-		worksheet.Range[$"F{startRow}:F{rowIndex - 1}"].CellStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
-		worksheet.Range[$"G{startRow}:H{rowIndex - 1}"].CellStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
-		worksheet.Range[$"I{startRow}:J{rowIndex - 1}"].CellStyle.HorizontalAlignment = ExcelHAlign.HAlignRight;
-
-		// Add grand total row
-		rowIndex += 1;
-		IRange totalLabelRange = worksheet.Range[$"A{rowIndex}:F{rowIndex}"];
-		totalLabelRange.Merge();
-		totalLabelRange.Text = "GRAND TOTAL";
-		totalLabelRange.CellStyle.Font.Bold = true;
-		totalLabelRange.CellStyle.HorizontalAlignment = ExcelHAlign.HAlignRight;
-		totalLabelRange.CellStyle.Color = Color.FromArgb(232, 234, 246); // Light indigo
-		totalLabelRange.CellStyle.Font.RGBColor = Color.FromArgb(40, 53, 147); // Dark indigo
-
-		// Total formulas
-		worksheet.Range[$"G{rowIndex}"].Formula = $"=SUM(G{startRow}:G{rowIndex - 1})";
-		worksheet.Range[$"H{rowIndex}"].Formula = $"=SUM(H{startRow}:H{rowIndex - 1})";
-		worksheet.Range[$"I{rowIndex}"].Formula = $"=SUM(I{startRow}:I{rowIndex - 1})";
-		worksheet.Range[$"J{rowIndex}"].Formula = $"=SUM(J{startRow}:J{rowIndex - 1})";
-
-		// Style total row
-		IRange totalRow = worksheet.Range[$"G{rowIndex}:J{rowIndex}"];
-		totalRow.CellStyle.Font.Bold = true;
-		totalRow.CellStyle.Color = Color.FromArgb(232, 234, 246); // Light indigo
-		totalRow.CellStyle.Font.RGBColor = Color.FromArgb(40, 53, 147); // Dark indigo
-		totalRow.CellStyle.NumberFormat = "₹#,##0.00";
-
-		return rowIndex + 2;
+		return rowIndex + 1;
 	}
 
-	private static void ApplyFinalFormatting(IWorksheet worksheet)
+	/// <summary>
+	/// Apply final formatting to the worksheet
+	/// </summary>
+	private static void ApplyFinalFormatting(IWorksheet worksheet, int columnCount)
 	{
 		try
 		{
-			// AutoFit columns for better readability (this might be causing issues if there's no data)
+			// AutoFit columns for better readability
 			if (worksheet.UsedRange != null)
 			{
 				worksheet.UsedRange.AutofitColumns();
 			}
 
-			// Get the actual number of columns in use
-			int columnCount = 0;
-			try
-			{
-				columnCount = worksheet.UsedRange.LastColumn;
-			}
-			catch
-			{
-				// Default to 10 columns if we can't determine the count
-				columnCount = 10;
-			}
-
-			// Set minimum column widths to avoid too narrow columns
-			// Columns collection might be 0-indexed or 1-indexed depending on the library version
-			for (int i = 1; i <= Math.Min(columnCount, 10); i++)
+			// Apply column width limits
+			for (int i = 1; i <= columnCount; i++)
 			{
 				try
 				{
@@ -338,9 +727,9 @@ public static class SubscriptionExcelExporter
 					{
 						worksheet.Columns[i].ColumnWidth = 8;
 					}
-					else if (width > 30)
+					else if (width > 40)
 					{
-						worksheet.Columns[i].ColumnWidth = 30;
+						worksheet.Columns[i].ColumnWidth = 40;
 					}
 				}
 				catch
@@ -350,24 +739,11 @@ public static class SubscriptionExcelExporter
 				}
 			}
 
-			// Ensure the client name column has enough space
-			try
-			{
-				if (columnCount >= 1)
-				{
-					worksheet.Columns[1].ColumnWidth = 25;
-				}
-			}
-			catch
-			{
-				// If setting column width fails, continue with the method
-			}
-
 			// Add footer with date and page numbers
 			worksheet.PageSetup.CenterFooter = "&D &T";
 			worksheet.PageSetup.RightFooter = "Page &P of &N";
 
-			// Set print options
+			// Set print options for better presentation
 			worksheet.PageSetup.Orientation = ExcelPageOrientation.Landscape;
 			worksheet.PageSetup.FitToPagesTall = 0;
 			worksheet.PageSetup.FitToPagesWide = 1;
@@ -380,9 +756,50 @@ public static class SubscriptionExcelExporter
 		}
 		catch (Exception ex)
 		{
-			// If there's an error in formatting, log it or handle it, but don't let it prevent the Excel file from being created
+			// Log error but continue - don't let formatting issues prevent export
 			Console.WriteLine($"Error in ApplyFinalFormatting: {ex.Message}");
 		}
 	}
 
+	/// <summary>
+	/// Convert a column number to Excel column letter (A, B, C, ..., Z, AA, AB, ...)
+	/// </summary>
+	private static string GetExcelColumnName(int columnNumber)
+	{
+		string columnName = "";
+
+		while (columnNumber > 0)
+		{
+			int remainder = (columnNumber - 1) % 26;
+			char columnLetter = (char)('A' + remainder);
+			columnName = columnLetter + columnName;
+			columnNumber = (columnNumber - 1) / 26;
+		}
+
+		return columnName;
+	}
+
+	/// <summary>
+	/// Split camel case text into readable format
+	/// </summary>
+	private static string SplitCamelCase(string input)
+	{
+		if (string.IsNullOrEmpty(input))
+			return input;
+
+		// Handle special cases
+		if (input.Equals("ID", StringComparison.OrdinalIgnoreCase))
+			return "ID";
+
+		// Replace common abbreviations
+		input = Regex.Replace(input, "Id$", "ID");
+
+		// Split by capital letters
+		return Regex.Replace(input,
+			"([a-z])([A-Z])",
+			"$1 $2",
+			RegexOptions.Compiled);
+	}
+
+	#endregion
 }

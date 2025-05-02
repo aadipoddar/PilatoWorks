@@ -48,9 +48,27 @@ public partial class ValidSubscriptionReport
 	private async Task ToolbarClickHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
 	{
 		if (args.Item.Id == "_sfSubscriptionGrid_excelexport")
-			await _sfSubscriptionGrid?.ExportToExcelAsync();
-		else if (args.Item.Id == "_sfSubscriptionGrid_pdfexport")
-			await _sfSubscriptionGrid?.ExportToPdfAsync();
+		{
+			var summaryItems = new Dictionary<string, object>
+			{
+				{ "Active Subscriptions", _validSubscriptionModels.Count },
+				{ "Total Sessions", CalculateTotalSessions() },
+				{ "Remaining Sessions", _validSubscriptionModels.Sum(s => s.RemainingSessions) },
+				{ "Total Revenue", CalculateTotalRevenue() },
+				{ "Outstanding Dues", CalculateTotalDues() }
+			};
+
+			// Use the generalized Excel exporter
+			var stream = ExcelExportUtil.ExportToExcel(
+				data: _validSubscriptionModels,
+				reportTitle: "ACTIVE SUBSCRIPTION DETAIL REPORT",
+				worksheetName: "Active Subscription Details",
+				summaryItems: summaryItems);
+
+			// Save the file with a descriptive name
+			var fileName = $"Active_Subscription_Report.xlsx";
+			await JS.InvokeVoidAsync("saveAs", Convert.ToBase64String(stream.ToArray()), fileName);
+		}
 	}
 
 	private int CalculateTotalSessions()

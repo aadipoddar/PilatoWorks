@@ -48,22 +48,37 @@ public partial class SubscriptionDetailReport
 	private void OnBackClick() =>
 		NavManager.NavigateTo("/Reports");
 
+	// In SubscriptionDetailReport.razor.cs, replace the ToolbarClickHandler method
+
 	private async Task ToolbarClickHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
 	{
 		if (args.Item.Id == "_sfSubscriptionGrid_excelexport")
 		{
-			// Create a custom decorated Excel file instead of the default export
-			var stream = await SubscriptionExcelExporter.ExportSubscriptionDetailsToExcel(_subscriptionModels, SubscriptionsStartDate, SubscriptionsEndDate);
+			// Create summary items for report
+			var summaryItems = new Dictionary<string, object>
+			{
+				{ "Total Subscriptions", _subscriptionModels.Count },
+				{ "Total Sessions", CalculateTotalSessions() },
+				{ "Remaining Sessions", _subscriptionModels.Sum(s => s.RemainingSessions) },
+				{ "Total Revenue", CalculateTotalRevenue() },
+				{ "Outstanding Dues", CalculateTotalDues() }
+			};
+
+			// Use the generalized Excel exporter
+			var stream = ExcelExportUtil.ExportToExcel(
+				data: _subscriptionModels,
+				reportTitle: "SUBSCRIPTION DETAIL REPORT",
+				worksheetName: "Subscription Details",
+				dateRangeStart: SubscriptionsStartDate,
+				dateRangeEnd: SubscriptionsEndDate,
+				summaryItems: summaryItems);
 
 			// Save the file with a descriptive name
 			var fileName = $"Subscription_Report_{SubscriptionsStartDate:yyyy-MM-dd}_to_{SubscriptionsEndDate:yyyy-MM-dd}.xlsx";
 			await JS.InvokeVoidAsync("saveAs", Convert.ToBase64String(stream.ToArray()), fileName);
 		}
-		else if (args.Item.Id == "_sfSubscriptionGrid_pdfexport")
-		{
-			await _sfSubscriptionGrid?.ExportToPdfAsync();
-		}
 	}
+
 
 
 	private async Task LoadSubscriptionData()

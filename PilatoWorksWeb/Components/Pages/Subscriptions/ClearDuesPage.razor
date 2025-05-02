@@ -145,6 +145,7 @@
 			<!-- Action Buttons -->
 			<div class="card-section">
 				<div class="action-buttons">
+					<SfButton IconCss="e-icons e-close" OnClick="OnCancelClick" Content="Cancel" CssClass="btn-cancel" />
 					<SfButton IconCss="e-icons e-save" OnClick="OnSaveClick" Content="Save Payment" CssClass="btn-save" />
 				</div>
 			</div>
@@ -427,6 +428,21 @@
 		gap: 1rem;
 	}
 
+	.btn-cancel {
+		background-color: #e0e0e0 !important;
+		color: #666 !important;
+		border-color: transparent !important;
+		padding: 0.6rem 1.5rem;
+		border-radius: 50px;
+		font-weight: 500;
+		transition: all 0.3s ease;
+	}
+
+		.btn-cancel:hover {
+			background-color: #d0d0d0 !important;
+			transform: translateY(-2px);
+		}
+
 	.btn-save {
 		background: linear-gradient(135deg, var(--secondary-color) 0%, #7cb342 100%) !important;
 		border-color: transparent !important;
@@ -475,11 +491,11 @@
 		}
 
 		.action-buttons {
-			flex-direction: column;
+			flex-direction: column-reverse;
 			gap: 0.75rem;
 		}
 
-		.btn-save {
+		.btn-cancel, .btn-save {
 			width: 100%;
 		}
 	}

@@ -28,9 +28,6 @@ public partial class ReportsPage
 	private void OnPeopleReportClick() =>
 		NavManager.NavigateTo("/PeopleReport");
 
-	private void OnPersonReportClick() =>
-		NavManager.NavigateTo("/PersonReport");
-
 	private void OnTrainerReportClick() =>
 		NavManager.NavigateTo("/TrainerReport");
 
