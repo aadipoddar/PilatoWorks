@@ -1,4 +1,4 @@
-using Syncfusion.Blazor.Grids;
+﻿using Syncfusion.Blazor.Grids;
 
 namespace PilatoWorksWeb.Components.Pages.Reports;
 

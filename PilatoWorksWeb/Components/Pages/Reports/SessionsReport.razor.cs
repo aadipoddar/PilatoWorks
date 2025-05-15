@@ -58,6 +58,19 @@ public partial class SessionsReport
 				{ "Confirmed Sessions", _sessionModels?.Count(s => s.Confirmed) ?? 0 }
 			};
 
+			var hiddenColumns = new List<int>
+			{
+				0,
+				2,
+				4,
+				5,
+				8,
+				10,
+				12,
+				16,
+				18
+			};
+
 			// Use the generalized Excel exporter
 			var stream = ExcelExportUtil.ExportToExcel(
 				data: _sessionModels,
@@ -65,7 +78,8 @@ public partial class SessionsReport
 				worksheetName: "Session Details",
 				dateRangeStart: SessionsStartDate,
 				dateRangeEnd: SessionsEndDate,
-				summaryItems: summaryItems);
+				summaryItems: summaryItems,
+				hiddenColumns: hiddenColumns);
 
 			// Save the file with a descriptive name
 			var fileName = $"Session_Report_{SessionsStartDate:yyyy-MM-dd}_to_{SessionsEndDate:yyyy-MM-dd}.xlsx";

@@ -64,6 +64,14 @@ public partial class SubscriptionDetailReport
 				{ "Outstanding Dues", CalculateTotalDues() }
 			};
 
+			var hiddenColumns = new List<int>
+			{
+				0,
+				3,
+				7,
+				13
+			};
+
 			// Use the generalized Excel exporter
 			var stream = ExcelExportUtil.ExportToExcel(
 				data: _subscriptionModels,
@@ -71,7 +79,8 @@ public partial class SubscriptionDetailReport
 				worksheetName: "Subscription Details",
 				dateRangeStart: SubscriptionsStartDate,
 				dateRangeEnd: SubscriptionsEndDate,
-				summaryItems: summaryItems);
+				summaryItems: summaryItems,
+				hiddenColumns: hiddenColumns);
 
 			// Save the file with a descriptive name
 			var fileName = $"Subscription_Report_{SubscriptionsStartDate:yyyy-MM-dd}_to_{SubscriptionsEndDate:yyyy-MM-dd}.xlsx";

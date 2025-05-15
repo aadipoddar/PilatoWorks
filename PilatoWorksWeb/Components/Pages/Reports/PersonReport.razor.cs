@@ -104,6 +104,14 @@ public partial class PersonReport
 				{ "Total Dues", CalculateDuesTotal() }
 			};
 
+			var hiddenColumns = new List<int>
+			{
+				0,
+				3,
+				7,
+				13
+			};
+
 			// Use the generalized Excel exporter
 			var stream = ExcelExportUtil.ExportToExcel(
 				data: _personSubscriptionModels,
@@ -128,6 +136,19 @@ public partial class PersonReport
 				{ "Active Subscriptions", _personSubscriptionModels?.Count ?? 0},
 				{ "Remainig Sessions", CalculateRemainingSessionsTotal() },
 				{ "Total Dues", CalculateDuesTotal() }
+			};
+
+			var hiddenColumns = new List<int>
+			{
+				0,
+				2,
+				4,
+				5,
+				8,
+				10,
+				12,
+				16,
+				18
 			};
 
 			// Use the generalized Excel exporter

@@ -26,6 +26,7 @@ public static class ExcelExportUtil
 	/// <param name="summaryItems">Optional dictionary of summary values to display</param>
 	/// <param name="columnSettings">Optional custom column settings</param>
 	/// <param name="columnOrder">Optional custom column display order</param>
+	/// <param name="hiddenColumns">Optional list of column indices to hide (0-based)</param>
 	/// <returns>MemoryStream containing the Excel file</returns>
 	public static MemoryStream ExportToExcel<T>(
 		IEnumerable<T> data,
@@ -35,7 +36,8 @@ public static class ExcelExportUtil
 		DateOnly? dateRangeEnd = null,
 		Dictionary<string, object> summaryItems = null,
 		Dictionary<string, ColumnSetting> columnSettings = null,
-		List<string> columnOrder = null)
+		List<string> columnOrder = null,
+		List<int> hiddenColumns = null)
 	{
 		MemoryStream ms = new();
 
@@ -64,6 +66,21 @@ public static class ExcelExportUtil
 
 				// Determine column order
 				List<string> effectiveColumnOrder = DetermineColumnOrder<T>(data, columnSettings, columnOrder);
+
+				// Filter out hidden columns if specified
+				if (hiddenColumns != null && hiddenColumns.Count > 0)
+				{
+					// Create a new list without the hidden columns
+					var filteredColumnOrder = new List<string>();
+					for (int i = 0; i < effectiveColumnOrder.Count; i++)
+					{
+						if (!hiddenColumns.Contains(i))
+						{
+							filteredColumnOrder.Add(effectiveColumnOrder[i]);
+						}
+					}
+					effectiveColumnOrder = filteredColumnOrder;
+				}
 
 				// Setup the worksheet
 				int currentRow = SetupHeader(worksheet, reportTitle, effectiveColumnOrder.Count, dateRangeStart, dateRangeEnd);
@@ -97,6 +114,7 @@ public static class ExcelExportUtil
 			throw;
 		}
 	}
+
 
 	/// <summary>
 	/// Column setting information for customizing Excel export

@@ -58,12 +58,21 @@ public partial class ValidSubscriptionReport
 				{ "Outstanding Dues", CalculateTotalDues() }
 			};
 
+			var hiddenColumns = new List<int>
+			{
+				0,
+				3,
+				7,
+				13
+			};
+
 			// Use the generalized Excel exporter
 			var stream = ExcelExportUtil.ExportToExcel(
 				data: _validSubscriptionModels,
 				reportTitle: "ACTIVE SUBSCRIPTION DETAIL REPORT",
 				worksheetName: "Active Subscription Details",
-				summaryItems: summaryItems);
+				summaryItems: summaryItems,
+				hiddenColumns: hiddenColumns);
 
 			// Save the file with a descriptive name
 			var fileName = $"Active_Subscription_Report.xlsx";
