@@ -13,7 +13,6 @@ public partial class SubscriptionsPage
 	private UserModel _user;
 
 	private string _personNumber;
-	private string _personName;
 	private string _noSessions;
 	private string _booking;
 	private string _cash;
@@ -21,8 +20,10 @@ public partial class SubscriptionsPage
 	private string _upi;
 
 	private bool _status = true;
+	private int _selectedPersonId = 0;
 	private int _selectedSessionType = 0;
 
+	private List<PersonModel> _personList = [];
 	private List<SessionTypeModel> _sessionTypes = [];
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -51,6 +52,7 @@ public partial class SubscriptionsPage
 
 	private async Task LoadComboBox()
 	{
+		_personList = await CommonData.LoadTableData<PersonModel>(TableNames.Person);
 		_sessionTypes = await CommonData.LoadTableDataByStatus<SessionTypeModel>(TableNames.SessionType);
 		_selectedSessionType = _sessionTypes.FirstOrDefault()?.Id ?? 0;
 		StateHasChanged();
@@ -59,13 +61,13 @@ public partial class SubscriptionsPage
 	private async Task OnNumberChanged(string args)
 	{
 		_personNumber = args;
-		if (_personNumber is null) return;
+		if (string.IsNullOrEmpty(_personNumber)) return;
 
 		var foundPerson = await PersonData.LoadPersonByNumber(_personNumber.Trim());
 
 		if (foundPerson is not null)
 		{
-			_personName = foundPerson.Name;
+			_selectedPersonId = foundPerson.Id;
 
 			var validSubscriptions = await SubscriptionData.LoadValidSubscriptionByPerson(foundPerson.Id);
 
@@ -77,7 +79,6 @@ public partial class SubscriptionsPage
 				ValidStartDate = DateOnly.FromDateTime(validSubscriptions.SubscriptionValidTo.ToDateTime(new TimeOnly(0, 0)));
 				ValidEndDate = DateOnly.FromDateTime(validSubscriptions.SubscriptionValidTo.ToDateTime(new TimeOnly(0, 0)).AddMonths(1));
 			}
-
 			else
 			{
 				MinValidDate = DateTime.Now.AddMonths(-10);
@@ -85,17 +86,15 @@ public partial class SubscriptionsPage
 				ValidEndDate = DateOnly.FromDateTime(DateTime.Now.AddMonths(1));
 			}
 		}
-
 		else
 		{
-			_personName = "";
+			_selectedPersonId = 0;
 
 			MinValidDate = DateTime.Now.AddMonths(-10);
 			ValidStartDate = DateOnly.FromDateTime(DateTime.Now);
 			ValidEndDate = DateOnly.FromDateTime(DateTime.Now.AddMonths(1));
 
 			_personNumber = "";
-			_personName = "";
 			_noSessions = "";
 			_booking = "";
 
@@ -110,57 +109,17 @@ public partial class SubscriptionsPage
 		StateHasChanged();
 	}
 
-	private async Task OnNameChanged(string args)
+	private async Task OnPersonSelected(int personId)
 	{
-		_personName = args;
-		if (string.IsNullOrEmpty(_personName)) return;
+		var selectedPerson = _personList.FirstOrDefault(p => p.Id == personId);
 
-		var foundPerson = await PersonData.LoadPersonByName(_personName.Trim());
-
-		if (foundPerson is not null)
+		if (selectedPerson is not null)
 		{
-			_personNumber = foundPerson.Number;
-			_personName = foundPerson.Name;
+			_personNumber = selectedPerson.Number;
 
-			var validSubscriptions = await SubscriptionData.LoadValidSubscriptionByPerson(foundPerson.Id);
-
-			if (validSubscriptions is not null)
-			{
-				await JS.InvokeVoidAsync("alert", "Person Already has a Valid Subscription");
-
-				MinValidDate = validSubscriptions.SubscriptionValidTo.ToDateTime(new TimeOnly(0, 0));
-				ValidStartDate = DateOnly.FromDateTime(validSubscriptions.SubscriptionValidTo.ToDateTime(new TimeOnly(0, 0)));
-				ValidEndDate = DateOnly.FromDateTime(validSubscriptions.SubscriptionValidTo.ToDateTime(new TimeOnly(0, 0)).AddMonths(1));
-			}
-			else
-			{
-				MinValidDate = DateTime.Now.AddMonths(-10);
-				ValidStartDate = DateOnly.FromDateTime(DateTime.Now);
-				ValidEndDate = DateOnly.FromDateTime(DateTime.Now.AddMonths(1));
-			}
+			await OnNumberChanged(_personNumber);
 		}
-		else
-		{
-			_personNumber = "";
-
-			MinValidDate = DateTime.Now.AddMonths(-10);
-			ValidStartDate = DateOnly.FromDateTime(DateTime.Now);
-			ValidEndDate = DateOnly.FromDateTime(DateTime.Now.AddMonths(1));
-
-			_noSessions = "";
-			_booking = "";
-
-			_selectedSessionType = 1;
-			_status = true;
-
-			_cash = "";
-			_card = "";
-			_upi = "";
-		}
-
-		StateHasChanged();
 	}
-
 
 	private async Task OnSaveClick()
 	{
@@ -205,7 +164,6 @@ public partial class SubscriptionsPage
 				_ => "0"
 			});
 
-			// Skip insertion if the amount is zero
 			if (amount == 0)
 				continue;
 
@@ -225,6 +183,12 @@ public partial class SubscriptionsPage
 
 	private async Task<bool> ValidateForm()
 	{
+		if (_selectedPersonId == 0)
+		{
+			await JS.InvokeVoidAsync("alert", "Please enter a valid Person");
+			return false;
+		}
+
 		if (string.IsNullOrEmpty(_personNumber) || string.IsNullOrEmpty(_personNumber))
 		{
 			await JS.InvokeVoidAsync("alert", "Please enter a valid Person Number");

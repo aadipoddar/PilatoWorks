@@ -22,28 +22,39 @@
 		<div class="content-card">
 			<!-- Customer Information Section -->
 			<div class="card-section">
-				<h5 class="section-header">
-					<svg class="section-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-						<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-					</svg>
-					Customer Information
-				</h5>
-				<div class="section-content">
-					<div class="form-grid">
-						<div class="form-group">
-							<label class="form-label">Client Number</label>
-							<SfTextBox Placeholder='Enter Number' CssClass="form-control"
-									   FloatLabelType='@FloatLabelType.Auto' Type="InputType.Number"
-									   ValueChanged="OnNumberChanged" Value="@_personNumber" maxlength="10" />
-						</div>
+			    <h5 class="section-header">
+			        <svg class="section-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+			            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+			        </svg>
+			        Customer Information
+			    </h5>
+			    <div class="section-content">
+			        <div class="form-grid">
+			            <div class="form-group">
+			                <label class="form-label">Client Number</label>
+			                <SfTextBox Placeholder='Enter Number' CssClass="form-control"
+			                           FloatLabelType='@FloatLabelType.Auto' Type="InputType.Number"
+			                           ValueChanged="OnNumberChanged" Value="@_personNumber" maxlength="10" />
+			            </div>
 						<div class="form-group">
 							<label class="form-label">Client Name</label>
-							<SfTextBox Placeholder='Enter Name' CssClass="form-control"
-									   FloatLabelType='@FloatLabelType.Auto' 
-									   ValueChanged="OnNameChanged" Value="@_personName" />
+							<SfComboBox TValue="int" TItem="PersonModel" Placeholder="Select Client"
+										CssClass="form-control" FloatLabelType='@FloatLabelType.Auto'
+										DataSource="@_personList" Value="_selectedPersonId"
+										ValueChanged="OnPersonSelected">
+								<ComboBoxTemplates TItem="PersonModel">
+									<ItemTemplate>
+										<div class="client-item">
+											<span class="client-name">@context.Name</span>
+											<span class="client-number">@context.Number</span>
+										</div>
+									</ItemTemplate>
+								</ComboBoxTemplates>
+								<ComboBoxFieldSettings Value="Id" Text="Name" />
+							</SfComboBox>
 						</div>
-					</div>
-				</div>
+			        </div>
+			    </div>
 			</div>
 
 			<!-- Subscription Details Section -->
@@ -135,7 +146,7 @@
 			<div class="card-section">
 				<div class="action-buttons">
 					<SfButton IconCss="e-icons e-close" OnClick="OnCancelClick"
-							  Content="Cancel" CssClass="btn-cancel" />
+							  Content="Close" CssClass="btn-cancel" />
 					<SfButton IconCss="e-icons e-save" OnClick="OnSaveClick"
 							  Content="Save Subscription" CssClass="btn-save" />
 				</div>
@@ -274,6 +285,23 @@
 		border: 2px solid #e0e0e0 !important;
 		transition: all 0.2s ease !important;
 	}
+
+	.client-item {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 4px 0;
+	}
+
+	.client-name {
+		font-weight: 500;
+	}
+
+	.client-number {
+		color: #666;
+		font-size: 0.9em;
+	}
+
 
 	::deep .e-input:focus,
 	::deep .e-input-group.e-control-wrapper:focus-within {
