@@ -76,12 +76,6 @@
 							</SfComboBox>
 						</div>
 						<div class="form-group">
-							<label class="form-label">Subscription Date</label>
-							<SfDatePicker TValue="DateTime" Placeholder="Select Date" CssClass="form-control"
-										  FloatLabelType='@FloatLabelType.Auto' @bind-Value="@_subscriptionDate"
-										  Format="d" Max="@DateTime.Now" />
-						</div>
-						<div class="form-group">
 							<label class="form-label">Validity Period</label>
 							<SfDateRangePicker Placeholder="Select Dates" CssClass="form-control"
 											   FloatLabelType='@FloatLabelType.Auto' @bind-StartDate="@ValidStartDate"
@@ -99,7 +93,13 @@
 									   FloatLabelType='@FloatLabelType.Auto' Type="InputType.Number"
 									   @bind-Value="@_booking" />
 						</div>
-						<div class="form-group checkbox-group">
+						<div class="form-group">
+							<label class="form-label">Payment Date</label>
+							<SfDatePicker TValue="DateTime" Placeholder="Select Date" CssClass="form-control"
+										  FloatLabelType='@FloatLabelType.Auto' @bind-Value="@_subscriptionDate"
+										  Format="d" Max="@DateTime.Now" />
+						</div>
+												<div class="form-group checkbox-group">
 							<SfCheckBox Label="Active Status" @bind-Checked="_status" CssClass="custom-checkbox" />
 						</div>
 					</div>
