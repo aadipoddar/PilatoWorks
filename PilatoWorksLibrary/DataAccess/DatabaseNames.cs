@@ -21,7 +21,6 @@ public static class StoredProcedureNames
 
 	public static string LoadUserByPassword => "Load_User_By_Password";
 	public static string LoadPersonByNumber => "Load_Person_By_Number";
-	public static string LoadPersonByName => "Load_Person_By_Name";
 	public static string LoadPersonByNameNumber => "Load_Person_By_Name_Number";
 
 	public static string LoadSubscriptionByPerson => "Load_Subscription_By_Person";

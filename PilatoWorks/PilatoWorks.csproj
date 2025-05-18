@@ -1,15 +1,19 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net9.0-windows</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UseWPF>true</UseWPF>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Syncfusion.Edit.WPF" Version="29.1.39" />
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="Syncfusion.Blazor.Calendars" Version="29.1.40" />
+    <PackageReference Include="Syncfusion.Blazor.DropDowns" Version="29.1.40" />
+    <PackageReference Include="Syncfusion.Blazor.Grid" Version="29.1.40" />
+    <PackageReference Include="Syncfusion.Blazor.Inputs" Version="29.1.40" />
+    <PackageReference Include="Syncfusion.Blazor.Themes" Version="29.1.40" />
+    <PackageReference Include="Syncfusion.XlsIO.NET" Version="29.1.40" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,7 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Using Include="PilatoWorks.Common" />
+    <Using Include="Microsoft.AspNetCore.Components" />
+    <Using Include="Microsoft.JSInterop" />
     <Using Include="PilatoWorksLibrary.Data" />
     <Using Include="PilatoWorksLibrary.DataAccess" />
     <Using Include="PilatoWorksLibrary.Models" />

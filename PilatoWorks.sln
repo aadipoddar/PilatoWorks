@@ -3,18 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PilatoWorks", "PilatoWorks\PilatoWorks.csproj", "{37451420-5D37-44C6-88BF-380573260916}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PilatoWorksLibrary", "PilatoWorksLibrary\PilatoWorksLibrary.csproj", "{B3899817-D9C3-42C6-913C-4561FDAAB205}"
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "DBPilatoWorks", "DBPilatoWorks\DBPilatoWorks.sqlproj", "{FF750455-DD7F-45DB-A556-F1952139A1C4}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "PilatoWorksSetup", "PilatoWorksSetup\PilatoWorksSetup.vdproj", "{CD04F990-1526-ACCD-92A9-D18D542F0B0C}"
-	ProjectSection(ProjectDependencies) = postProject
-		{B3899817-D9C3-42C6-913C-4561FDAAB205} = {B3899817-D9C3-42C6-913C-4561FDAAB205}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PilatoWorksWeb", "PilatoWorksWeb\PilatoWorksWeb.csproj", "{023D4C23-71B7-4FDE-9435-EEF0B9B6F37F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PilatoWorks", "PilatoWorks\PilatoWorks.csproj", "{2A74053F-A75D-B459-83AC-37C29A43978F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,10 +15,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{37451420-5D37-44C6-88BF-380573260916}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{37451420-5D37-44C6-88BF-380573260916}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{37451420-5D37-44C6-88BF-380573260916}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{37451420-5D37-44C6-88BF-380573260916}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B3899817-D9C3-42C6-913C-4561FDAAB205}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B3899817-D9C3-42C6-913C-4561FDAAB205}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3899817-D9C3-42C6-913C-4561FDAAB205}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -36,12 +25,10 @@ Global
 		{FF750455-DD7F-45DB-A556-F1952139A1C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FF750455-DD7F-45DB-A556-F1952139A1C4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FF750455-DD7F-45DB-A556-F1952139A1C4}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{CD04F990-1526-ACCD-92A9-D18D542F0B0C}.Debug|Any CPU.ActiveCfg = Debug
-		{CD04F990-1526-ACCD-92A9-D18D542F0B0C}.Release|Any CPU.ActiveCfg = Release
-		{023D4C23-71B7-4FDE-9435-EEF0B9B6F37F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{023D4C23-71B7-4FDE-9435-EEF0B9B6F37F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{023D4C23-71B7-4FDE-9435-EEF0B9B6F37F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{023D4C23-71B7-4FDE-9435-EEF0B9B6F37F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A74053F-A75D-B459-83AC-37C29A43978F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A74053F-A75D-B459-83AC-37C29A43978F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A74053F-A75D-B459-83AC-37C29A43978F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A74053F-A75D-B459-83AC-37C29A43978F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
