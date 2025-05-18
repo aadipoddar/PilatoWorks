@@ -110,6 +110,58 @@ public partial class SubscriptionsPage
 		StateHasChanged();
 	}
 
+	private async Task OnNameChanged(string args)
+	{
+		_personName = args;
+		if (string.IsNullOrEmpty(_personName)) return;
+
+		var foundPerson = await PersonData.LoadPersonByName(_personName.Trim());
+
+		if (foundPerson is not null)
+		{
+			_personNumber = foundPerson.Number;
+			_personName = foundPerson.Name;
+
+			var validSubscriptions = await SubscriptionData.LoadValidSubscriptionByPerson(foundPerson.Id);
+
+			if (validSubscriptions is not null)
+			{
+				await JS.InvokeVoidAsync("alert", "Person Already has a Valid Subscription");
+
+				MinValidDate = validSubscriptions.SubscriptionValidTo.ToDateTime(new TimeOnly(0, 0));
+				ValidStartDate = DateOnly.FromDateTime(validSubscriptions.SubscriptionValidTo.ToDateTime(new TimeOnly(0, 0)));
+				ValidEndDate = DateOnly.FromDateTime(validSubscriptions.SubscriptionValidTo.ToDateTime(new TimeOnly(0, 0)).AddMonths(1));
+			}
+			else
+			{
+				MinValidDate = DateTime.Now.AddMonths(-10);
+				ValidStartDate = DateOnly.FromDateTime(DateTime.Now);
+				ValidEndDate = DateOnly.FromDateTime(DateTime.Now.AddMonths(1));
+			}
+		}
+		else
+		{
+			_personNumber = "";
+
+			MinValidDate = DateTime.Now.AddMonths(-10);
+			ValidStartDate = DateOnly.FromDateTime(DateTime.Now);
+			ValidEndDate = DateOnly.FromDateTime(DateTime.Now.AddMonths(1));
+
+			_noSessions = "";
+			_booking = "";
+
+			_selectedSessionType = 1;
+			_status = true;
+
+			_cash = "";
+			_card = "";
+			_upi = "";
+		}
+
+		StateHasChanged();
+	}
+
+
 	private async Task OnSaveClick()
 	{
 		if (!await ValidateForm())

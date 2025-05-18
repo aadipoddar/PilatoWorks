@@ -48,8 +48,6 @@ public partial class SubscriptionDetailReport
 	private void OnBackClick() =>
 		NavManager.NavigateTo("/Reports");
 
-	// In SubscriptionDetailReport.razor.cs, replace the ToolbarClickHandler method
-
 	private async Task ToolbarClickHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
 	{
 		if (args.Item.Id == "_sfSubscriptionGrid_excelexport")
@@ -69,7 +67,9 @@ public partial class SubscriptionDetailReport
 				0,
 				3,
 				7,
-				13
+				13,
+				14,
+				15
 			};
 
 			// Use the generalized Excel exporter

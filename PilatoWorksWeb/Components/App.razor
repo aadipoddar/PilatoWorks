@@ -41,8 +41,20 @@
 		}
 
 		function deleteCookie(name) {
-			document.cookie = name + '=; Max-Age=0; path=/; domain=' + location.hostname + '; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+			// Set cookie with past expiration date (standard way)
+			document.cookie = name + '=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+
+			// Also try without domain specification
+			document.cookie = name + '=; path=/; max-age=-99999999;';
+
+			// If needed, also try with domain
+			if (location.hostname.indexOf('.') !== -1) {
+				// For domains with dots (e.g. example.com)
+				const domain = location.hostname.split('.').slice(-2).join('.');
+				document.cookie = name + '=; path=/; domain=.' + domain + '; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+			}
 		}
+
 
 		// Excel download functionality
 		window.saveAs = function (base64String, filename) {

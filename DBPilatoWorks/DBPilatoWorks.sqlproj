@@ -65,6 +65,7 @@
     <Folder Include="StoredProcedures\LoadData\Subscription" />
     <Folder Include="StoredProcedures\LoadData\Sessions" />
     <Folder Include="StoredProcedures\LoadData\Common" />
+    <Folder Include="Compares" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\Person.sql" />
@@ -101,6 +102,7 @@
     <Build Include="StoredProcedures\LoadData\Subscription\Load_Subscription_By_Person.sql" />
     <Build Include="StoredProcedures\LoadData\Subscription\Load_Subscription_By_Date_Range.sql" />
     <Build Include="StoredProcedures\LoadData\Sessions\Load_SessionDetails_By_Date_Range.sql" />
+    <Build Include="StoredProcedures\LoadData\Load_Person_By_Name.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="DBPilatoWorks.refactorlog" />
@@ -109,5 +111,6 @@
     <None Include="Publish\DBPilatoWorks.publish.xml" />
     <None Include="DBPilatoWorks.publish.xml" />
     <None Include="Publish\AzureDBPilatoWorks.publish.xml" />
+    <None Include="Compares\SqlDataCompare.dcmp" />
   </ItemGroup>
 </Project>

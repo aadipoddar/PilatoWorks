@@ -63,7 +63,9 @@ public partial class ValidSubscriptionReport
 				0,
 				3,
 				7,
-				13
+				13,
+				14,
+				15
 			};
 
 			// Use the generalized Excel exporter

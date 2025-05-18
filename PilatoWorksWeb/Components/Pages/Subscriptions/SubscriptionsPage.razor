@@ -31,15 +31,16 @@
 				<div class="section-content">
 					<div class="form-grid">
 						<div class="form-group">
-							<label class="form-label">Person Number</label>
+							<label class="form-label">Client Number</label>
 							<SfTextBox Placeholder='Enter Number' CssClass="form-control"
 									   FloatLabelType='@FloatLabelType.Auto' Type="InputType.Number"
-									   ValueChanged="OnNumberChanged" maxlength="10" />
+									   ValueChanged="OnNumberChanged" Value="@_personNumber" maxlength="10" />
 						</div>
 						<div class="form-group">
-							<label class="form-label">Person Name</label>
+							<label class="form-label">Client Name</label>
 							<SfTextBox Placeholder='Enter Name' CssClass="form-control"
-									   FloatLabelType='@FloatLabelType.Auto' @bind-Value="@_personName" />
+									   FloatLabelType='@FloatLabelType.Auto' 
+									   ValueChanged="OnNameChanged" Value="@_personName" />
 						</div>
 					</div>
 				</div>

@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DataComparison>
+  <Version>10</Version>
+  <ConnectionProperties1>
+    <ConnectionString>Data Source=AADILAPI;Initial Catalog=PilatoWorks;Integrated Security=True;Persist Security Info=False;Pooling=False;Multiple Active Result Sets=False;Connect Timeout=60;Encrypt=True;Trust Server Certificate=True;Command Timeout=0</ConnectionString>
+    <FullDisplayName>AADILAPI.PilatoWorks (AADILAPI\aadip)</FullDisplayName>
+  </ConnectionProperties1>
+  <ConnectionProperties2>
+    <ConnectionString>Data Source=tcp:reflexpilates.database.windows.net,1433;Initial Catalog=PilatoWorks;Persist Security Info=True;User ID=aadisql;Pooling=False;Multiple Active Result Sets=False;Connect Timeout=60;Encrypt=True;Trust Server Certificate=True;Command Timeout=0</ConnectionString>
+    <FullDisplayName>tcp:reflexpilates.database.windows.net,1433.PilatoWorks (aadisql)</FullDisplayName>
+  </ConnectionProperties2>
+  <SessionSettings>Default</SessionSettings>
+</DataComparison>
