@@ -1,4 +1,5 @@
 ﻿@page "/Subscriptions"
+@page "/Subscriptions/{SubscriptionId:int}"
 
 <PageTitle>Subscriptions - Reflex and Reform Pilates</PageTitle>
 
@@ -79,7 +80,7 @@
 							<label class="form-label">Validity Period</label>
 							<SfDateRangePicker Placeholder="Select Dates" CssClass="form-control"
 											   FloatLabelType='@FloatLabelType.Auto' @bind-StartDate="@ValidStartDate"
-											   EndDate="@ValidEndDate" Min="@MinValidDate" />
+											   @bind-EndDate="@ValidEndDate" Min="@MinValidDate" />
 						</div>
 						<div class="form-group">
 							<label class="form-label">Number of Sessions</label>
@@ -99,7 +100,7 @@
 										  FloatLabelType='@FloatLabelType.Auto' @bind-Value="@_subscriptionDate"
 										  Format="d" Max="@DateTime.Now" />
 						</div>
-												<div class="form-group checkbox-group">
+							<div class="form-group checkbox-group">
 							<SfCheckBox Label="Active Status" @bind-Checked="_status" CssClass="custom-checkbox" />
 						</div>
 					</div>

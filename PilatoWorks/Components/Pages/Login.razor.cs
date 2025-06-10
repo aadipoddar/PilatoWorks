@@ -35,7 +35,7 @@ public partial class Login
 		var user = await UserData.LoadUserByPassword(_password);
 		if (user is null || !user.Status) return;
 
-		await JS.InvokeVoidAsync("setCookie", "UserId", user.Id, 1);
+		await JS.InvokeVoidAsync("setCookie", "UserId", user.Id, 13);
 		await JS.InvokeVoidAsync("setCookie", "Password", BCrypt.Net.BCrypt.EnhancedHashPassword(user.Password.ToString(), 13), 1);
 
 		NavManager.NavigateTo("/Dashboard");

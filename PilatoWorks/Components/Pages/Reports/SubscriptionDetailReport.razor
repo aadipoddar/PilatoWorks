@@ -117,15 +117,17 @@
 								AllowExcelExport="true"
 								Toolbar="@(new List<string>() { "ExcelExport" })">
 
-							<GridPageSettings PageSize="10" PageSizes="@_pageSizes"></GridPageSettings>
+							<GridPageSettings PageSize="10" PageSizes="@_pageSizes" />
 
 							<GridSortSettings AllowUnsort="true">
 								<GridSortColumns>
-									<GridSortColumn Field="SubscriptionDate" Direction="SortDirection.Descending"></GridSortColumn>
+									<GridSortColumn Field="SubscriptionDate" Direction="SortDirection.Descending" />
 								</GridSortColumns>
 							</GridSortSettings>
 
-							<GridEvents OnToolbarClick="ToolbarClickHandler" TValue="SubscriptionDetailsModel"></GridEvents>
+							<GridEvents OnToolbarClick="ToolbarClickHandler" TValue="SubscriptionDetailsModel" />
+
+							<GridEvents RowSelected="SubscriptionDetailRowSelected" TValue="SubscriptionDetailsModel" />
 
 							<GridColumns>
 								<GridColumn Field=@nameof(SubscriptionDetailsModel.PersonName) HeaderText="Client Name" Width="180">

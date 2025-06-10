@@ -88,8 +88,6 @@ public partial class SubscriptionDetailReport
 		}
 	}
 
-
-
 	private async Task LoadSubscriptionData()
 	{
 		_subscriptionModels = await SubscriptionData.LoadSubscriptionByDateRange(SubscriptionsStartDate, SubscriptionsEndDate);
@@ -122,4 +120,7 @@ public partial class SubscriptionDetailReport
 		if (_subscriptionModels == null) return 0;
 		return _subscriptionModels.Sum(s => s.Dues);
 	}
+
+	public void SubscriptionDetailRowSelected(RowSelectEventArgs<SubscriptionDetailsModel> args) =>
+		NavManager.NavigateTo($"/Subscriptions/{args.Data.SubscriptionId}");
 }

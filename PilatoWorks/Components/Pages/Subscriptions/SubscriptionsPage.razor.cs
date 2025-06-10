@@ -5,6 +5,8 @@ public partial class SubscriptionsPage
 	[Inject] public NavigationManager NavManager { get; set; }
 	[Inject] public IJSRuntime JS { get; set; }
 
+	[Parameter] public int? SubscriptionId { get; set; }
+
 	public DateOnly ValidStartDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
 	public DateOnly ValidEndDate { get; set; } = DateOnly.FromDateTime(DateTime.Now.AddMonths(1));
 
@@ -56,6 +58,56 @@ public partial class SubscriptionsPage
 		_personList = await CommonData.LoadTableData<PersonModel>(TableNames.Person);
 		_sessionTypes = await CommonData.LoadTableDataByStatus<SessionTypeModel>(TableNames.SessionType);
 		_selectedSessionType = _sessionTypes.FirstOrDefault()?.Id ?? 0;
+
+		if (SubscriptionId.HasValue && SubscriptionId.Value > 0)
+			await LoadSubscription();
+
+		StateHasChanged();
+	}
+
+	private async Task LoadSubscription()
+	{
+		var subscription = await CommonData.LoadTableDataById<SubscriptionModel>(TableNames.Subscription, SubscriptionId.Value);
+		if (subscription is null)
+		{
+			await JS.InvokeVoidAsync("alert", "Subscription not found.");
+			NavManager.NavigateTo("/Dashboard");
+			return;
+		}
+
+		var person = await CommonData.LoadTableDataById<PersonModel>(TableNames.Person, subscription.PersonId);
+		if (person is null)
+		{
+			await JS.InvokeVoidAsync("alert", "Person not found for the subscription.");
+			NavManager.NavigateTo("/Dashboard");
+			return;
+		}
+
+		_personNumber = person.Number;
+		_selectedPersonId = person.Id;
+		_noSessions = subscription.NoSessions.ToString();
+		_booking = subscription.Booking.ToString();
+		_selectedSessionType = subscription.SessionTypeId;
+		_status = subscription.Status;
+		_subscriptionDate = subscription.SubscriptionDate;
+		_selectedSessionType = subscription.SessionTypeId;
+		ValidStartDate = subscription.ValidFrom;
+		ValidEndDate = subscription.ValidTo;
+
+		var payments = await SubscriptionData.LoadSubscriptionPaymentDetailsBySubscriptionId(subscription.Id);
+		if (payments is not null)
+		{
+			_cash = payments.FirstOrDefault(p => p.PaymentModeId == 1)?.Amount.ToString() ?? "";
+			_card = payments.FirstOrDefault(p => p.PaymentModeId == 2)?.Amount.ToString() ?? "";
+			_upi = payments.FirstOrDefault(p => p.PaymentModeId == 3)?.Amount.ToString() ?? "";
+		}
+		else
+		{
+			_cash = "";
+			_card = "";
+			_upi = "";
+		}
+
 		StateHasChanged();
 	}
 
@@ -134,9 +186,9 @@ public partial class SubscriptionsPage
 			return;
 		}
 
-		var subscription = new SubscriptionModel
+		var subscriptionId = await SubscriptionData.InsertSubscription(new()
 		{
-			Id = 0,
+			Id = SubscriptionId ?? 0,
 			PersonId = person.Id,
 			ValidFrom = ValidStartDate,
 			ValidTo = ValidEndDate,
@@ -146,13 +198,21 @@ public partial class SubscriptionsPage
 			UserId = _user.Id,
 			Status = _status,
 			SubscriptionDate = _subscriptionDate
-		};
-
-		subscription.Id = await SubscriptionData.InsertSubscription(subscription);
-		if (subscription.Id == 0)
+		});
+		if (subscriptionId == 0)
 		{
 			await JS.InvokeVoidAsync("alert", "Error in creating subscription.");
 			return;
+		}
+
+		if (SubscriptionId.HasValue && SubscriptionId.Value > 0)
+		{
+			var payments = await SubscriptionData.LoadSubscriptionPaymentDetailsBySubscriptionId(SubscriptionId.Value);
+			foreach (var payment in payments)
+			{
+				payment.Status = false;
+				await SubscriptionData.InsertSubscriptionPaymentDetails(payment);
+			}
 		}
 
 		for (int i = 1; i <= 3; i++)
@@ -168,18 +228,22 @@ public partial class SubscriptionsPage
 			if (amount == 0)
 				continue;
 
-			await SubscriptionData.InsertSubscriptionPaymentDetails(new SubscriptionPaymentDetailsModel
+			await SubscriptionData.InsertSubscriptionPaymentDetails(new()
 			{
 				Id = 0,
 				PaymentModeId = i,
-				SubscriptionId = subscription.Id,
+				SubscriptionId = subscriptionId,
 				Amount = amount,
 				PaymentDate = DateTime.Now,
 				Status = true
 			});
 		}
 
-		NavManager.NavigateTo(NavManager.Uri, forceLoad: true);
+		if (SubscriptionId.HasValue && SubscriptionId.Value > 0)
+			NavManager.NavigateTo($"/Dashboard");
+
+		else
+			NavManager.NavigateTo(NavManager.Uri, forceLoad: true);
 	}
 
 	private async Task<bool> ValidateForm()
@@ -232,16 +296,19 @@ public partial class SubscriptionsPage
 		}
 
 		// Check for overlapping subscriptions
-		var existingSubscriptions = await SubscriptionData.LoadSubscriptionByPerson(person.Id);
-		foreach (var subscription in existingSubscriptions)
+		if (SubscriptionId is null || SubscriptionId.Value <= 0)
 		{
-			// Check if new subscription dates overlap with any existing subscription
-			if (ValidStartDate <= subscription.SubscriptionValidTo && ValidEndDate >= subscription.SubscriptionValidFrom)
+			var existingSubscriptions = await SubscriptionData.LoadSubscriptionByPerson(person.Id);
+			foreach (var subscription in existingSubscriptions)
 			{
-				await JS.InvokeVoidAsync("alert",
-					$"This person already has a subscription that overlaps with the selected date range " +
-					$"(existing subscription: {subscription.SubscriptionValidFrom} to {subscription.SubscriptionValidTo})");
-				return false;
+				// Check if new subscription dates overlap with any existing subscription
+				if (ValidStartDate <= subscription.SubscriptionValidTo && ValidEndDate >= subscription.SubscriptionValidFrom)
+				{
+					await JS.InvokeVoidAsync("alert",
+						$"This person already has a subscription that overlaps with the selected date range " +
+						$"(existing subscription: {subscription.SubscriptionValidFrom} to {subscription.SubscriptionValidTo})");
+					return false;
+				}
 			}
 		}
 

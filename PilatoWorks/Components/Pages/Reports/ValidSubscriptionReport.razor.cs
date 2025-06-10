@@ -96,7 +96,10 @@ public partial class ValidSubscriptionReport
 
 	private decimal CalculateTotalDues()
 	{
-		if (_validSubscriptionModels == null) return 0;
+		if (_validSubscriptionModels is null) return 0;
 		return _validSubscriptionModels.Sum(s => s.Dues);
 	}
+
+	public void SubscriptionDetailRowSelected(RowSelectEventArgs<SubscriptionDetailsModel> args) =>
+		NavManager.NavigateTo($"/Subscriptions/{args.Data.SubscriptionId}");
 }

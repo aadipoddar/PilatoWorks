@@ -86,15 +86,17 @@
 						<SfGrid DataSource="@_validSubscriptionModels" ID="_sfSubscriptionGrid" @ref="_sfSubscriptionGrid"
 								AllowPaging="true" AllowSorting="true" AllowFiltering="true" AllowResizing="true" AllowExcelExport="true"
 								Toolbar="@(new List<string>() { "ExcelExport" })">
-							<GridPageSettings PageSize="10" PageSizes="@_pageSizes"></GridPageSettings>
+							<GridPageSettings PageSize="10" PageSizes="@_pageSizes" />
 
 							<GridSortSettings AllowUnsort="true">
 								<GridSortColumns>
-									<GridSortColumn Field="PersonName" Direction="SortDirection.Ascending"></GridSortColumn>
+									<GridSortColumn Field="PersonName" Direction="SortDirection.Ascending" />
 								</GridSortColumns>
 							</GridSortSettings>
 
-							<GridEvents OnToolbarClick="ToolbarClickHandler" TValue="SubscriptionDetailsModel"></GridEvents>
+							<GridEvents OnToolbarClick="ToolbarClickHandler" TValue="SubscriptionDetailsModel" />
+
+							<GridEvents RowSelected="SubscriptionDetailRowSelected" TValue="SubscriptionDetailsModel" />
 
 							<GridColumns>
 								<GridColumn Field=@nameof(SubscriptionDetailsModel.PersonName) HeaderText="Person Name" Width="150">
