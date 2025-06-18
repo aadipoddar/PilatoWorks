@@ -27,12 +27,16 @@ public partial class SessionsPage
 
 	private SessionDetailsModel _selectedSession = null;
 
-
 	private List<SessionDetailsModel> SessionDetailsModels { get; set; } = [];
 
 	private SfGrid<SessionDetailsModel> _sfGrid;
 
+	// Voice assistance properties
+	private bool _showVoiceModal = false;
+	private string _transcript = "";
+	private SessionResponseModel extractedSession = new();
 
+	#region Load Data
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
 		if (firstRender && !await ValidatePassword()) NavManager.NavigateTo("/");
@@ -134,31 +138,9 @@ public partial class SessionsPage
 
 		StateHasChanged();
 	}
+	#endregion
 
-	private async Task OnSaveClick()
-	{
-		if (!await ValidateForm())
-			return;
-
-		await SessionData.InsertSession(new SessionModel
-		{
-			Id = _selectedSession?.Id ?? 0,
-			SessionDate = _selectedSession?.SessionDate ?? _selectedDate,
-			SlotId = _selectedSession?.SlotId ?? _selectedSlot,
-			SubscriptionId = _selectedSession?.SubscriptionId ?? _selectedValidSub,
-			CreatedDate = _selectedSession?.CreatedDate ?? DateTime.Now,
-			UserId = _selectedSession?.UserId ?? _user.Id,
-			Trainer1Id = _selectedTrainer1,
-			Trainer2Id = _selectedTrainer2 == -1 ? null : _selectedTrainer2,
-			Confirmed = _isConfirmed,
-		});
-
-		_isUpdating = false;
-		_selectedSession = null;
-		_isConfirmed = true;
-		await LoadSessions();
-	}
-
+	#region Saving
 	private async Task<bool> ValidateForm()
 	{
 		if (_selectedTrainer1 == 0 || _selectedTrainer1 == -1)
@@ -187,6 +169,95 @@ public partial class SessionsPage
 		return true;
 	}
 
+	private async Task OnSaveClick()
+	{
+		if (!await ValidateForm())
+			return;
+
+		await SessionData.InsertSession(new SessionModel
+		{
+			Id = _selectedSession?.Id ?? 0,
+			SessionDate = _selectedSession?.SessionDate ?? _selectedDate,
+			SlotId = _selectedSession?.SlotId ?? _selectedSlot,
+			SubscriptionId = _selectedSession?.SubscriptionId ?? _selectedValidSub,
+			CreatedDate = _selectedSession?.CreatedDate ?? DateTime.Now,
+			UserId = _selectedSession?.UserId ?? _user.Id,
+			Trainer1Id = _selectedTrainer1,
+			Trainer2Id = _selectedTrainer2 == -1 ? null : _selectedTrainer2,
+			Confirmed = _isConfirmed,
+		});
+
+		_isUpdating = false;
+		_selectedSession = null;
+		_isConfirmed = true;
+		await LoadSessions();
+	}
+
 	private void OnCancelClick() =>
 		NavManager.NavigateTo("/");
+	#endregion
+
+	// Voice assistance methods
+	private void OnVoiceAssistanceClick()
+	{
+		_showVoiceModal = true;
+		_transcript = "";
+		extractedSession = new();
+		StateHasChanged();
+	}
+
+	private void CloseVoiceModal()
+	{
+		_showVoiceModal = false;
+		StateHasChanged();
+	}
+
+	private async Task OnTranscribeClick()
+	{
+		if (string.IsNullOrWhiteSpace(_transcript))
+			return;
+
+		try
+		{
+			extractedSession = await AIProcessing.SessionProcessing(_transcript);
+
+			if (extractedSession is null)
+				return;
+
+			_selectedDate = DateOnly.Parse(extractedSession.date);
+
+			var matchingSlot = _slots.FirstOrDefault(s => s.Hour == int.Parse(extractedSession.time));
+			if (matchingSlot is not null)
+				_selectedSlot = matchingSlot.Id;
+
+			await LoadSessions();
+
+			// Use AI to find the perfect match for client name
+			if (!string.IsNullOrWhiteSpace(extractedSession.clientName) && _validSubs.Count != 0)
+			{
+				var bestMatch = await AIProcessing.FindBestClientMatch(extractedSession.clientName, _validSubs);
+
+				if (bestMatch is not null)
+					_selectedValidSub = bestMatch.SubscriptionId;
+
+				// Fallback to simple contains matching if AI couldn't find a good match
+				else
+				{
+					var fallbackMatch = _validSubs.FirstOrDefault(c =>
+						c.PersonName.Contains(extractedSession.clientName, StringComparison.OrdinalIgnoreCase));
+
+					if (fallbackMatch is not null)
+						_selectedValidSub = fallbackMatch.SubscriptionId;
+				}
+			}
+
+			CloseVoiceModal();
+			StateHasChanged();
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Error Extracting information: {ex.Message}");
+			await JS.InvokeVoidAsync("alert", "Error Extracting information. Please try again.");
+		}
+	}
 }

@@ -14,11 +14,51 @@
 				</svg>
 				<h1>Session Management</h1>
 			</div>
+
+			<!-- Voice Assistance Button -->
+			<div class="voice-assistance-button" @onclick="OnVoiceAssistanceClick">
+				<div class="voice-icon-container">
+					<div class="voice-icon">
+						<div class="voice-wave-container">
+							<div class="voice-wave"></div>
+							<div class="voice-wave"></div>
+							<div class="voice-wave"></div>
+							<div class="voice-wave"></div>
+						</div>
+						<svg class="mic-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+							<path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5z" />
+							<path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
+						</svg>
+					</div>
+				</div>
+				<span class="voice-button-text">Voice Assistance</span>
+			</div>
 		</div>
 	</div>
 
 	<!-- Main Content -->
 	<div class="sessions-content">
+		<!-- Voice Assistant Modal (Initially Hidden) -->
+		@if (_showVoiceModal)
+		{
+			<div class="voice-modal-overlay" @onclick="CloseVoiceModal">
+				<div class="voice-modal" @onclick:stopPropagation="true">
+					<div class="voice-modal-header">
+						<h3>Voice Assistance</h3>
+						<button class="voice-modal-close" @onclick="CloseVoiceModal">×</button>
+					</div>
+					<div class="voice-modal-body">
+						<SfSpeechToText @bind-Transcript="@_transcript" />
+						<SfTextArea RowCount="3" ColumnCount="50" @bind-Value="@_transcript" ResizeMode="Resize.None" Placeholder="Speak now, or type your query here..." />
+
+						<div class="voice-actions">
+							<SfButton OnClick="OnTranscribeClick" Content="Process Voice Command" CssClass="voice-process-btn" />
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+
 		<div class="content-card">
 			<!-- Session Selection Controls -->
 			<div class="card-section">
@@ -497,6 +537,293 @@
 
 		.btn-cancel, .btn-save {
 			width: 100%;
+		}
+	}
+
+	/* Voice Assistance Button Styles */
+	.voice-assistance-button {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.8rem;
+		background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+		border: none;
+		color: white;
+		padding: 0.7rem 1.8rem;
+		border-radius: 50px;
+		cursor: pointer;
+		box-shadow: 0 6px 16px rgba(106, 17, 203, 0.2);
+		transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+		position: relative;
+		overflow: hidden;
+	}
+
+		.voice-assistance-button:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 8px 20px rgba(106, 17, 203, 0.3);
+		}
+
+		.voice-assistance-button:active {
+			transform: translateY(1px);
+			box-shadow: 0 4px 12px rgba(106, 17, 203, 0.2);
+		}
+
+	.voice-icon-container {
+		position: relative;
+		width: 28px;
+		height: 28px;
+		border-radius: 50%;
+		background: rgba(255, 255, 255, 0.15);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 3px;
+	}
+
+	.voice-icon {
+		position: relative;
+		width: 100%;
+		height: 100%;
+	}
+
+	.mic-icon {
+		width: 100%;
+		height: 100%;
+		fill: white;
+		position: relative;
+		z-index: 2;
+		filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.1));
+	}
+
+	.voice-button-text {
+		font-weight: 600;
+		font-size: 1rem;
+		letter-spacing: 0.2px;
+	}
+
+	.voice-wave-container {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		left: 0;
+		top: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.voice-wave {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		border-radius: 50%;
+		border: 1.5px solid rgba(255, 255, 255, 0.5);
+		transform: scale(0);
+		opacity: 0;
+		animation: pulse 2s infinite;
+	}
+
+		.voice-wave:nth-child(2) {
+			animation-delay: 0.5s;
+		}
+
+		.voice-wave:nth-child(3) {
+			animation-delay: 1s;
+		}
+
+		.voice-wave:nth-child(4) {
+			animation-delay: 1.5s;
+		}
+
+	@@keyframes pulse {
+		0% {
+			transform: scale(0.5);
+			opacity: 0;
+		}
+
+		50% {
+			opacity: 0.2;
+		}
+
+		100% {
+			transform: scale(1.8);
+			opacity: 0;
+		}
+	}
+
+	/* Voice Modal Styles */
+	.voice-modal-overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-color: rgba(0, 0, 0, 0.5);
+		z-index: 1000;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		backdrop-filter: blur(5px);
+	}
+
+	.voice-modal {
+		background-color: white;
+		border-radius: 16px;
+		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+		width: 90%;
+		max-width: 600px;
+		padding: 0;
+		overflow: hidden;
+		animation: modal-fade 0.3s ease-out;
+	}
+
+	.voice-modal-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 1.25rem 1.5rem;
+		background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+		color: white;
+	}
+
+		.voice-modal-header h3 {
+			margin: 0;
+			font-size: 1.2rem;
+			font-weight: 600;
+		}
+
+	.voice-modal-close {
+		background: transparent;
+		border: none;
+		color: white;
+		font-size: 1.5rem;
+		cursor: pointer;
+		width: 32px;
+		height: 32px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 50%;
+		transition: background 0.2s;
+	}
+
+		.voice-modal-close:hover {
+			background: rgba(255, 255, 255, 0.2);
+		}
+
+	.voice-modal-body {
+		padding: 1.5rem;
+		display: flex;
+		flex-direction: column;
+		gap: 1.25rem;
+		align-items: center;
+		align-content: center;
+	}
+
+	::deep .e-speech-mic-btn {
+		background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%) !important;
+		border-color: transparent !important;
+		width: 50px;
+		height: 50px;
+		border-radius: 50% !important;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-shadow: 0 6px 16px rgba(106, 17, 203, 0.2);
+	}
+
+		::deep .e-speech-mic-btn:hover {
+			box-shadow: 0 8px 20px rgba(106, 17, 203, 0.3);
+			transform: translateY(-2px);
+		}
+
+	.voice-actions {
+		display: flex;
+		justify-content: center;
+	}
+
+	.voice-process-btn {
+		background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%) !important;
+		border-color: transparent !important;
+		color: white;
+		padding: 0.6rem 1.5rem;
+		border-radius: 50px;
+		font-weight: 500;
+		transition: all 0.3s ease;
+		box-shadow: 0 4px 12px rgba(106, 17, 203, 0.2);
+	}
+
+		.voice-process-btn:hover {
+			box-shadow: 0 6px 16px rgba(106, 17, 203, 0.3);
+			transform: translateY(-2px);
+		}
+
+	.extracted-info {
+		background-color: #f8f9ff;
+		border-radius: 12px;
+		padding: 1.25rem;
+		border-left: 4px solid #6a11cb;
+	}
+
+		.extracted-info h4 {
+			margin: 0 0 0.75rem 0;
+			color: #6a11cb;
+			font-size: 1.1rem;
+		}
+
+	.info-item {
+		margin: 0.5rem 0;
+		font-size: 0.95rem;
+	}
+
+	.voice-apply-actions {
+		display: flex;
+		justify-content: center;
+		margin-top: 1rem;
+	}
+
+	.voice-apply-btn {
+		background: linear-gradient(135deg, var(--secondary-color) 0%, #7cb342 100%) !important;
+		border-color: transparent !important;
+		padding: 0.5rem 1.25rem;
+		border-radius: 50px;
+		font-weight: 500;
+		transition: all 0.3s ease;
+		box-shadow: 0 2px 8px rgba(139, 195, 74, 0.3);
+	}
+
+		.voice-apply-btn:hover {
+			box-shadow: 0 4px 12px rgba(139, 195, 74, 0.4);
+			transform: translateY(-2px);
+		}
+
+	@@keyframes modal-fade {
+		from {
+			opacity: 0;
+			transform: translateY(20px);
+		}
+
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	@@media (max-width: 480px) {
+		.voice-assistance-button {
+			padding: 0.6rem 1.4rem;
+		}
+
+		.voice-icon-container {
+			width: 24px;
+			height: 24px;
+		}
+
+		.voice-button-text {
+			font-size: 0.9rem;
+		}
+
+		.voice-modal {
+			width: 95%;
 		}
 	}
 </style>

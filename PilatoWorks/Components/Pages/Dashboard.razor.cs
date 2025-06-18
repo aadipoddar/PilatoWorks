@@ -53,6 +53,9 @@ public partial class Dashboard
 	private void OnUsersClick() =>
 		NavManager.NavigateTo("/UserManagement");
 
+	private void OnVoiceAssistanceClick() =>
+		NavManager.NavigateTo("/VoiceAssistance");
+
 	private async Task OnLogoutClick()
 	{
 		await JS.InvokeVoidAsync("deleteCookie", "UserId");
