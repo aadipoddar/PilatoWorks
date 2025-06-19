@@ -16,7 +16,8 @@ public partial class UsersManagementPage
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
-		if (firstRender && !await ValidatePassword()) NavManager.NavigateTo("/");
+		if (firstRender && !await ValidatePassword())
+			NavManager.NavigateTo("/Login");
 
 		if (firstRender)
 			await LoadUsersGrid();

@@ -24,9 +24,11 @@ public partial class PersonReport
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
-		if (firstRender && !await ValidatePassword()) NavManager.NavigateTo("/");
+		if (firstRender && !await ValidatePassword())
+			NavManager.NavigateTo("/Login");
 
-		if (!firstRender) return;
+		if (!firstRender)
+			return;
 
 		_sessionDetailsModels = [];
 		_personSubscriptionModels = [];

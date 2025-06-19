@@ -1,0 +1,1007 @@
+﻿@page "/New-UI-Sessions"
+
+<PageTitle>Sessions - Reflex and Reform Pilates</PageTitle>
+
+<div class="sessions-container">
+    <div class="sessions-overlay"></div>
+
+    <!-- Header Section -->
+    <div class="sessions-header">
+        <div class="header-content">
+            <div class="page-title">
+                <svg class="page-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14a2 2 0 002 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7v-5z" />
+                </svg>
+                <h1>Sessions</h1>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="sessions-content">
+        <!-- Date Selection Card -->
+        <div class="content-card date-selector">
+            <div class="card-section">
+                <h5 class="section-header">
+                    <svg class="section-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14a2 2 0 002 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zm-5-5h-2v-2h2v2z" />
+                    </svg>
+                    Select Date
+                </h5>
+                <div class="section-content">
+                    <div class="date-picker-wrapper">
+                        <SfDatePicker TValue="DateOnly"
+                                      Placeholder="Select Session Date"
+                                      Value="_selectedDate"
+                                      CssClass="form-control date-picker">
+                            <DatePickerEvents TValue="DateOnly" ValueChange="OnDateChanged" />
+                        </SfDatePicker>
+                        <div class="selected-date-display">
+                            <span>Selected Date:</span>
+                            <span class="date-value">@_selectedDate.ToLongDateString()</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Session Slots Card -->
+        <div class="content-card sessions-overview">
+            <div class="card-section">
+                <h5 class="section-header">
+                    <svg class="section-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 5v14H5V5h14m1.1-2H3.9c-.5 0-.9.4-.9.9v16.2c0 .4.4.9.9.9h16.2c.4 0 .9-.5.9-.9V3.9c0-.5-.5-.9-.9-.9zM11 7h6v2h-6V7zm0 4h6v2h-6v-2zm0 4h6v2h-6v-2zM7 7h2v2H7V7zm0 4h2v2H7v-2zm0 4h2v2H7v-2z" />
+                    </svg>
+                    Time Slots & Sessions
+                </h5>
+
+                <div class="section-content">
+                    <div class="time-slots-grid">
+                        @foreach (var slot in _slots)
+                        {
+                            int totalSlots = _sessionModels.Where(s => s.SlotId == slot.Id).Count();
+                            int occupiedSlots = _sessionModels.Where(s => s.SlotId == slot.Id && s.Confirmed).Count();
+                            int availableSlots = slot.Max - occupiedSlots;
+                            bool hasExceededMax = totalSlots > slot.Max;
+
+                            string availabilityClass = hasExceededMax ? "exceeded-max" :
+                            availableSlots == 0 ? "full" :
+                            availableSlots <= slot.Max * 0.2 ? "almost-full" :
+                            availableSlots >= slot.Max * 0.7 ? "mostly-available" : "moderately-available";
+
+                            <div class="time-slot-card @availabilityClass">
+                                <div class="slot-header">
+                                    <div class="slot-time-wrapper">
+                                        <h3 class="slot-time">@slot.Name</h3>
+                                    </div>
+                                    <div class="slot-capacity-badge">
+                                        <span>@availableSlots / @slot.Max</span>
+                                        @if (hasExceededMax)
+                                        {
+                                            <span class="exceeds-indicator">+@(totalSlots - slot.Max)</span>
+                                        }
+                                    </div>
+                                    <SfButton CssClass="add-session-btn" OnClick="@(() => CreateNewSessionClick(slot))">
+                                        <svg class="add-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+                                        </svg>
+                                        Add Session
+                                    </SfButton>
+                                </div>
+
+                                <div class="sessions-list">
+                                    @if (!_sessionModels.Any(s => s.SlotId == slot.Id))
+                                    {
+                                        <div class="no-sessions">No sessions scheduled for this time slot</div>
+                                    }
+                                    else
+                                    {
+                                        <div class="session-cards">
+                                            @foreach (var sessions in _sessionModels.Where(s => s.SlotId == slot.Id).GroupBy(s => s.SessionTypeId))
+                                            {
+                                                @foreach (var session in sessions)
+                                                {
+                                                    bool isGroupSession = session.SessionTypeName.ToLower().Contains("group");
+                                                    string sessionClass = isGroupSession ? "group-session" : "private-session";
+
+                                                    <div class="session-card @(session.Confirmed ? "confirmed" : "pending") @sessionClass" @onclick="@(() => OnSessionClick(session))">
+                                                        <div class="session-status-indicator"></div>
+                                                        <div class="session-details">
+                                                            <div class="client-info">
+                                                                <span class="client-name">@session.PersonName</span>
+                                                                <span class="client-phone">@session.PersonNumber</span>
+                                                            </div>
+                                                            <div class="session-type">
+                                                                <span class="session-tag @(isGroupSession ? "group-tag" : "private-tag")">@session.SessionTypeName</span>
+                                                            </div>
+                                                            <div class="trainer-info">
+                                                                <span class="trainer-name">
+                                                                    <svg class="trainer-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                                                                    </svg>
+                                                                    @session.Trainer1Name
+                                                                </span>
+                                                                @if (!string.IsNullOrEmpty(session.Trainer2Name))
+                                                                {
+                                                                    <span class="trainer-name co-trainer">
+                                                                        <svg class="trainer-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                                                                        </svg>
+                                                                        + @session.Trainer2Name
+                                                                    </span>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            }
+
+                                            @if (availableSlots > 0)
+                                            {
+                                                @for (int i = 0; i < availableSlots; i++)
+                                                {
+                                                    <div class="empty-session-card" @onclick="@(() => CreateNewSessionClick(slot))">
+                                                        <div class="empty-session-content">
+                                                            <svg class="add-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+                                                            </svg>
+                                                            <span>Add</span>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Session Dialog -->
+    <SfDialog IsModal="true" Width="400px" @bind-Visible="@_isSessionDialogVisible" CssClass="session-dialog">
+        <DialogTemplates>
+            <Header>
+                <div class="dialog-header">
+                    <svg class="dialog-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14a2 2 0 002 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zm-5-5h-2v-2h2v2z" />
+                    </svg>
+                    Session Details
+                </div>
+            </Header>
+            <Content>
+                <div class="dialog-content">
+                    <div class="dialog-date">
+                        <svg class="dialog-field-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14a2 2 0 002 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z" />
+                        </svg>
+                        @_selectedDate.ToLongDateString()
+                    </div>
+                    <div class="dialog-slot">
+                        <svg class="dialog-field-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
+                        </svg>
+                        @_selectedSlot?.Name
+                    </div>
+
+                    <div class="dialog-field">
+                        <label class="dialog-label">Client</label>
+                        <SfComboBox TValue="int"
+                                    TItem="SubscriptionDetailsModel"
+                                    Placeholder="Select a Client"
+                                    DataSource="@_validSubs"
+                                    @bind-Value="_selectedSession.SubscriptionId"
+                                    CssClass="dialog-input">
+                            <ComboBoxFieldSettings Value="SubscriptionId" Text="PersonName" />
+                        </SfComboBox>
+                    </div>
+
+                    <div class="dialog-field">
+                        <label class="dialog-label">Primary Trainer</label>
+                        <SfComboBox TValue="int"
+                                    TItem="TrainerModel"
+                                    Placeholder="Select a Trainer"
+                                    DataSource="@_trainers"
+                                    @bind-Value="_selectedSession.Trainer1Id"
+                                    CssClass="dialog-input">
+                            <ComboBoxFieldSettings Value="Id" Text="Name" />
+                        </SfComboBox>
+                    </div>
+
+                    <div class="dialog-field">
+                        <label class="dialog-label">Co-Trainer (Optional)</label>
+                        <SfComboBox TValue="int?"
+                                    TItem="TrainerModel"
+                                    Placeholder="Select a Co-Trainer"
+                                    DataSource="@_trainers"
+                                    @bind-Value="_selectedSession.Trainer2Id"
+                                    CssClass="dialog-input">
+                            <ComboBoxFieldSettings Value="Id" Text="Name" />
+                        </SfComboBox>
+                    </div>
+
+                    <div class="dialog-field checkbox-field">
+                        <SfCheckBox Label="Confirm Session" @bind-Checked="_selectedSession.Confirmed" CssClass="dialog-checkbox" />
+                    </div>
+                </div>
+            </Content>
+        </DialogTemplates>
+        <DialogButtons>
+            <DialogButton Content="Cancel" OnClick="@(() => _isSessionDialogVisible = false)" CssClass="dialog-btn-cancel" />
+            <DialogButton Content="Save" IsPrimary="true" OnClick="@SessionDialogOkClick" CssClass="dialog-btn-save" />
+        </DialogButtons>
+    </SfDialog>
+
+    <!-- Confirmation Dialog -->
+    <SfDialog IsModal="true" Width="350px" @bind-Visible="@_isConfirmDialogVisible" CssClass="confirm-dialog">
+        <DialogTemplates>
+            <Header>
+                <div class="dialog-header">
+                    <svg class="dialog-icon warning" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" />
+                    </svg>
+                    Slot Maximum Exceeded
+                </div>
+            </Header>
+            <Content>
+                <div class="dialog-content">
+                    <p>You have reached the maximum number of sessions for this time slot. Would you like to create additional sessions?</p>
+                </div>
+            </Content>
+        </DialogTemplates>
+        <DialogButtons>
+            <DialogButton Content="Cancel" OnClick="@ConfirmDialogCancelClick" CssClass="dialog-btn-cancel" />
+            <DialogButton Content="Create Additional" IsPrimary="true" OnClick="@ConfirmDialogOkClick" CssClass="dialog-btn-save" />
+        </DialogButtons>
+    </SfDialog>
+
+    <div class="sessions-footer">
+        <p>&copy; @DateTime.Now.Year A Product By <a href="https://aadisoft.vercel.app" target="_blank" class="footer-link">AadiSoft</a>. All rights reserved.</p>
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary-color: #3f51b5; /* Fitness blue/purple */
+        --secondary-color: #8bc34a; /* Fresh green */
+        --dark-color: #303030;
+        --light-color: #f8f8f8;
+        --accent-color: #ff5722; /* Energetic orange */
+        --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        --confirmed-color: #4caf50;
+        --pending-color: #ff9800;
+        --border-radius: 12px;
+        --full-color: #ffebee; /* Light red background for full slots */
+        --almost-full-color: #fff8e1; /* Light amber background for almost full slots */
+        --moderately-available-color: #f1f8e9; /* Light green background for moderately available slots */
+        --mostly-available-color: #e8f5e9; /* Light green background for mostly available slots */
+        --exceeded-max-color: #ffe0e6; /* Pink background for slots that exceeded max */
+        --group-color: #3f51b5; /* Blue for group sessions */
+        --private-color: #ff5722; /* Orange for private sessions */
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    .sessions-container {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%233f51b5" fill-opacity="0.1" d="M0,224L48,218.7C96,213,192,203,288,213.3C384,224,480,256,576,261.3C672,267,768,245,864,208C960,171,1056,117,1152,106.7C1248,96,1344,128,1392,144L1440,160L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"></path></svg>'), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%238bc34a" fill-opacity="0.1" d="M0,64L48,85.3C96,107,192,149,288,165.3C384,181,480,171,576,144C672,117,768,75,864,80C960,85,1056,139,1152,154.7C1248,171,1344,149,1392,138.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+        background-color: #f8f9fa;
+        background-repeat: no-repeat;
+        background-position: top, bottom;
+        padding: 2rem;
+        position: relative;
+    }
+
+    .sessions-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml;utf8,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><rect width="20" height="20" fill="none" stroke="%23000" stroke-opacity="0.03" stroke-width="1"/></svg>');
+        opacity: 0.5;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .sessions-header {
+        margin-bottom: 1.5rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .page-title {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .page-icon {
+        width: 40px;
+        height: 40px;
+        color: var(--secondary-color);
+        filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
+    }
+
+    .page-title h1 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--dark-color);
+    }
+
+    .sessions-content {
+        flex-grow: 1;
+        position: relative;
+        z-index: 1;
+    }
+
+    .content-card {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .date-selector {
+        max-width: 600px;
+        margin: 0 auto 2rem;
+    }
+
+    .card-section {
+        padding: 1.5rem 2rem;
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin: 0 0 1.25rem 0;
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--dark-color);
+    }
+
+    .section-icon {
+        width: 24px;
+        height: 24px;
+        color: var(--secondary-color);
+    }
+
+    /* Date picker styles */
+    .date-picker-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .date-picker {
+        width: 100%;
+        max-width: 400px;
+        border-radius: 8px !important;
+        border: 2px solid #e0e0e0 !important;
+        transition: all 0.2s ease !important;
+    }
+
+    ::deep .e-input:focus,
+    ::deep .e-input-group.e-control-wrapper:focus-within {
+        border-color: var(--secondary-color) !important;
+        box-shadow: 0 0 0 3px rgba(139, 195, 74, 0.2) !important;
+    }
+
+    .selected-date-display {
+        background-color: #f5f5f5;
+        padding: 0.8rem 1.2rem;
+        border-radius: 50px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    .date-value {
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+
+    /* Time slots grid */
+    .time-slots-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem; /* Reduced gap between time slot cards */
+    }
+
+    .time-slot-card {
+        background-color: #ffffff;
+        border-radius: 12px;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        /* Time slot card background colors based on availability */
+        .time-slot-card.full {
+            background-color: var(--full-color);
+            border-left: 4px solid #f44336; /* Red indicator for full */
+        }
+
+        .time-slot-card.almost-full {
+            background-color: var(--almost-full-color);
+            border-left: 4px solid #ffc107; /* Amber indicator for almost full */
+        }
+
+        .time-slot-card.moderately-available {
+            background-color: var(--moderately-available-color);
+            border-left: 4px solid #aed581; /* Light green indicator for moderately available */
+        }
+
+        .time-slot-card.mostly-available {
+            background-color: var(--mostly-available-color);
+            border-left: 4px solid #66bb6a; /* Green indicator for mostly available */
+        }
+
+        .time-slot-card.exceeded-max {
+            background-color: var(--exceeded-max-color);
+            border-left: 4px solid #e91e63; /* Pink indicator for exceeded max */
+            border-right: 4px solid #e91e63;
+            border-top: 2px solid #e91e63;
+            border-bottom: 2px solid #e91e63;
+        }
+
+        .time-slot-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.09);
+        }
+
+    .slot-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+        background: linear-gradient(135deg, rgba(63, 81, 181, 0.03) 0%, rgba(63, 81, 181, 0.09) 100%);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        position: relative;
+        min-height: 45px;
+    }
+
+    /* Adjust header background for different availability states */
+    .full .slot-header {
+        background: linear-gradient(135deg, rgba(244, 67, 54, 0.03) 0%, rgba(244, 67, 54, 0.09) 100%);
+    }
+
+    .almost-full .slot-header {
+        background: linear-gradient(135deg, rgba(255, 193, 7, 0.03) 0%, rgba(255, 193, 7, 0.09) 100%);
+    }
+
+    .moderately-available .slot-header, .mostly-available .slot-header {
+        background: linear-gradient(135deg, rgba(139, 195, 74, 0.03) 0%, rgba(139, 195, 74, 0.09) 100%);
+    }
+
+    .exceeded-max .slot-header {
+        background: linear-gradient(135deg, rgba(233, 30, 99, 0.03) 0%, rgba(233, 30, 99, 0.09) 100%);
+    }
+
+    .slot-time-wrapper {
+        flex: 1;
+        margin-right: 1rem;
+    }
+
+    .slot-time {
+        margin: 0;
+        font-size: 1.1rem; /* Reduced font size */
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+
+    .full .slot-time {
+        color: #d32f2f; /* Darker red for full slots */
+    }
+
+    .almost-full .slot-time {
+        color: #f57c00; /* Darker amber for almost full slots */
+    }
+
+    .mostly-available .slot-time {
+        color: #2e7d32; /* Darker green for mostly available slots */
+    }
+
+    .exceeded-max .slot-time {
+        color: #c2185b; /* Darker pink for exceeded slots */
+    }
+
+    /* Capacity badge in center of header */
+    .slot-capacity-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        background-color: rgba(255, 255, 255, 0.9);
+        color: var(--dark-color);
+        font-weight: 600;
+        font-size: 0.75rem;
+        padding: 0.1rem 0.5rem;
+        border-radius: 50px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        z-index: 2;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .full .slot-capacity-badge {
+        background-color: rgba(244, 67, 54, 0.15);
+        color: #d32f2f;
+        border-color: rgba(244, 67, 54, 0.3);
+    }
+
+    .almost-full .slot-capacity-badge {
+        background-color: rgba(255, 193, 7, 0.15);
+        color: #f57c00;
+        border-color: rgba(255, 193, 7, 0.3);
+    }
+
+    .mostly-available .slot-capacity-badge {
+        background-color: rgba(102, 187, 106, 0.15);
+        color: #2e7d32;
+        border-color: rgba(102, 187, 106, 0.3);
+    }
+
+    .exceeded-max .slot-capacity-badge {
+        background-color: rgba(233, 30, 99, 0.15);
+        color: #c2185b;
+        border-color: rgba(233, 30, 99, 0.3);
+    }
+
+    .exceeds-indicator {
+        background-color: #e91e63;
+        color: white;
+        font-size: 0.65rem; /* Smaller font size */
+        padding: 0.05rem 0.3rem; /* Smaller padding */
+        border-radius: 50px;
+        margin-left: 0.2rem;
+        font-weight: 700;
+    }
+
+    .add-session-btn {
+        background-color: var(--secondary-color) !important;
+        border-color: transparent !important;
+        color: white !important;
+        border-radius: 50px !important;
+        padding: 0.25rem 0.8rem !important; /* Reduced padding */
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.3rem !important;
+        font-weight: 500 !important;
+        font-size: 0.8rem !important; /* Smaller font */
+        transition: all 0.2s ease !important;
+        box-shadow: 0 2px 6px rgba(139, 195, 74, 0.3) !important;
+        min-width: unset !important;
+        height: 28px !important; /* Fixed height */
+    }
+
+    .full .add-session-btn {
+        background-color: #9e9e9e !important; /* Gray button for full slots */
+        box-shadow: 0 2px 6px rgba(158, 158, 158, 0.3) !important;
+    }
+
+    .exceeded-max .add-session-btn {
+        background-color: #e91e63 !important; /* Pink button for exceeded slots */
+        box-shadow: 0 2px 6px rgba(233, 30, 99, 0.3) !important;
+    }
+
+    .add-session-btn:hover {
+        background-color: #7cb342 !important;
+        box-shadow: 0 4px 8px rgba(139, 195, 74, 0.4) !important;
+        transform: translateY(-2px);
+    }
+
+    .full .add-session-btn:hover {
+        background-color: #757575 !important; /* Darker gray on hover */
+        box-shadow: 0 4px 8px rgba(158, 158, 158, 0.4) !important;
+    }
+
+    .exceeded-max .add-session-btn:hover {
+        background-color: #d81b60 !important; /* Darker pink on hover */
+        box-shadow: 0 4px 8px rgba(233, 30, 99, 0.4) !important;
+    }
+
+    .add-icon {
+        width: 16px; /* Smaller icon */
+        height: 16px; /* Smaller icon */
+        fill: white;
+    }
+
+    .sessions-list {
+        padding: 0.5rem 1rem; /* Reduced padding */
+        max-height: 250px; /* Limit height */
+        overflow-y: auto; /* Add scrolling for many sessions */
+    }
+
+    .no-sessions {
+        text-align: center;
+        padding: 1rem 0; /* Reduced padding */
+        color: #888;
+        font-style: italic;
+        font-size: 0.9rem;
+    }
+
+    .session-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 0.7rem; /* Reduced gap */
+    }
+
+    .session-card {
+        position: relative;
+        background-color: white;
+        border-radius: 10px;
+        padding: 0.8rem; /* Reduced padding */
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        cursor: pointer;
+        overflow: hidden;
+    }
+
+        .session-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .session-card.confirmed {
+            border-left: 4px solid var(--confirmed-color);
+        }
+
+        .session-card.pending {
+            border-left: 4px solid var(--pending-color);
+        }
+
+        /* Group vs Private session styling */
+        .session-card.group-session {
+            border-top: 3px solid var(--group-color);
+            background-color: rgba(63, 81, 181, 0.03);
+        }
+
+        .session-card.private-session {
+            border-top: 3px solid var(--private-color);
+            background-color: rgba(255, 87, 34, 0.03);
+        }
+
+    .session-status-indicator {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 10px; /* Smaller indicator */
+        height: 10px; /* Smaller indicator */
+        border-radius: 50%;
+        margin: 0.6rem;
+    }
+
+    .confirmed .session-status-indicator {
+        background-color: var(--confirmed-color);
+    }
+
+    .pending .session-status-indicator {
+        background-color: var(--pending-color);
+    }
+
+    .group-session .session-status-indicator {
+        box-shadow: 0 0 0 2px rgba(63, 81, 181, 0.2);
+    }
+
+    .private-session .session-status-indicator {
+        box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.2);
+    }
+
+    .session-details {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem; /* Reduced gap */
+    }
+
+    .client-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.1rem; /* Reduced gap */
+    }
+
+    .client-name {
+        font-weight: 600;
+        font-size: 1rem; /* Reduced font size */
+        color: var(--dark-color);
+    }
+
+    .client-phone {
+        font-size: 0.8rem; /* Reduced font size */
+        color: #666;
+    }
+
+    .session-type {
+        margin-top: 0.1rem; /* Reduced margin */
+    }
+
+    .session-tag {
+        display: inline-flex;
+        align-items: center;
+        font-size: 0.75rem; /* Reduced font size */
+        font-weight: 500;
+        padding: 0.2rem 0.5rem; /* Reduced padding */
+        border-radius: 50px;
+        padding-left: 1.8rem;
+        position: relative;
+    }
+
+        .session-tag.group-tag {
+            background-color: rgba(63, 81, 181, 0.15);
+            color: var(--group-color);
+        }
+
+            .session-tag.group-tag::before {
+                content: "";
+                position: absolute;
+                left: 0.5rem;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 16px;
+                height: 16px;
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%233f51b5' d='M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z'/%3E%3C/svg%3E");
+                background-repeat: no-repeat;
+                background-size: contain;
+            }
+
+        .session-tag.private-tag {
+            background-color: rgba(255, 87, 34, 0.15);
+            color: var(--private-color);
+        }
+
+            .session-tag.private-tag::before {
+                content: "";
+                position: absolute;
+                left: 0.5rem;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 16px;
+                height: 16px;
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23ff5722' d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E");
+                background-repeat: no-repeat;
+                background-size: contain;
+            }
+
+    .trainer-info {
+        margin-top: 0.2rem; /* Reduced margin */
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+
+    .trainer-name {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem; /* Reduced gap */
+        font-size: 0.8rem; /* Reduced font size */
+        color: #444;
+    }
+
+    .co-trainer {
+        color: #666;
+        font-style: italic;
+    }
+
+    .trainer-icon {
+        width: 14px; /* Smaller icon */
+        height: 14px; /* Smaller icon */
+        fill: #666;
+    }
+
+    .empty-session-card {
+        background-color: rgba(0, 0, 0, 0.03);
+        border: 2px dashed rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        height: 80px; /* Reduced height */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+        .empty-session-card:hover {
+            background-color: rgba(139, 195, 74, 0.08);
+            border-color: rgba(139, 195, 74, 0.3);
+            transform: translateY(-2px);
+        }
+
+    .empty-session-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.4rem; /* Reduced gap */
+        color: #888;
+        font-size: 0.9rem; /* Reduced font size */
+    }
+
+        .empty-session-content .add-icon {
+            width: 20px;
+            height: 20px;
+            fill: var(--secondary-color);
+        }
+
+    /* Session Dialog Styles */
+    ::deep .session-dialog .e-dlg-header {
+        padding: 0 !important;
+    }
+
+    ::deep .confirm-dialog .e-dlg-header {
+        padding: 0 !important;
+    }
+
+    .dialog-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 1.5rem;
+        background: linear-gradient(135deg, var(--primary-color) 0%, #5c6bc0 100%);
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .dialog-icon {
+        width: 24px;
+        height: 24px;
+        fill: white;
+    }
+
+        .dialog-icon.warning {
+            fill: #ffeb3b;
+        }
+
+    .dialog-content {
+        padding: 1.5rem 0 0.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    .dialog-date, .dialog-slot {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        margin-bottom: 1rem;
+        font-weight: 500;
+    }
+
+    .dialog-field-icon {
+        width: 18px;
+        height: 18px;
+        fill: var(--primary-color);
+    }
+
+    .dialog-field {
+        margin-bottom: 1.25rem;
+    }
+
+    .dialog-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #555;
+        position: relative;
+        padding-left: 0.5rem;
+    }
+
+        .dialog-label::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: var(--secondary-color);
+            border-radius: 2px;
+        }
+
+    .dialog-input {
+        width: 100%;
+        border-radius: 8px !important;
+    }
+
+    .checkbox-field {
+        margin-top: 1rem;
+    }
+
+    ::deep .dialog-btn-cancel {
+        background-color: #f1f1f1 !important;
+        color: #666 !important;
+        border-color: transparent !important;
+        border-radius: 50px !important;
+    }
+
+    ::deep .dialog-btn-save {
+        background: linear-gradient(135deg, var(--secondary-color) 0%, #7cb342 100%) !important;
+        border-color: transparent !important;
+        border-radius: 50px !important;
+    }
+
+    .sessions-footer {
+        margin-top: auto;
+        text-align: center;
+        padding: 1rem;
+        position: relative;
+        z-index: 1;
+    }
+
+        .sessions-footer p {
+            margin: 0;
+            color: #777;
+            font-size: 0.9rem;
+        }
+
+    /* Responsive adjustments */
+    @@media (max-width: 768px) {
+        .sessions-container {
+            padding: 1.5rem 1rem;
+        }
+
+        .page-title h1 {
+            font-size: 1.5rem;
+        }
+
+        .card-section {
+            padding: 1.5rem 1rem;
+        }
+
+        .session-cards {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .slot-header {
+            flex-wrap: wrap;
+            padding: 0.75rem 0.8rem;
+            min-height: 60px;
+        }
+
+        .slot-time-wrapper {
+            order: 1;
+            flex: 0 0 100%;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .slot-capacity-badge {
+            position: static;
+            transform: none;
+            order: 2;
+            margin: 0 auto 0.5rem auto;
+        }
+
+        .add-session-btn {
+            order: 3;
+            width: 100%;
+            margin-top: 0.5rem;
+            justify-content: center;
+        }
+    }
+</style>

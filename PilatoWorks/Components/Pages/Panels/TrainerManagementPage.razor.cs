@@ -15,7 +15,8 @@ public partial class TrainerManagementPage
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
-		if (firstRender && !await ValidatePassword()) NavManager.NavigateTo("/");
+		if (firstRender && !await ValidatePassword())
+			NavManager.NavigateTo("/Login");
 
 		if (firstRender)
 			await LoadTrainersGrid();

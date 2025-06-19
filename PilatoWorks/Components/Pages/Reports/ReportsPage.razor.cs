@@ -7,7 +7,8 @@ public partial class ReportsPage
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
-		if (firstRender && !await ValidatePassword()) NavManager.NavigateTo("/");
+		if (firstRender && !await ValidatePassword())
+			NavManager.NavigateTo("/Login");
 	}
 
 	private async Task<bool> ValidatePassword()
@@ -41,6 +42,6 @@ public partial class ReportsPage
 		NavManager.NavigateTo("/SessionsReport");
 
 	private void NavigateToDashboard() =>
-		NavManager.NavigateTo("/dashboard");
+		NavManager.NavigateTo("/");
 
 }

@@ -18,7 +18,8 @@ public partial class SessionsReport
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
-		if (firstRender && !await ValidatePassword()) NavManager.NavigateTo("/");
+		if (firstRender && !await ValidatePassword())
+			NavManager.NavigateTo("/Login");
 
 		if (firstRender)
 		{
@@ -100,11 +101,5 @@ public partial class SessionsReport
 		SessionsEndDate = args.EndDate;
 		await LoadSessionData();
 		StateHasChanged();
-	}
-
-	private string CalculateTotalRevenue()
-	{
-		decimal total = _sessionModels?.Sum(s => s.PerSessionCost) ?? 0;
-		return total.FormatIndianCurrency();
 	}
 }

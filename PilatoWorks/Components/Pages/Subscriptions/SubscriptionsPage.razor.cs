@@ -31,7 +31,8 @@ public partial class SubscriptionsPage
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
-		if (firstRender && !await ValidatePassword()) NavManager.NavigateTo("/");
+		if (firstRender && !await ValidatePassword())
+			NavManager.NavigateTo("/Login");
 
 		if (firstRender)
 			await LoadComboBox();
@@ -71,7 +72,7 @@ public partial class SubscriptionsPage
 		if (subscription is null)
 		{
 			await JS.InvokeVoidAsync("alert", "Subscription not found.");
-			NavManager.NavigateTo("/Dashboard");
+			NavManager.NavigateTo("/");
 			return;
 		}
 
@@ -79,7 +80,7 @@ public partial class SubscriptionsPage
 		if (person is null)
 		{
 			await JS.InvokeVoidAsync("alert", "Person not found for the subscription.");
-			NavManager.NavigateTo("/Dashboard");
+			NavManager.NavigateTo("/");
 			return;
 		}
 
@@ -240,7 +241,7 @@ public partial class SubscriptionsPage
 		}
 
 		if (SubscriptionId.HasValue && SubscriptionId.Value > 0)
-			NavManager.NavigateTo($"/Dashboard");
+			NavManager.NavigateTo($"/");
 
 		else
 			NavManager.NavigateTo(NavManager.Uri, forceLoad: true);

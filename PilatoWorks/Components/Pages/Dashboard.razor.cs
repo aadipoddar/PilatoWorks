@@ -9,7 +9,12 @@ public partial class Dashboard
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
-		if (firstRender && !await ValidatePassword()) NavManager.NavigateTo("/");
+		if (firstRender)
+			Dapper.SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());
+
+		if (firstRender && !await ValidatePassword())
+			NavManager.NavigateTo("/Login");
+
 		StateHasChanged();
 	}
 
@@ -32,6 +37,9 @@ public partial class Dashboard
 	private void OnSessionClick() =>
 		NavManager.NavigateTo("/Sessions");
 
+	private void OnNewUISessionClick() =>
+		NavManager.NavigateTo("/New-UI-Sessions");
+
 	private void OnTrainerClick() =>
 		NavManager.NavigateTo("/Trainers");
 
@@ -52,9 +60,6 @@ public partial class Dashboard
 
 	private void OnUsersClick() =>
 		NavManager.NavigateTo("/UserManagement");
-
-	private void OnVoiceAssistanceClick() =>
-		NavManager.NavigateTo("/VoiceAssistance");
 
 	private async Task OnLogoutClick()
 	{

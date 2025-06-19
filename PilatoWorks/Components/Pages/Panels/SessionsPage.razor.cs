@@ -34,12 +34,13 @@ public partial class SessionsPage
 	// Voice assistance properties
 	private bool _showVoiceModal = false;
 	private string _transcript = "";
-	private SessionResponseModel extractedSession = new();
+	private SessionResponseModel _extractedSession = new();
 
 	#region Load Data
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
-		if (firstRender && !await ValidatePassword()) NavManager.NavigateTo("/");
+		if (firstRender && !await ValidatePassword())
+			NavManager.NavigateTo("/Login");
 
 		if (firstRender)
 		{
@@ -64,17 +65,17 @@ public partial class SessionsPage
 		return true;
 	}
 
-	private async void OnSlotChanged(ChangeEventArgs<int, SlotModel> args)
-	{
-		if (_selectedSlot == 0) return;
-		await LoadSessions();
-	}
-
 	private async void OnDateChanged(ChangedEventArgs<DateOnly> args)
 	{
 		_selectedDate = args.Value;
 		await LoadSessions();
 		StateHasChanged();
+	}
+
+	private async void OnSlotChanged(ChangeEventArgs<int, SlotModel> args)
+	{
+		if (_selectedSlot == 0) return;
+		await LoadSessions();
 	}
 
 	private async Task LoadSlots()
@@ -197,12 +198,12 @@ public partial class SessionsPage
 		NavManager.NavigateTo("/");
 	#endregion
 
-	// Voice assistance methods
+	#region Voice Assistance
 	private void OnVoiceAssistanceClick()
 	{
 		_showVoiceModal = true;
 		_transcript = "";
-		extractedSession = new();
+		_extractedSession = new();
 		StateHasChanged();
 	}
 
@@ -219,23 +220,23 @@ public partial class SessionsPage
 
 		try
 		{
-			extractedSession = await AIProcessing.SessionProcessing(_transcript);
+			_extractedSession = await AIProcessing.SessionProcessing(_transcript);
 
-			if (extractedSession is null)
+			if (_extractedSession is null)
 				return;
 
-			_selectedDate = DateOnly.Parse(extractedSession.date);
+			_selectedDate = DateOnly.Parse(_extractedSession.date);
 
-			var matchingSlot = _slots.FirstOrDefault(s => s.Hour == int.Parse(extractedSession.time));
+			var matchingSlot = _slots.FirstOrDefault(s => s.Hour == int.Parse(_extractedSession.time));
 			if (matchingSlot is not null)
 				_selectedSlot = matchingSlot.Id;
 
 			await LoadSessions();
 
 			// Use AI to find the perfect match for client name
-			if (!string.IsNullOrWhiteSpace(extractedSession.clientName) && _validSubs.Count != 0)
+			if (!string.IsNullOrWhiteSpace(_extractedSession.clientName) && _validSubs.Count != 0)
 			{
-				var bestMatch = await AIProcessing.FindBestClientMatch(extractedSession.clientName, _validSubs);
+				var bestMatch = await AIProcessing.FindBestClientMatch(_extractedSession.clientName, _validSubs);
 
 				if (bestMatch is not null)
 					_selectedValidSub = bestMatch.SubscriptionId;
@@ -244,7 +245,7 @@ public partial class SessionsPage
 				else
 				{
 					var fallbackMatch = _validSubs.FirstOrDefault(c =>
-						c.PersonName.Contains(extractedSession.clientName, StringComparison.OrdinalIgnoreCase));
+						c.PersonName.Contains(_extractedSession.clientName, StringComparison.OrdinalIgnoreCase));
 
 					if (fallbackMatch is not null)
 						_selectedValidSub = fallbackMatch.SubscriptionId;
@@ -260,4 +261,5 @@ public partial class SessionsPage
 			await JS.InvokeVoidAsync("alert", "Error Extracting information. Please try again.");
 		}
 	}
+	#endregion
 }

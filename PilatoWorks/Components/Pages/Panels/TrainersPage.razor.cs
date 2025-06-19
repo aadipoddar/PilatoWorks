@@ -29,7 +29,8 @@ public partial class TrainersPage
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
-		if (firstRender && !await ValidatePassword()) NavManager.NavigateTo("/");
+		if (firstRender && !await ValidatePassword())
+			NavManager.NavigateTo("/Login");
 	}
 
 	private async Task<bool> ValidatePassword()

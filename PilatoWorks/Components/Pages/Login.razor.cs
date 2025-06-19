@@ -23,7 +23,7 @@ public partial class Login
 			if (user is null) return;
 
 			if (BCrypt.Net.BCrypt.EnhancedVerify(user.Password.ToString(), password))
-				NavManager.NavigateTo("/Dashboard");
+				NavManager.NavigateTo("/");
 		}
 	}
 
@@ -38,6 +38,6 @@ public partial class Login
 		await JS.InvokeVoidAsync("setCookie", "UserId", user.Id, 13);
 		await JS.InvokeVoidAsync("setCookie", "Password", BCrypt.Net.BCrypt.EnhancedHashPassword(user.Password.ToString(), 13), 13);
 
-		NavManager.NavigateTo("/Dashboard");
+		NavManager.NavigateTo("/");
 	}
 }
