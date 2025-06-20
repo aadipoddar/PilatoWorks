@@ -66,6 +66,7 @@
 
                             string availabilityClass = hasExceededMax ? "exceeded-max" :
                             availableSlots == 0 ? "full" :
+                            availableSlots <= 2 ? "very-low-availability" :
                             availableSlots <= slot.Max * 0.2 ? "almost-full" :
                             availableSlots >= slot.Max * 0.7 ? "mostly-available" : "moderately-available";
 
@@ -274,11 +275,20 @@
         --confirmed-color: #4caf50;
         --pending-color: #ff9800;
         --border-radius: 12px;
-        --full-color: #ffebee; /* Light red background for full slots */
-        --almost-full-color: #fff8e1; /* Light amber background for almost full slots */
-        --moderately-available-color: #f1f8e9; /* Light green background for moderately available slots */
-        --mostly-available-color: #e8f5e9; /* Light green background for mostly available slots */
-        --exceeded-max-color: #ffe0e6; /* Pink background for slots that exceeded max */
+        /* Updated soothing colors for availability states */
+        --full-color: #f8ecec; /* Softer light red for full slots */
+        --almost-full-color: #faf5e6; /* Softer light amber/yellow for almost full slots */
+        --very-low-color: #fdf8e1; /* Light shade of yellow for very low availability (1-2 slots) */
+        --moderately-available-color: #edf5e9; /* Softer light green for moderately available */
+        --mostly-available-color: #e8f1e8; /* Softer light green for mostly available */
+        --exceeded-max-color: #f9edf2; /* Softer light pink for exceeded max */
+        /* Border colors */
+        --full-border-color: #e57373; /* Softer red for borders */
+        --almost-full-border-color: #ffca7a; /* Softer yellow/amber for borders */
+        --very-low-border-color: #ffee58; /* Yellow border for very low availability */
+        --available-border-color: #81c784; /* Softer green for borders */
+        --exceeded-border-color: #f48fb1; /* Softer pink for borders */
+        /* Group and private colors */
         --group-color: #3f51b5; /* Blue for group sessions */
         --private-color: #ff5722; /* Orange for private sessions */
     }
@@ -439,30 +449,36 @@
         /* Time slot card background colors based on availability */
         .time-slot-card.full {
             background-color: var(--full-color);
-            border-left: 4px solid #f44336; /* Red indicator for full */
+            border-left: 4px solid var(--full-border-color); /* Softer red indicator for full */
         }
 
         .time-slot-card.almost-full {
             background-color: var(--almost-full-color);
-            border-left: 4px solid #ffc107; /* Amber indicator for almost full */
+            border-left: 4px solid var(--almost-full-border-color); /* Softer amber indicator for almost full */
+        }
+
+        /* New class for very low availability (1-2 slots) */
+        .time-slot-card.very-low-availability {
+            background-color: var(--very-low-color);
+            border-left: 4px solid var(--very-low-border-color); /* Yellow indicator for very low availability */
         }
 
         .time-slot-card.moderately-available {
             background-color: var(--moderately-available-color);
-            border-left: 4px solid #aed581; /* Light green indicator for moderately available */
+            border-left: 4px solid var(--available-border-color); /* Softer green indicator for moderately available */
         }
 
         .time-slot-card.mostly-available {
             background-color: var(--mostly-available-color);
-            border-left: 4px solid #66bb6a; /* Green indicator for mostly available */
+            border-left: 4px solid var(--available-border-color); /* Softer green indicator for mostly available */
         }
 
         .time-slot-card.exceeded-max {
             background-color: var(--exceeded-max-color);
-            border-left: 4px solid #e91e63; /* Pink indicator for exceeded max */
-            border-right: 4px solid #e91e63;
-            border-top: 2px solid #e91e63;
-            border-bottom: 2px solid #e91e63;
+            border-left: 4px solid var(--exceeded-border-color); /* Softer pink indicator for exceeded max */
+            border-right: 4px solid var(--exceeded-border-color);
+            border-top: 2px solid var(--exceeded-border-color);
+            border-bottom: 2px solid var(--exceeded-border-color);
         }
 
         .time-slot-card:hover {
@@ -475,7 +491,7 @@
         align-items: center;
         justify-content: space-between;
         padding: 0.5rem 1rem;
-        background: linear-gradient(135deg, rgba(63, 81, 181, 0.03) 0%, rgba(63, 81, 181, 0.09) 100%);
+        background: linear-gradient(135deg, rgba(63, 81, 181, 0.02) 0%, rgba(63, 81, 181, 0.06) 100%);
         border-bottom: 1px solid rgba(0, 0, 0, 0.06);
         position: relative;
         min-height: 45px;
@@ -483,19 +499,24 @@
 
     /* Adjust header background for different availability states */
     .full .slot-header {
-        background: linear-gradient(135deg, rgba(244, 67, 54, 0.03) 0%, rgba(244, 67, 54, 0.09) 100%);
+        background: linear-gradient(135deg, rgba(229, 115, 115, 0.02) 0%, rgba(229, 115, 115, 0.06) 100%);
     }
 
     .almost-full .slot-header {
-        background: linear-gradient(135deg, rgba(255, 193, 7, 0.03) 0%, rgba(255, 193, 7, 0.09) 100%);
+        background: linear-gradient(135deg, rgba(255, 202, 122, 0.02) 0%, rgba(255, 202, 122, 0.06) 100%);
+    }
+
+    /* Add header gradient for very low availability */
+    .very-low-availability .slot-header {
+        background: linear-gradient(135deg, rgba(255, 238, 88, 0.02) 0%, rgba(255, 238, 88, 0.06) 100%);
     }
 
     .moderately-available .slot-header, .mostly-available .slot-header {
-        background: linear-gradient(135deg, rgba(139, 195, 74, 0.03) 0%, rgba(139, 195, 74, 0.09) 100%);
+        background: linear-gradient(135deg, rgba(129, 199, 132, 0.02) 0%, rgba(129, 199, 132, 0.06) 100%);
     }
 
     .exceeded-max .slot-header {
-        background: linear-gradient(135deg, rgba(233, 30, 99, 0.03) 0%, rgba(233, 30, 99, 0.09) 100%);
+        background: linear-gradient(135deg, rgba(244, 143, 177, 0.02) 0%, rgba(244, 143, 177, 0.06) 100%);
     }
 
     .slot-time-wrapper {
@@ -511,19 +532,24 @@
     }
 
     .full .slot-time {
-        color: #d32f2f; /* Darker red for full slots */
+        color: #c62828; /* Less intense red for full slots */
     }
 
     .almost-full .slot-time {
-        color: #f57c00; /* Darker amber for almost full slots */
+        color: #ef6c00; /* Less intense amber for almost full slots */
+    }
+
+    /* New color for very low availability text */
+    .very-low-availability .slot-time {
+        color: #f9a825; /* Amber color for very low availability */
     }
 
     .mostly-available .slot-time {
-        color: #2e7d32; /* Darker green for mostly available slots */
+        color: #2e7d32; /* Keeping a readable green for mostly available slots */
     }
 
     .exceeded-max .slot-time {
-        color: #c2185b; /* Darker pink for exceeded slots */
+        color: #ad1457; /* Less intense pink for exceeded slots */
     }
 
     /* Capacity badge in center of header */
@@ -547,31 +573,38 @@
     }
 
     .full .slot-capacity-badge {
-        background-color: rgba(244, 67, 54, 0.15);
-        color: #d32f2f;
-        border-color: rgba(244, 67, 54, 0.3);
+        background-color: rgba(229, 115, 115, 0.12);
+        color: #c62828;
+        border-color: rgba(229, 115, 115, 0.25);
     }
 
     .almost-full .slot-capacity-badge {
-        background-color: rgba(255, 193, 7, 0.15);
-        color: #f57c00;
-        border-color: rgba(255, 193, 7, 0.3);
+        background-color: rgba(255, 202, 122, 0.12);
+        color: #ef6c00;
+        border-color: rgba(255, 202, 122, 0.25);
+    }
+
+    /* New capacity badge style for very low availability */
+    .very-low-availability .slot-capacity-badge {
+        background-color: rgba(255, 238, 88, 0.12);
+        color: #f9a825;
+        border-color: rgba(255, 238, 88, 0.25);
     }
 
     .mostly-available .slot-capacity-badge {
-        background-color: rgba(102, 187, 106, 0.15);
+        background-color: rgba(129, 199, 132, 0.12);
         color: #2e7d32;
-        border-color: rgba(102, 187, 106, 0.3);
+        border-color: rgba(129, 199, 132, 0.25);
     }
 
     .exceeded-max .slot-capacity-badge {
-        background-color: rgba(233, 30, 99, 0.15);
-        color: #c2185b;
-        border-color: rgba(233, 30, 99, 0.3);
+        background-color: rgba(244, 143, 177, 0.12);
+        color: #ad1457;
+        border-color: rgba(244, 143, 177, 0.25);
     }
 
     .exceeds-indicator {
-        background-color: #e91e63;
+        background-color: #ec407a;
         color: white;
         font-size: 0.65rem; /* Smaller font size */
         padding: 0.05rem 0.3rem; /* Smaller padding */
@@ -603,8 +636,8 @@
     }
 
     .exceeded-max .add-session-btn {
-        background-color: #e91e63 !important; /* Pink button for exceeded slots */
-        box-shadow: 0 2px 6px rgba(233, 30, 99, 0.3) !important;
+        background-color: #ec407a !important; /* Softer pink button for exceeded slots */
+        box-shadow: 0 2px 6px rgba(236, 64, 122, 0.3) !important;
     }
 
     .add-session-btn:hover {
@@ -620,7 +653,7 @@
 
     .exceeded-max .add-session-btn:hover {
         background-color: #d81b60 !important; /* Darker pink on hover */
-        box-shadow: 0 4px 8px rgba(233, 30, 99, 0.4) !important;
+        box-shadow: 0 4px 8px rgba(216, 27, 96, 0.4) !important;
     }
 
     .add-icon {
