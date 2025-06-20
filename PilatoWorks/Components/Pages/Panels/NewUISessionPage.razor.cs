@@ -11,8 +11,10 @@ public partial class NewUISessionPage
 
 	private bool _isConfirmDialogVisible = false;
 	private bool _isSessionDialogVisible = false;
+	private bool _isCopyDialogVisible = false;
 
 	private DateOnly _selectedDate = DateOnly.FromDateTime(DateTime.Now);
+	private DateOnly _copySourceDate = DateOnly.FromDateTime(DateTime.Today);
 
 	private SlotModel _selectedSlot;
 	private SessionDetailsModel _selectedSession = new() { Confirmed = true };
@@ -114,15 +116,6 @@ public partial class NewUISessionPage
 		_isSessionDialogVisible = true;
 	}
 
-	private void ConfirmDialogOkClick()
-	{
-		_isConfirmDialogVisible = false;
-		_isSessionDialogVisible = true;
-	}
-
-	private void ConfirmDialogCancelClick() =>
-		_isConfirmDialogVisible = false;
-
 	private async Task OnSessionClick(SessionDetailsModel session)
 	{
 		_selectedSession = session;
@@ -133,8 +126,21 @@ public partial class NewUISessionPage
 		_isSessionDialogVisible = true;
 		StateHasChanged();
 	}
+
+	private void ConfirmDialogOkClick()
+	{
+		_isConfirmDialogVisible = false;
+		_isSessionDialogVisible = true;
+	}
+
+	private void ConfirmDialogCancelClick() =>
+		_isConfirmDialogVisible = false;
+
+	private void OnCopySessionsClick() =>
+		_isCopyDialogVisible = true;
 	#endregion
 
+	#region Saving
 	private async Task SessionDialogOkClick()
 	{
 		if (_selectedSession.SlotId <= 0)
@@ -182,5 +188,17 @@ public partial class NewUISessionPage
 		await LoadSessions();
 
 		StateHasChanged();
+	}
+	#endregion
+
+	private void OnVoiceAssistantClick()
+	{
+		// Implement voice assistant functionality here
+	}
+
+	private void CopyScheduleClick()
+	{
+		// Implement copying functionality from _copySourceDate to _selectedDate
+		_isCopyDialogVisible = false;
 	}
 }
