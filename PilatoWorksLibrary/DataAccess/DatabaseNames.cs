@@ -15,6 +15,8 @@ public static class TableNames
 
 public static class StoredProcedureNames
 {
+	public static string DeleteSessionById => "Delete_Session_By_Id";
+
 	public static string LoadTableData => "Load_TableData";
 	public static string LoadTableDataById => "Load_TableData_By_Id";
 	public static string LoadTableDataByStatus => "Load_TableData_By_Status";

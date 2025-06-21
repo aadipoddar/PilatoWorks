@@ -12,17 +12,19 @@ public partial class NewUISessionPage
 	private bool _isConfirmDialogVisible = false;
 	private bool _isSessionDialogVisible = false;
 	private bool _isCopyDialogVisible = false;
+	private bool _isNotInsertedDialogVisible = false;
 
 	private DateOnly _selectedDate = DateOnly.FromDateTime(DateTime.Now);
-	private DateOnly _copySourceDate = DateOnly.FromDateTime(DateTime.Today);
+	private DateOnly _copySourceDate = DateOnly.FromDateTime(DateTime.Today.AddDays(-7));
 
 	private SlotModel _selectedSlot;
 	private SessionDetailsModel _selectedSession = new() { Confirmed = true };
 
 	private List<SlotModel> _slots = [];
 	private List<TrainerModel> _trainers = [];
-	private List<SessionDetailsModel> _sessionModels = [];
+	private List<SessionDetailsModel> _sessions = [];
 	private List<SubscriptionDetailsModel> _validSubs = [];
+	private List<SessionDetailsModel> _notInsertedSessions = [];
 
 	#region Load Data
 	protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -69,7 +71,7 @@ public partial class NewUISessionPage
 
 	private async Task LoadSessions()
 	{
-		_sessionModels = await SessionData.LoadSessionDetailsByDateRange(_selectedDate, _selectedDate);
+		_sessions = await SessionData.LoadSessionDetailsByDateRange(_selectedDate, _selectedDate);
 		StateHasChanged();
 	}
 
@@ -79,6 +81,9 @@ public partial class NewUISessionPage
 		_validSubs = [.. _validSubs
 			.GroupBy(sub => sub.PersonId)
 			.Select(group => group.First())];
+
+		if (_selectedSlot is null || _selectedSlot.Id <= 0)
+			return;
 
 		var slotSessions = await SessionData.LoadSessionDetailsByDateSlot(_selectedDate, _selectedSlot.Id);
 
@@ -103,7 +108,7 @@ public partial class NewUISessionPage
 		var sessions = await SessionData.LoadSessionDetailsByDateSlot(_selectedDate, slot.Id);
 
 		_selectedSlot = slot;
-		_selectedSession = new();
+		_selectedSession = new() { Confirmed = true };
 
 		await LoadValidPersons();
 
@@ -136,8 +141,69 @@ public partial class NewUISessionPage
 	private void ConfirmDialogCancelClick() =>
 		_isConfirmDialogVisible = false;
 
+	private async Task DeleteSessionClick()
+	{
+		if (_selectedSession.Id > 0)
+		{
+			await SessionData.DeleteSessionById(_selectedSession.Id);
+
+			_isSessionDialogVisible = false;
+
+			_selectedSession = new() { Confirmed = true };
+			_selectedSlot = null;
+
+			await LoadSessions();
+
+			StateHasChanged();
+		}
+	}
+
 	private void OnCopySessionsClick() =>
 		_isCopyDialogVisible = true;
+
+	private async Task CopyScheduleClick()
+	{
+		_isCopyDialogVisible = false;
+
+		await LoadSessions();
+
+		foreach (var session in _sessions)
+			await SessionData.DeleteSessionById(session.Id);
+
+		_notInsertedSessions = [];
+		await LoadValidPersons();
+		var sessions = await SessionData.LoadSessionDetailsByDateRange(_copySourceDate, _copySourceDate);
+
+		foreach (var session in sessions)
+		{
+			if (!_validSubs.Any(s => s.SubscriptionId == session.SubscriptionId))
+			{
+				_notInsertedSessions.Add(session);
+				continue;
+			}
+
+			await SessionData.InsertSession(new()
+			{
+				Id = 0,
+				SessionDate = _selectedDate,
+				SubscriptionId = session.SubscriptionId,
+				Trainer1Id = session.Trainer1Id,
+				Trainer2Id = session.Trainer2Id,
+				UserId = _user.Id,
+				SlotId = session.SlotId,
+				Confirmed = session.Confirmed,
+				CreatedDate = DateTime.Now,
+			});
+		}
+
+		await LoadValidPersons();
+		await LoadSessions();
+
+		if (_notInsertedSessions.Count != 0)
+			_isNotInsertedDialogVisible = true;
+
+		StateHasChanged();
+	}
 	#endregion
 
 	#region Saving
@@ -194,11 +260,5 @@ public partial class NewUISessionPage
 	private void OnVoiceAssistantClick()
 	{
 		// Implement voice assistant functionality here
-	}
-
-	private void CopyScheduleClick()
-	{
-		// Implement copying functionality from _copySourceDate to _selectedDate
-		_isCopyDialogVisible = false;
 	}
 }

@@ -77,17 +77,19 @@
 					<div class="slots-container">
 						@foreach (var slot in _slots)
 						{
-							int totalSlots = _sessionModels.Where(s => s.SlotId == slot.Id).Count();
-							int occupiedSlots = _sessionModels.Where(s => s.SlotId == slot.Id && s.Confirmed).Count();
+							int totalSlots = _sessions.Where(s => s.SlotId == slot.Id).Count();
+							int occupiedSlots = _sessions.Where(s => s.SlotId == slot.Id && s.Confirmed).Count();
 							int availableSlots = slot.Max - occupiedSlots;
 							bool hasExceededMax = totalSlots > slot.Max;
 
-							string availabilityClass = availableSlots <= 0 ? "no-availability" :
-							availableSlots <= 2 ? "low-availability" :
-							availableSlots <= 4 ? "limited-availability" : "full-availability";
+							string availabilityClass = hasExceededMax ? "low-availability" :
+							availableSlots <= 0 ? "no-availability" :
+							availableSlots <= 2 ? "limited-availability" :
+							"full-availability";
 
 							<div class="slot-card">
 								<div class="slot-header @availabilityClass">
+									<!-- Rest of the code remains unchanged -->
 									<div class="slot-title">
 										<h3>@slot.Name</h3>
 									</div>
@@ -114,7 +116,7 @@
 								</div>
 
 								<div class="slot-content">
-									@if (!_sessionModels.Any(s => s.SlotId == slot.Id))
+									@if (!_sessions.Any(s => s.SlotId == slot.Id))
 									{
 										<div class="no-sessions">
 											<svg class="empty-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -126,7 +128,7 @@
 									else
 									{
 										<div class="sessions-grid">
-											@foreach (var sessions in _sessionModels.Where(s => s.SlotId == slot.Id).GroupBy(s => s.SessionTypeId))
+											@foreach (var sessions in _sessions.Where(s => s.SlotId == slot.Id).GroupBy(s => s.SessionTypeId))
 											{
 												@foreach (var session in sessions)
 												{
@@ -277,6 +279,10 @@
 			</Content>
 		</DialogTemplates>
 		<DialogButtons>
+			@if (_selectedSession.Id > 0)
+			{
+				<DialogButton Content="Delete" OnClick="@DeleteSessionClick" CssClass="dialog-btn-delete" />
+			}
 			<DialogButton Content="Cancel" OnClick="@(() => _isSessionDialogVisible = false)" CssClass="dialog-btn-cancel" />
 			<DialogButton Content="Save" IsPrimary="true" OnClick="@SessionDialogOkClick" CssClass="dialog-btn-save" />
 		</DialogButtons>
@@ -335,6 +341,67 @@
 		</DialogButtons>
 	</SfDialog>
 
+	<!-- Not Inserted Sessions Dialog -->
+	<SfDialog IsModal="true" Width="550px" @bind-Visible="@_isNotInsertedDialogVisible" CssClass="not-inserted-dialog">
+		<DialogTemplates>
+			<Header>
+				<div class="dialog-header">
+					<svg class="dialog-icon warning" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+						<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+					</svg>
+					<span>Sessions Not Inserted</span>
+				</div>
+			</Header>
+			<Content>
+				<div class="dialog-content">
+					<p class="info-message">The following sessions could not be inserted because their subscriptions are no longer valid:</p>
+
+					@if (_notInsertedSessions.Any())
+					{
+						<div class="not-inserted-list">
+							@foreach (var session in _notInsertedSessions)
+							{
+								<div class="not-inserted-item">
+									<div class="not-inserted-header">
+										<span class="not-inserted-client">@session.PersonName</span>
+										<span class="not-inserted-time">@_slots.FirstOrDefault(s => s.Id == session.SlotId)?.Name</span>
+									</div>
+									<div class="not-inserted-details">
+										<div class="not-inserted-type">
+											<svg class="session-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+												<path d="@(session.SessionTypeName?.ToLower().Contains("group") == true ? "M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" : "M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z")" />
+											</svg>
+											<span>@session.SessionTypeName</span>
+										</div>
+										<div class="not-inserted-trainers">
+											<svg class="trainer-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+												<path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z" />
+											</svg>
+											<span>@session.Trainer1Name @(!string.IsNullOrEmpty(session.Trainer2Name) ? $"+ {session.Trainer2Name}" : "")</span>
+										</div>
+										<div class="reason-label">Reason: Subscription expired or not valid for this date</div>
+									</div>
+								</div>
+							}
+						</div>
+					}
+					else
+					{
+						<div class="no-sessions">
+							<svg class="empty-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+								<path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" />
+							</svg>
+							<span>All sessions were successfully inserted</span>
+						</div>
+					}
+				</div>
+			</Content>
+		</DialogTemplates>
+		<DialogButtons>
+			<DialogButton Content="Close" OnClick="@(() => _isNotInsertedDialogVisible = false)" CssClass="dialog-btn-cancel" />
+		</DialogButtons>
+	</SfDialog>
+
 	<div class="sessions-footer">
 		<p>&copy; @DateTime.Now.Year A Product By <a href="https://aadisoft.vercel.app" target="_blank" class="footer-link">AadiSoft</a>. All rights reserved.</p>
 	</div>
@@ -348,11 +415,11 @@
 		--light-color: #f8f8f8;
 		--accent-color: #ff5722; /* Energetic orange */
 		--card-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-		/* Availability colors - less saturated */
-		--no-availability-color: rgba(244, 67, 54, 0.7);
-		--low-availability-color: rgba(183, 28, 28, 0.7);
-		--limited-availability-color: rgba(255, 152, 0, 0.7);
-		--full-availability-color: rgba(76, 175, 80, 0.7);
+		/* Less saturated availability colors */
+		--full-availability-color: rgba(76, 175, 80, 0.65); /* Less saturated green for completely available */
+		--limited-availability-color: rgba(255, 193, 7, 0.65); /* Less saturated amber/yellow for less available */
+		--no-availability-color: rgba(244, 67, 54, 0.65); /* Less saturated red for none available */
+		--low-availability-color: rgba(183, 28, 28, 0.65); /* Less saturated dark red for exceeded */
 	}
 
 	body {
@@ -981,6 +1048,81 @@
 	.dialog-btn-create {
 		background: var(--accent-color) !important;
 		border-color: var(--accent-color) !important;
+	}
+
+	.dialog-btn-delete {
+		background-color: #f44336 !important;
+		border-color: #f44336 !important;
+		color: white !important;
+		min-width: 100px;
+		border-radius: 30px;
+		padding: 0.5rem 1.25rem;
+		margin-right: auto; /* Pushes other buttons to the right */
+	}
+
+		.dialog-btn-delete:hover {
+			background-color: #d32f2f !important;
+			border-color: #d32f2f !important;
+		}
+
+	.not-inserted-list {
+		max-height: 300px;
+		overflow-y: auto;
+		margin: 1rem 0;
+		border: 1px solid rgba(0, 0, 0, 0.08);
+		border-radius: 8px;
+	}
+
+	.not-inserted-item {
+		padding: 1rem;
+		border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+	}
+
+		.not-inserted-item:last-child {
+			border-bottom: none;
+		}
+
+	.not-inserted-header {
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 0.5rem;
+		align-items: center;
+	}
+
+	.not-inserted-client {
+		font-weight: 600;
+		color: var(--dark-color);
+	}
+
+	.not-inserted-time {
+		color: #666;
+		font-size: 0.9rem;
+	}
+
+	.not-inserted-details {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.not-inserted-type, .not-inserted-trainers {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		color: #555;
+		font-size: 0.85rem;
+	}
+
+	.reason-label {
+		font-size: 0.85rem;
+		color: var(--no-availability-color);
+		padding-top: 0.25rem;
+		font-style: italic;
+	}
+
+	.info-message {
+		margin-bottom: 1rem;
+		color: #555;
 	}
 
 	/* Footer */
