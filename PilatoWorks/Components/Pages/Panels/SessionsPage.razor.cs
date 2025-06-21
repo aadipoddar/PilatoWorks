@@ -1,6 +1,4 @@
 using Syncfusion.Blazor.Calendars;
-using Syncfusion.Blazor.DropDowns;
-using Syncfusion.Blazor.Grids;
 
 namespace PilatoWorks.Components.Pages.Panels;
 
@@ -11,30 +9,26 @@ public partial class SessionsPage
 
 	private UserModel _user;
 
+	private bool _isConfirmDialogVisible = false;
+	private bool _isSessionDialogVisible = false;
+	private bool _isCopyDialogVisible = false;
+	private bool _isNotInsertedDialogVisible = false;
+	private bool _showVoiceDialog = false;
+
+	private string _transcript = "";
+
 	private DateOnly _selectedDate = DateOnly.FromDateTime(DateTime.Now);
+	private DateOnly _copySourceDate = DateOnly.FromDateTime(DateTime.Today.AddDays(-7));
 
-	private int _selectedSlot = 0;
-	private int _selectedValidSub = 0;
-	private int _selectedTrainer1 = 0;
-	private int _selectedTrainer2 = -1;
-
-	private bool _isUpdating = false;
-	private bool _isConfirmed = true;
+	private SlotModel _selectedSlot;
+	private SessionDetailsModel _selectedSession = new() { Confirmed = true };
+	private SessionResponseModel _extractedSession = new();
 
 	private List<SlotModel> _slots = [];
 	private List<TrainerModel> _trainers = [];
+	private List<SessionDetailsModel> _sessions = [];
 	private List<SubscriptionDetailsModel> _validSubs = [];
-
-	private SessionDetailsModel _selectedSession = null;
-
-	private List<SessionDetailsModel> SessionDetailsModels { get; set; } = [];
-
-	private SfGrid<SessionDetailsModel> _sfGrid;
-
-	// Voice assistance properties
-	private bool _showVoiceModal = false;
-	private string _transcript = "";
-	private SessionResponseModel _extractedSession = new();
+	private List<SessionDetailsModel> _notInsertedSessions = [];
 
 	#region Load Data
 	protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -43,10 +37,7 @@ public partial class SessionsPage
 			NavManager.NavigateTo("/Login");
 
 		if (firstRender)
-		{
-			await LoadSlots();
-			await LoadComboBox();
-		}
+			await LoadInitialData();
 	}
 
 	private async Task<bool> ValidatePassword()
@@ -65,6 +56,16 @@ public partial class SessionsPage
 		return true;
 	}
 
+	private async Task LoadInitialData()
+	{
+		_slots = await CommonData.LoadTableData<SlotModel>(TableNames.Slot);
+		await LoadSessions();
+
+		_trainers = await CommonData.LoadTableDataByStatus<TrainerModel>(TableNames.Trainer);
+
+		StateHasChanged();
+	}
+
 	private async void OnDateChanged(ChangedEventArgs<DateOnly> args)
 	{
 		_selectedDate = args.Value;
@@ -72,26 +73,9 @@ public partial class SessionsPage
 		StateHasChanged();
 	}
 
-	private async void OnSlotChanged(ChangeEventArgs<int, SlotModel> args)
-	{
-		if (_selectedSlot == 0) return;
-		await LoadSessions();
-	}
-
-	private async Task LoadSlots()
-	{
-		_slots = await CommonData.LoadTableData<SlotModel>(TableNames.Slot);
-		_selectedSlot = _slots.FirstOrDefault()?.Id ?? 1;
-		await LoadSessions();
-		await _sfGrid.Refresh();
-		StateHasChanged();
-	}
-
 	private async Task LoadSessions()
 	{
-		SessionDetailsModels = await SessionData.LoadSessionDetailsByDateSlot(_selectedDate, _selectedSlot);
-		await _sfGrid.Refresh();
-		await LoadValidPersons();
+		_sessions = await SessionData.LoadSessionDetailsByDateRange(_selectedDate, _selectedDate);
 		StateHasChanged();
 	}
 
@@ -102,163 +86,251 @@ public partial class SessionsPage
 			.GroupBy(sub => sub.PersonId)
 			.Select(group => group.First())];
 
-		var slotSessions = await SessionData.LoadSessionDetailsByDateSlot(_selectedDate, _selectedSlot);
+		if (_selectedSlot is null || _selectedSlot.Id <= 0)
+			return;
+
+		var slotSessions = await SessionData.LoadSessionDetailsByDateSlot(_selectedDate, _selectedSlot.Id);
 
 		foreach (var slotSession in slotSessions)
 		{
+			if (_selectedSession.Id > 0)
+				if (slotSession.Id == _selectedSession.Id)
+					continue;
+
 			var subscription = _validSubs.FirstOrDefault(sub => sub.SubscriptionId == slotSession.SubscriptionId);
 			if (subscription is not null)
 				_validSubs.Remove(subscription);
 		}
 
-		_selectedValidSub = _validSubs.FirstOrDefault()?.SubscriptionId ?? 0;
 		StateHasChanged();
 	}
+	#endregion
 
-	private async Task LoadComboBox()
+	#region Dialog Events
+	private async Task CreateNewSessionClick(SlotModel slot)
 	{
-		_trainers = await CommonData.LoadTableDataByStatus<TrainerModel>(TableNames.Trainer);
-		_trainers.Add(new TrainerModel { Id = -1, Name = "No Trainer" });
-		_selectedTrainer1 = _trainers.FirstOrDefault()?.Id ?? 1;
-		_selectedTrainer2 = -1;
+		var sessions = await SessionData.LoadSessionDetailsByDateSlot(_selectedDate, slot.Id);
 
-		StateHasChanged();
-	}
+		_selectedSlot = slot;
+		_selectedSession = new() { Confirmed = true };
 
-	public void RowSelectHandler(RowSelectEventArgs<SessionDetailsModel> args)
-	{
-		_isUpdating = true;
+		await LoadValidPersons();
 
-		_selectedSession = args.Data;
-		if (_selectedSession is not null)
+		if (slot.Max <= sessions.Where(c => c.Confirmed).Count())
 		{
-			_selectedTrainer1 = _selectedSession.Trainer1Id;
-			_selectedTrainer2 = _selectedSession.Trainer2Id ?? -1;
-			_isConfirmed = _selectedSession.Confirmed;
+			_isConfirmDialogVisible = true;
+			return;
 		}
+
+		_isSessionDialogVisible = true;
+	}
+
+	private async Task OnSessionClick(SessionDetailsModel session)
+	{
+		_selectedSession = session;
+		_selectedSlot = _slots.FirstOrDefault(s => s.Id == session.SlotId);
+
+		await LoadValidPersons();
+
+		_isSessionDialogVisible = true;
+		StateHasChanged();
+	}
+
+	private void ConfirmDialogOkClick()
+	{
+		_isConfirmDialogVisible = false;
+		_isSessionDialogVisible = true;
+	}
+
+	private void ConfirmDialogCancelClick() =>
+		_isConfirmDialogVisible = false;
+
+	private async Task DeleteSessionClick()
+	{
+		if (_selectedSession.Id > 0)
+		{
+			await SessionData.DeleteSessionById(_selectedSession.Id);
+
+			_isSessionDialogVisible = false;
+
+			_selectedSession = new() { Confirmed = true };
+			_selectedSlot = null;
+
+			await LoadSessions();
+
+			StateHasChanged();
+		}
+	}
+
+	private void OnCopySessionsClick() =>
+		_isCopyDialogVisible = true;
+
+	private async Task CopyScheduleClick()
+	{
+		_isCopyDialogVisible = false;
+
+		await LoadSessions();
+
+		foreach (var session in _sessions)
+			await SessionData.DeleteSessionById(session.Id);
+
+		_notInsertedSessions = [];
+		await LoadValidPersons();
+		var sessions = await SessionData.LoadSessionDetailsByDateRange(_copySourceDate, _copySourceDate);
+
+		foreach (var session in sessions)
+		{
+			if (!_validSubs.Any(s => s.SubscriptionId == session.SubscriptionId))
+			{
+				_notInsertedSessions.Add(session);
+				continue;
+			}
+
+			await SessionData.InsertSession(new()
+			{
+				Id = 0,
+				SessionDate = _selectedDate,
+				SubscriptionId = session.SubscriptionId,
+				Trainer1Id = session.Trainer1Id,
+				Trainer2Id = session.Trainer2Id,
+				UserId = _user.Id,
+				SlotId = session.SlotId,
+				Confirmed = session.Confirmed,
+				CreatedDate = DateTime.Now,
+			});
+		}
+
+		await LoadValidPersons();
+		await LoadSessions();
+
+		if (_notInsertedSessions.Count != 0)
+			_isNotInsertedDialogVisible = true;
 
 		StateHasChanged();
 	}
 	#endregion
 
 	#region Saving
-	private async Task<bool> ValidateForm()
+	private async Task SessionDialogOkClick()
 	{
-		if (_selectedTrainer1 == 0 || _selectedTrainer1 == -1)
+		if (_selectedSession.SlotId <= 0)
+			_selectedSession.SlotId = _selectedSlot.Id;
+
+		if (_selectedSession.Trainer1Id <= 0 && _selectedSession.Trainer2Id > 0 && _selectedSession.Trainer2Id is not null)
 		{
-			await JS.InvokeVoidAsync("alert", "Please select a trainer.");
-			return false;
-		}
-		if (_selectedValidSub == 0 && !_isUpdating)
-		{
-			await JS.InvokeVoidAsync("alert", "Please select a valid Person.");
-			return false;
+			_selectedSession.Trainer1Id = _selectedSession.Trainer2Id.Value;
+			_selectedSession.Trainer2Id = null;
 		}
 
-		if (_selectedTrainer2 == _selectedTrainer1)
+		if (_selectedSession.SubscriptionId <= 0 ||
+			(_selectedSession.Trainer1Id <= 0 && _selectedSession.Trainer2Id <= 0) ||
+			_selectedSession.Id < 0 ||
+			_selectedSession.Trainer1Id == _selectedSession.Trainer2Id)
 		{
-			await JS.InvokeVoidAsync("alert", "Trainer 1 and Trainer 2 cannot be the same.");
-			return false;
-		}
+			_isSessionDialogVisible = false;
+			_selectedSession = new() { Confirmed = true };
+			_selectedSlot = null;
 
-		if (_selectedSlot == 0)
-		{
-			await JS.InvokeVoidAsync("alert", "Please select a slot.");
-			return false;
-		}
+			await LoadSessions();
 
-		return true;
-	}
+			StateHasChanged();
 
-	private async Task OnSaveClick()
-	{
-		if (!await ValidateForm())
 			return;
+		}
 
-		await SessionData.InsertSession(new SessionModel
+		await SessionData.InsertSession(new()
 		{
-			Id = _selectedSession?.Id ?? 0,
-			SessionDate = _selectedSession?.SessionDate ?? _selectedDate,
-			SlotId = _selectedSession?.SlotId ?? _selectedSlot,
-			SubscriptionId = _selectedSession?.SubscriptionId ?? _selectedValidSub,
-			CreatedDate = _selectedSession?.CreatedDate ?? DateTime.Now,
-			UserId = _selectedSession?.UserId ?? _user.Id,
-			Trainer1Id = _selectedTrainer1,
-			Trainer2Id = _selectedTrainer2 == -1 ? null : _selectedTrainer2,
-			Confirmed = _isConfirmed,
+			Id = _selectedSession.Id,
+			SessionDate = _selectedDate,
+			SubscriptionId = _selectedSession.SubscriptionId,
+			Trainer1Id = _selectedSession.Trainer1Id,
+			Trainer2Id = _selectedSession.Trainer2Id,
+			UserId = _user.Id,
+			SlotId = _selectedSlot.Id,
+			Confirmed = _selectedSession.Confirmed,
+			CreatedDate = DateTime.Now,
 		});
 
-		_isUpdating = false;
-		_selectedSession = null;
-		_isConfirmed = true;
-		await LoadSessions();
-	}
+		_isSessionDialogVisible = false;
+		_selectedSession = new() { Confirmed = true };
+		_selectedSlot = null;
 
-	private void OnCancelClick() =>
-		NavManager.NavigateTo("/");
+		await LoadSessions();
+
+		StateHasChanged();
+	}
 	#endregion
 
-	#region Voice Assistance
-	private void OnVoiceAssistanceClick()
+	#region Voie Assistance
+	private void CloseVoiceDialog() =>
+		_showVoiceDialog = false;
+
+	private void OnVoiceAssistantClick()
 	{
-		_showVoiceModal = true;
+		_showVoiceDialog = true;
 		_transcript = "";
 		_extractedSession = new();
 		StateHasChanged();
 	}
 
-	private void CloseVoiceModal()
-	{
-		_showVoiceModal = false;
-		StateHasChanged();
-	}
-
-	private async Task OnTranscribeClick()
+	private async Task OnProcessTranscriptClick()
 	{
 		if (string.IsNullOrWhiteSpace(_transcript))
 			return;
 
 		try
 		{
-			_extractedSession = await AIProcessing.SessionProcessing(_transcript);
+			_extractedSession = await AIProcessing.ExtractSessionDetailsFromTranscript(_transcript);
 
-			if (_extractedSession is null)
-				return;
-
-			_selectedDate = DateOnly.Parse(_extractedSession.date);
-
-			var matchingSlot = _slots.FirstOrDefault(s => s.Hour == int.Parse(_extractedSession.time));
-			if (matchingSlot is not null)
-				_selectedSlot = matchingSlot.Id;
-
-			await LoadSessions();
-
-			// Use AI to find the perfect match for client name
-			if (!string.IsNullOrWhiteSpace(_extractedSession.clientName) && _validSubs.Count != 0)
+			if (_extractedSession is null || string.IsNullOrEmpty(_extractedSession.time) || string.IsNullOrEmpty(_extractedSession.date))
 			{
-				var bestMatch = await AIProcessing.FindBestClientMatch(_extractedSession.clientName, _validSubs);
-
-				if (bestMatch is not null)
-					_selectedValidSub = bestMatch.SubscriptionId;
-
-				// Fallback to simple contains matching if AI couldn't find a good match
-				else
-				{
-					var fallbackMatch = _validSubs.FirstOrDefault(c =>
-						c.PersonName.Contains(_extractedSession.clientName, StringComparison.OrdinalIgnoreCase));
-
-					if (fallbackMatch is not null)
-						_selectedValidSub = fallbackMatch.SubscriptionId;
-				}
+				await JS.InvokeVoidAsync("alert", "No valid session details found in the transcript.");
+				return;
 			}
 
-			CloseVoiceModal();
-			StateHasChanged();
+			_selectedDate = DateOnly.Parse(_extractedSession.date);
+			_selectedSlot = _slots.FirstOrDefault(s => s.Hour == int.Parse(_extractedSession.time));
+
+			await LoadValidPersons();
+
+			_selectedSession = new() { Confirmed = true };
+
+			var clientBestMatch = await AIProcessing.FindBestClientMatch(_extractedSession.clientName, _validSubs);
+
+			if (clientBestMatch is not null)
+				_selectedSession.SubscriptionId = clientBestMatch.SubscriptionId;
+
+			else
+			{
+				var fallbackMatch = _validSubs.FirstOrDefault(c => c.PersonName.Contains(_extractedSession.clientName, StringComparison.OrdinalIgnoreCase));
+
+				if (fallbackMatch is not null)
+					_selectedSession.SubscriptionId = fallbackMatch.SubscriptionId;
+			}
+
+			if (_selectedSession.SubscriptionId <= 0)
+			{
+				await JS.InvokeVoidAsync("alert", "No valid client found for the extracted session details.");
+				return;
+			}
+
+			if (_selectedSession.SubscriptionId > 0)
+			{
+				await LoadSessions();
+				_showVoiceDialog = false;
+				_isSessionDialogVisible = true;
+			}
+
+			else
+			{
+				await LoadSessions();
+				_showVoiceDialog = false;
+			}
 		}
 		catch (Exception ex)
 		{
-			Console.WriteLine($"Error Extracting information: {ex.Message}");
-			await JS.InvokeVoidAsync("alert", "Error Extracting information. Please try again.");
+			Console.WriteLine($"Error extracting information: {ex.Message}");
+			await JS.InvokeVoidAsync("alert", "Error extracting information. Please try again.");
 		}
 	}
 	#endregion

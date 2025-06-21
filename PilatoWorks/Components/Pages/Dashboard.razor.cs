@@ -37,9 +37,6 @@ public partial class Dashboard
 	private void OnSessionClick() =>
 		NavManager.NavigateTo("/Sessions");
 
-	private void OnNewUISessionClick() =>
-		NavManager.NavigateTo("/New-UI-Sessions");
-
 	private void OnTrainerClick() =>
 		NavManager.NavigateTo("/Trainers");
 
