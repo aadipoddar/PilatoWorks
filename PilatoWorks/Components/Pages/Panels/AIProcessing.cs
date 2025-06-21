@@ -83,7 +83,7 @@ internal static class AIProcessing
 
 			extractedInfo = JsonSerializer.Deserialize<SessionResponseModel>(aiJSONResponse);
 
-			if (extractedInfo is null)
+			if (extractedInfo is null || string.IsNullOrEmpty(extractedInfo.time))
 				return new SessionResponseModel
 				{
 					time = DateTime.Now.Hour.ToString(),
