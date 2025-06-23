@@ -15,6 +15,7 @@
 				<h1>Sessions</h1>
 			</div>
 			<div class="header-actions">
+				<SfButton IconCss="e-icons e-arrow-left" CssClass="feature-button back-button" OnClick="OnBackClick" Content="Back to Dashboard" />
 				<div class="voice-assistance-button" @onclick="OnVoiceAssistantClick">
 					<div class="voice-icon-container">
 						<div class="voice-icon">
@@ -533,6 +534,21 @@
 		border-radius: 50px;
 		transition: all 0.3s ease;
 	}
+
+	.back-button {
+		background-color: rgba(63, 81, 181, 0.85) !important;
+		border-color: transparent !important;
+		color: white !important;
+		display: flex !important;
+		align-items: center !important;
+		gap: 0.5rem !important;
+	}
+
+		.back-button:hover {
+			background-color: rgba(63, 81, 181, 0.95) !important;
+			transform: translateY(-2px);
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+		}
 
 	/* Voice Assistance Button Styles */
 	.voice-assistance-button {

@@ -208,6 +208,9 @@ public partial class SessionsPage
 
 		StateHasChanged();
 	}
+
+	private void OnBackClick() =>
+		NavManager.NavigateTo("/");
 	#endregion
 
 	#region Saving
