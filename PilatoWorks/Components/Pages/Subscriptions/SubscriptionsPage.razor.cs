@@ -21,7 +21,7 @@ public partial class SubscriptionsPage
 	private string _card;
 	private string _upi;
 
-	private DateTime _subscriptionDate = DateTime.Now;
+	private DateTime _subscriptionDate = DateTime.Now.AddHours(5).AddMinutes(30);
 	private bool _status = true;
 	private int _selectedPersonId = 0;
 	private int _selectedSessionType = 0;
@@ -29,6 +29,7 @@ public partial class SubscriptionsPage
 	private List<PersonModel> _personList = [];
 	private List<SessionTypeModel> _sessionTypes = [];
 
+	#region Load Data
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
 		if (firstRender && !await ValidatePassword())
@@ -111,7 +112,9 @@ public partial class SubscriptionsPage
 
 		StateHasChanged();
 	}
+	#endregion
 
+	#region Events
 	private async Task OnNumberChanged(string args)
 	{
 		_personNumber = args;
@@ -174,79 +177,9 @@ public partial class SubscriptionsPage
 			await OnNumberChanged(_personNumber);
 		}
 	}
+	#endregion
 
-	private async Task OnSaveClick()
-	{
-		if (!await ValidateForm())
-			return;
-
-		var person = await PersonData.LoadPersonByNumber(_personNumber.Trim());
-		if (person is null)
-		{
-			await JS.InvokeVoidAsync("alert", "Person not found.");
-			return;
-		}
-
-		var subscriptionId = await SubscriptionData.InsertSubscription(new()
-		{
-			Id = SubscriptionId ?? 0,
-			PersonId = person.Id,
-			ValidFrom = ValidStartDate,
-			ValidTo = ValidEndDate,
-			SessionTypeId = _selectedSessionType,
-			NoSessions = int.Parse(_noSessions.Trim()),
-			Booking = int.Parse(_booking.Trim()),
-			UserId = _user.Id,
-			Status = _status,
-			SubscriptionDate = _subscriptionDate
-		});
-		if (subscriptionId == 0)
-		{
-			await JS.InvokeVoidAsync("alert", "Error in creating subscription.");
-			return;
-		}
-
-		if (SubscriptionId.HasValue && SubscriptionId.Value > 0)
-		{
-			var payments = await SubscriptionData.LoadSubscriptionPaymentDetailsBySubscriptionId(SubscriptionId.Value);
-			foreach (var payment in payments)
-			{
-				payment.Status = false;
-				await SubscriptionData.InsertSubscriptionPaymentDetails(payment);
-			}
-		}
-
-		for (int i = 1; i <= 3; i++)
-		{
-			int amount = int.Parse(i switch
-			{
-				1 => _cash,
-				2 => _card,
-				3 => _upi,
-				_ => "0"
-			});
-
-			if (amount == 0)
-				continue;
-
-			await SubscriptionData.InsertSubscriptionPaymentDetails(new()
-			{
-				Id = 0,
-				PaymentModeId = i,
-				SubscriptionId = subscriptionId,
-				Amount = amount,
-				PaymentDate = DateTime.Now,
-				Status = true
-			});
-		}
-
-		if (SubscriptionId.HasValue && SubscriptionId.Value > 0)
-			NavManager.NavigateTo($"/");
-
-		else
-			NavManager.NavigateTo(NavManager.Uri, forceLoad: true);
-	}
-
+	#region Saving
 	private async Task<bool> ValidateForm()
 	{
 		if (_selectedPersonId == 0)
@@ -316,6 +249,80 @@ public partial class SubscriptionsPage
 		return true;
 	}
 
+	private async Task OnSaveClick()
+	{
+		if (!await ValidateForm())
+			return;
+
+		var person = await PersonData.LoadPersonByNumber(_personNumber.Trim());
+		if (person is null)
+		{
+			await JS.InvokeVoidAsync("alert", "Person not found.");
+			return;
+		}
+
+		var subscriptionId = await SubscriptionData.InsertSubscription(new()
+		{
+			Id = SubscriptionId ?? 0,
+			PersonId = person.Id,
+			ValidFrom = ValidStartDate,
+			ValidTo = ValidEndDate,
+			SessionTypeId = _selectedSessionType,
+			NoSessions = int.Parse(_noSessions.Trim()),
+			Booking = int.Parse(_booking.Trim()),
+			UserId = _user.Id,
+			Status = _status,
+			SubscriptionDate = _subscriptionDate
+		});
+
+		if (subscriptionId == 0)
+		{
+			await JS.InvokeVoidAsync("alert", "Error in creating subscription.");
+			return;
+		}
+
+		if (SubscriptionId.HasValue && SubscriptionId.Value > 0)
+		{
+			var payments = await SubscriptionData.LoadSubscriptionPaymentDetailsBySubscriptionId(SubscriptionId.Value);
+			foreach (var payment in payments)
+			{
+				payment.Status = false;
+				await SubscriptionData.InsertSubscriptionPaymentDetails(payment);
+			}
+		}
+
+		for (int i = 1; i <= 3; i++)
+		{
+			int amount = int.Parse(i switch
+			{
+				1 => _cash,
+				2 => _card,
+				3 => _upi,
+				_ => "0"
+			});
+
+			if (amount == 0)
+				continue;
+
+			await SubscriptionData.InsertSubscriptionPaymentDetails(new()
+			{
+				Id = 0,
+				PaymentModeId = i,
+				SubscriptionId = subscriptionId,
+				Amount = amount,
+				PaymentDate = DateTime.Now,
+				Status = true
+			});
+		}
+
+		if (SubscriptionId.HasValue && SubscriptionId.Value > 0)
+			NavManager.NavigateTo($"/");
+
+		else
+			NavManager.NavigateTo(NavManager.Uri, forceLoad: true);
+	}
+
 	private void OnCancelClick() =>
 		NavManager.NavigateTo("/");
+	#endregion
 }
