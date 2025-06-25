@@ -34,36 +34,12 @@ public partial class Dashboard
 		return true;
 	}
 
-	private void OnSessionClick() =>
-		NavManager.NavigateTo("/Sessions");
-
-	private void OnTrainerClick() =>
-		NavManager.NavigateTo("/Trainers");
-
-	private void OnSubscriptionClick() =>
-		NavManager.NavigateTo("/Subscriptions");
-
-	private void OnPeopleClick() =>
-		NavManager.NavigateTo("/People");
-
-	private void OnClearDuesClick() =>
-		NavManager.NavigateTo("/ClearDues");
-
-	private void OnReportsClick() =>
-		NavManager.NavigateTo("/Reports");
-
-	private void OnTrainerManagementClick() =>
-		NavManager.NavigateTo("/TrainerManagement");
-
-	private void OnUsersClick() =>
-		NavManager.NavigateTo("/UserManagement");
-
 	private async Task OnLogoutClick()
 	{
 		await JS.InvokeVoidAsync("deleteCookie", "UserId");
 		await JS.InvokeVoidAsync("deleteCookie", "Password");
 
-		NavManager.NavigateTo("/");
+		NavManager.NavigateTo("/Login");
 	}
 
 	private string GetUserRoles()

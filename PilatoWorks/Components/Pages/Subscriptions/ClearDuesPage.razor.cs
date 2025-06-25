@@ -92,10 +92,6 @@ public partial class ClearDuesPage
 		StateHasChanged();
 	}
 
-	private void OnCancelClick() =>
-		NavManager.NavigateTo("/");
-
-
 	private async Task OnSaveClick()
 	{
 		if (!await ValidateForm())

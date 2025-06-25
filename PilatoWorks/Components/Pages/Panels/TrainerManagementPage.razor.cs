@@ -88,7 +88,4 @@ public partial class TrainerManagementPage
 
 		return true;
 	}
-
-	private void OnCancelClick() =>
-		NavManager.NavigateTo("/");
 }

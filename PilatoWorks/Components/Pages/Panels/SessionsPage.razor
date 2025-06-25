@@ -15,7 +15,7 @@
 				<h1>Sessions</h1>
 			</div>
 			<div class="header-actions">
-				<SfButton IconCss="e-icons e-arrow-left" CssClass="feature-button back-button" OnClick="OnBackClick" Content="Back to Dashboard" />
+				<SfButton IconCss="e-icons e-arrow-left" CssClass="feature-button back-button" OnClick='() => NavManager.NavigateTo("/")' Content="Back to Dashboard" />
 				<div class="voice-assistance-button" @onclick="OnVoiceAssistantClick">
 					<div class="voice-icon-container">
 						<div class="voice-icon">

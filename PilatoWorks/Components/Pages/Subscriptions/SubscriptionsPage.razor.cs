@@ -321,8 +321,5 @@ public partial class SubscriptionsPage
 		else
 			NavManager.NavigateTo(NavManager.Uri, forceLoad: true);
 	}
-
-	private void OnCancelClick() =>
-		NavManager.NavigateTo("/");
 	#endregion
 }

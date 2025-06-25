@@ -96,7 +96,4 @@ public partial class UsersManagementPage
 
 		return true;
 	}
-
-	private void OnCancelClick() =>
-		NavManager.NavigateTo("/");
 }

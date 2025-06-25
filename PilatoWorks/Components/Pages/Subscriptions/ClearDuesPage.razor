@@ -14,6 +14,17 @@
 				</svg>
 				<h1>Clear Dues</h1>
 			</div>
+			<!-- Added Dashboard Navigation Button -->
+			<div class="header-actions">
+				<button class="dashboard-btn" @onclick='() => NavManager.NavigateTo("/")'>
+					<span class="btn-icon">
+						<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+							<path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8h5z" />
+						</svg>
+					</span>
+					Back to Dashboard
+				</button>
+			</div>
 		</div>
 	</div>
 
@@ -145,7 +156,7 @@
 			<!-- Action Buttons -->
 			<div class="card-section">
 				<div class="action-buttons">
-					<SfButton IconCss="e-icons e-close" OnClick="OnCancelClick" Content="Close" CssClass="btn-cancel" />
+					<SfButton IconCss="e-icons e-close" OnClick='() => NavManager.NavigateTo("/")' Content="Close" CssClass="btn-cancel" />
 					<SfButton IconCss="e-icons e-save" OnClick="OnSaveClick" Content="Save Payment" CssClass="btn-save" />
 				</div>
 			</div>
@@ -261,6 +272,55 @@
 		font-weight: 700;
 		color: var(--dark-color);
 	}
+
+	/* Added Dashboard Button Styles */
+	.header-actions {
+		display: flex;
+		align-items: center;
+	}
+
+	.dashboard-btn {
+		background: linear-gradient(135deg, var(--primary-color) 0%, #5c6bc0 100%);
+		border: none;
+		border-radius: 50px;
+		padding: 0.6rem 1.5rem;
+		color: white;
+		font-weight: 600;
+		font-family: 'Montserrat', 'Roboto', sans-serif;
+		font-size: 0.95rem;
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		cursor: pointer;
+		transition: all 0.3s ease;
+		box-shadow: 0 4px 10px rgba(63, 81, 181, 0.3);
+	}
+
+		.dashboard-btn:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 6px 15px rgba(63, 81, 181, 0.4);
+			background: linear-gradient(135deg, #4558c9 0%, #6677cc 100%);
+		}
+
+		.dashboard-btn:active {
+			transform: translateY(1px);
+			box-shadow: 0 2px 5px rgba(63, 81, 181, 0.3);
+		}
+
+	.btn-icon {
+		width: 20px;
+		height: 20px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+		.btn-icon svg {
+			width: 20px;
+			height: 20px;
+			fill: white;
+		}
+	/* End of Dashboard Button Styles */
 
 	.sessions-content {
 		flex-grow: 1;
@@ -497,6 +557,17 @@
 
 		.btn-cancel, .btn-save {
 			width: 100%;
+		}
+		/* Added responsive styles for header content */
+		.header-content {
+			flex-direction: column;
+			gap: 1rem;
+			align-items: flex-start;
+		}
+
+		.dashboard-btn {
+			width: 100%;
+			justify-content: center;
 		}
 	}
 </style>

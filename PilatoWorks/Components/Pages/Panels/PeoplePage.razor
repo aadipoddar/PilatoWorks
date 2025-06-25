@@ -14,6 +14,17 @@
 				</svg>
 				<h1>Client Management</h1>
 			</div>
+			<!-- Added Dashboard Navigation Button -->
+			<div class="header-actions">
+				<button class="dashboard-btn" @onclick='() => NavManager.NavigateTo("/")'>
+					<span class="btn-icon">
+						<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+							<path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8h5z" />
+						</svg>
+					</span>
+					Back to Dashboard
+				</button>
+			</div>
 		</div>
 	</div>
 
@@ -160,7 +171,7 @@
 			<!-- Action Buttons -->
 			<div class="card-section">
 				<div class="action-buttons">
-					<SfButton IconCss="e-icons e-close" OnClick="OnCancelClick"
+					<SfButton IconCss="e-icons e-close" OnClick='() => NavManager.NavigateTo("/")'
 							  Content="Close" CssClass="btn-cancel" />
 					<SfButton IconCss="e-icons e-save" OnClick="OnSaveClick"
 							  Content="Save Profile" CssClass="btn-save" />
@@ -187,6 +198,30 @@
 	body {
 		margin: 0;
 		padding: 0;
+	}
+
+	.sessions-container {
+		min-height: 100vh;
+		display: flex;
+		flex-direction: column;
+		background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%233f51b5" fill-opacity="0.1" d="M0,224L48,218.7C96,213,192,203,288,213.3C384,224,480,256,576,261.3C672,267,768,245,864,208C960,171,1056,117,1152,106.7C1248,96,1344,128,1392,144L1440,160L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"></path></svg>'), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%238bc34a" fill-opacity="0.1" d="M0,64L48,85.3C96,107,192,149,288,165.3C384,181,480,171,576,144C672,117,768,75,864,80C960,85,1056,139,1152,154.7C1248,171,1344,149,1392,138.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+		background-color: #f8f9fa;
+		background-repeat: no-repeat;
+		background-position: top, bottom;
+		padding: 2rem;
+		position: relative;
+	}
+
+	.sessions-overlay {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: url('data:image/svg+xml;utf8,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><rect width="20" height="20" fill="none" stroke="%23000" stroke-opacity="0.03" stroke-width="1"/></svg>');
+		opacity: 0.5;
+		pointer-events: none;
+		z-index: 0;
 	}
 
 	.sessions-header {
@@ -220,6 +255,55 @@
 		font-weight: 700;
 		color: var(--dark-color);
 	}
+
+	/* Added Dashboard Button Styles */
+	.header-actions {
+		display: flex;
+		align-items: center;
+	}
+
+	.dashboard-btn {
+		background: linear-gradient(135deg, var(--primary-color) 0%, #5c6bc0 100%);
+		border: none;
+		border-radius: 50px;
+		padding: 0.6rem 1.5rem;
+		color: white;
+		font-weight: 600;
+		font-family: 'Montserrat', 'Roboto', sans-serif;
+		font-size: 0.95rem;
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		cursor: pointer;
+		transition: all 0.3s ease;
+		box-shadow: 0 4px 10px rgba(63, 81, 181, 0.3);
+	}
+
+		.dashboard-btn:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 6px 15px rgba(63, 81, 181, 0.4);
+			background: linear-gradient(135deg, #4558c9 0%, #6677cc 100%);
+		}
+
+		.dashboard-btn:active {
+			transform: translateY(1px);
+			box-shadow: 0 2px 5px rgba(63, 81, 181, 0.3);
+		}
+
+	.btn-icon {
+		width: 20px;
+		height: 20px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+		.btn-icon svg {
+			width: 20px;
+			height: 20px;
+			fill: white;
+		}
+	/* End of Dashboard Button Styles */
 
 	.sessions-content {
 		flex-grow: 1;
@@ -382,6 +466,17 @@
 
 		.btn-cancel, .btn-save {
 			width: 100%;
+		}
+		/* Added responsive styles for header content */
+		.header-content {
+			flex-direction: column;
+			gap: 1rem;
+			align-items: flex-start;
+		}
+
+		.dashboard-btn {
+			width: 100%;
+			justify-content: center;
 		}
 	}
 </style>

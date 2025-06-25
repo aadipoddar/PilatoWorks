@@ -14,6 +14,17 @@
 				</svg>
 				<h1>Trainer Management</h1>
 			</div>
+			<!-- Added Dashboard Navigation Button -->
+			<div class="header-actions">
+				<button class="dashboard-btn" @onclick='() => NavManager.NavigateTo("/")'>
+					<span class="btn-icon">
+						<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+							<path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8h5z" />
+						</svg>
+					</span>
+					Back to Dashboard
+				</button>
+			</div>
 		</div>
 	</div>
 
@@ -26,15 +37,24 @@
 					<svg class="section-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 						<path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
 					</svg>
-					Find Trainer
+					Select Trainer
 				</h5>
 				<div class="section-content">
 					<div class="form-grid">
 						<div class="form-group">
+							<label class="form-label">Choose a Trainer</label>
+							<SfDropDownList TValue="int" TItem="TrainerModel" CssClass="form-control trainer-dropdown"
+											Placeholder="Select Trainer" DataSource="_trainers"
+											FloatLabelType='@FloatLabelType.Auto' ValueChanged="OnTrainerSelected">
+								<DropDownListFieldSettings Text="Name" Value="Id" />
+							</SfDropDownList>
+						</div>
+
+						<div class="form-group">
 							<label class="form-label">Trainer Number</label>
-							<SfTextBox Placeholder='Enter Number' CssClass="form-control"
-									   FloatLabelType='@FloatLabelType.Auto' Type="InputType.Number"
-									   ValueChanged="OnNumberChanged" maxlength="10" />
+							<SfTextBox Placeholder='Trainer Number' CssClass="form-control"
+									   FloatLabelType='@FloatLabelType.Auto' Readonly="true"
+									   Value="@(_trainer.Number ?? "")" />
 						</div>
 					</div>
 				</div>
@@ -54,25 +74,25 @@
 							<label class="form-label">Name</label>
 							<SfTextBox Placeholder='Trainer Name' CssClass="form-control"
 									   FloatLabelType='@FloatLabelType.Auto' Readonly="true"
-									   Value="@_trainerName" />
+									   Value="@_trainer.Name" />
 						</div>
 						<div class="form-group">
 							<label class="form-label">Address</label>
 							<SfTextBox Placeholder='Trainer Address' CssClass="form-control"
 									   FloatLabelType='@FloatLabelType.Auto' Readonly="true"
-									   Value="@_trainerAddress" />
+									   Value="@_trainer.Address" />
 						</div>
 						<div class="form-group">
 							<label class="form-label">Salary</label>
 							<SfTextBox Placeholder='Trainer Salary' CssClass="form-control"
 									   FloatLabelType='@FloatLabelType.Auto' Readonly="true"
-									   Value="@_trainerSalary" />
+									   Value="@_trainer.Salary.ToString()" />
 						</div>
 						<div class="form-group">
 							<label class="form-label">Commission Percentage</label>
 							<SfTextBox Placeholder='Commission %' CssClass="form-control"
 									   FloatLabelType='@FloatLabelType.Auto' Readonly="true"
-									   Value="@_trainerCommissionPercent" />
+									   Value="@_trainer.CommissionPercent.ToString()" />
 						</div>
 					</div>
 				</div>
@@ -126,7 +146,7 @@
 							<label class="form-label">Date Range</label>
 							<SfDateRangePicker Placeholder="Get Sessions Between" TValue="DateOnly"
 											   FloatLabelType='@FloatLabelType.Auto'
-											   StartDate="@SessionStartDate" EndDate="@SessionEndDate"
+											   StartDate="_sessionStartDate" EndDate="_sessionEndDate"
 											   CssClass="form-control">
 								<DateRangePickerEvents TValue="DateOnly" ValueChange="@SessionDateChanged" />
 							</SfDateRangePicker>
@@ -134,7 +154,7 @@
 					</div>
 
 					<div class="grid-container mt-4">
-						<SfGrid DataSource="@SessionDetailsModels"
+						<SfGrid DataSource="_sessions"
 								ID="_sfGrid"
 								@ref="_sfGrid"
 								Height="300"
@@ -233,6 +253,55 @@
 		color: var(--dark-color);
 	}
 
+	/* Added Dashboard Button Styles */
+	.header-actions {
+		display: flex;
+		align-items: center;
+	}
+
+	.dashboard-btn {
+		background: linear-gradient(135deg, var(--primary-color) 0%, #5c6bc0 100%);
+		border: none;
+		border-radius: 50px;
+		padding: 0.6rem 1.5rem;
+		color: white;
+		font-weight: 600;
+		font-family: 'Montserrat', 'Roboto', sans-serif;
+		font-size: 0.95rem;
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		cursor: pointer;
+		transition: all 0.3s ease;
+		box-shadow: 0 4px 10px rgba(63, 81, 181, 0.3);
+	}
+
+		.dashboard-btn:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 6px 15px rgba(63, 81, 181, 0.4);
+			background: linear-gradient(135deg, #4558c9 0%, #6677cc 100%);
+		}
+
+		.dashboard-btn:active {
+			transform: translateY(1px);
+			box-shadow: 0 2px 5px rgba(63, 81, 181, 0.3);
+		}
+
+	.btn-icon {
+		width: 20px;
+		height: 20px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+		.btn-icon svg {
+			width: 20px;
+			height: 20px;
+			fill: white;
+		}
+	/* End of Dashboard Button Styles */
+
 	.sessions-content {
 		flex-grow: 1;
 		position: relative;
@@ -313,8 +382,64 @@
 		transition: all 0.2s ease !important;
 	}
 
+	.input-group {
+		display: flex;
+		gap: 10px;
+	}
+
+	.trainer-dropdown {
+		min-width: 200px;
+	}
+
+	::deep .trainer-dropdown .e-input-group {
+		border-radius: 8px !important;
+		border: 2px solid #e0e0e0 !important;
+		transition: all 0.2s ease !important;
+	}
+
 	::deep .e-input:focus,
 	::deep .e-input-group.e-control-wrapper:focus-within {
+		border-color: var(--secondary-color) !important;
+		box-shadow: 0 0 0 3px rgba(139, 195, 74, 0.2) !important;
+	}
+
+	/* Add these new styles */
+	.trainer-dropdown {
+		width: 100%;
+	}
+
+	.trainer-number-display .summary-card {
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-top: 0;
+	}
+
+	.summary-badge.trainer-id {
+		background: linear-gradient(135deg, var(--primary-color) 0%, #5c6bc0 100%);
+		min-width: 100px;
+		text-align: center;
+	}
+
+	::deep .e-ddl.form-control {
+		height: auto;
+		padding: 0;
+	}
+
+	::deep .e-ddl .e-input-group {
+		border-radius: 8px !important;
+		border: 2px solid #e0e0e0 !important;
+		transition: all 0.2s ease !important;
+	}
+
+		::deep .e-ddl .e-input-group:hover:not(.e-disabled):not(.e-float-icon-left),
+		::deep .e-ddl .e-input-group.e-control-wrapper:hover:not(.e-disabled):not(.e-float-icon-left) {
+			border-color: var(--secondary-color) !important;
+		}
+
+	::deep .e-ddl.e-input-focus .e-input-group,
+	::deep .e-ddl.e-input-focus .e-input-group.e-control-wrapper {
 		border-color: var(--secondary-color) !important;
 		box-shadow: 0 0 0 3px rgba(139, 195, 74, 0.2) !important;
 	}
@@ -405,6 +530,17 @@
 
 		.form-grid {
 			grid-template-columns: 1fr;
+		}
+		/* Added responsive styles for header content */
+		.header-content {
+			flex-direction: column;
+			gap: 1rem;
+			align-items: flex-start;
+		}
+
+		.dashboard-btn {
+			width: 100%;
+			justify-content: center;
 		}
 	}
 </style>

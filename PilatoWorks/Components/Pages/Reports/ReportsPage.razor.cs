@@ -41,7 +41,4 @@ public partial class ReportsPage
 	private void OnSessionsReportClick() =>
 		NavManager.NavigateTo("/SessionsReport");
 
-	private void NavigateToDashboard() =>
-		NavManager.NavigateTo("/");
-
 }

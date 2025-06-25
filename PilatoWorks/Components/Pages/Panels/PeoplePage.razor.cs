@@ -128,7 +128,4 @@ public partial class PeoplePage
 
 		return true;
 	}
-
-	private void OnCancelClick() =>
-		NavManager.NavigateTo("/");
 }

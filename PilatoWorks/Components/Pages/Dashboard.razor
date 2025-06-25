@@ -32,7 +32,7 @@
 		<div class="menu-cards">
 			@if (_user?.Session == true)
 			{
-				<div class="menu-card person-card" @onclick="OnPeopleClick">
+				<div class="menu-card person-card" @onclick='() => NavManager.NavigateTo("/People")'>
 					<div class="card-icon">
 						<svg class="feature-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 							<path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
@@ -44,7 +44,7 @@
 					</div>
 				</div>
 
-				<div class="menu-card subscription-card" @onclick="OnSubscriptionClick">
+				<div class="menu-card subscription-card" @onclick='() => NavManager.NavigateTo("/Subscriptions")'>
 					<div class="card-icon">
 						<svg class="feature-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 							<path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
@@ -56,7 +56,7 @@
 					</div>
 				</div>
 
-				<div class="menu-card session-card" @onclick="OnSessionClick">
+				<div class="menu-card session-card" @onclick='() => NavManager.NavigateTo("/Sessions")'>
 					<div class="card-icon">
 						<svg class="feature-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 							<path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14a2 2 0 002 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7v-5z" />
@@ -68,19 +68,7 @@
 					</div>
 				</div>
 
-				<div class="menu-card dues-card" @onclick="OnClearDuesClick">
-					<div class="card-icon">
-						<svg class="feature-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-							<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11H7v-2h10v2z" />
-						</svg>
-					</div>
-					<div class="card-content">
-						<h3>Clear Dues</h3>
-						<p>Manage and clear outstanding client payments</p>
-					</div>
-				</div>
-
-				<div class="menu-card reports-card" @onclick="OnReportsClick">
+				<div class="menu-card reports-card" @onclick='() => NavManager.NavigateTo("/Reports")'>
 					<div class="card-icon">
 						<svg class="feature-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 							<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
@@ -91,11 +79,23 @@
 						<p>View and generate business performance reports</p>
 					</div>
 				</div>
+
+				<div class="menu-card dues-card" @onclick='() => NavManager.NavigateTo("/ClearDues")'>
+					<div class="card-icon">
+						<svg class="feature-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+							<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11H7v-2h10v2z" />
+						</svg>
+					</div>
+					<div class="card-content">
+						<h3>Clear Dues</h3>
+						<p>Manage and clear outstanding client payments</p>
+					</div>
+				</div>
 			}
 
 			@if (_user?.Trainer == true)
 			{
-				<div class="menu-card trainer-card" @onclick="OnTrainerClick">
+				<div class="menu-card trainer-card" @onclick='() => NavManager.NavigateTo("/Trainers")'>
 					<div class="card-icon">
 						<svg class="feature-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 							<path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z" />
@@ -110,7 +110,7 @@
 
 			@if (_user?.Admin == true)
 			{
-				<div class="menu-card users-card" @onclick="OnUsersClick">
+				<div class="menu-card users-card" @onclick='() => NavManager.NavigateTo("/UserManagement")'>
 					<div class="card-icon">
 						<svg class="feature-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 							<path d="M12 5.9c1.16 0 2.1.94 2.1 2.1s-.94 2.1-2.1 2.1S9.9 9.16 9.9 8s.94-2.1 2.1-2.1m0 9c2.97 0 6.1 1.46 6.1 2.1v1.1H5.9V17c0-.64 3.13-2.1 6.1-2.1M12 4C9.79 4 8 5.79 8 8s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 9c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4zm9-9h-3V1h-2v3h-3v2h3v3h2V6h3z" />
@@ -122,7 +122,7 @@
 					</div>
 				</div>
 
-				<div class="menu-card trainers-mgmt-card" @onclick="OnTrainerManagementClick">
+				<div class="menu-card trainers-mgmt-card" @onclick='() => NavManager.NavigateTo("/TrainerManagement")'>
 					<div class="card-icon">
 						<svg class="feature-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 							<path d="M15 11V5l-3-3-3 3v2H3v14h18V11h-6zm-8 8H5v-2h2v2zm0-4H5v-2h2v2zm0-4H5V9h2v2zm6 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V9h2v2zm0-4h-2V5h2v2zm6 12h-2v-2h2v2zm0-4h-2v-2h2v2z" />
