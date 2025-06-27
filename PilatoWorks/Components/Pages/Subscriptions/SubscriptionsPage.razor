@@ -43,16 +43,10 @@
 				<div class="section-content">
 					<div class="form-grid">
 						<div class="form-group">
-							<label class="form-label">Client Number</label>
-							<SfTextBox Placeholder='Enter Number' CssClass="form-control"
-									   FloatLabelType='@FloatLabelType.Auto' Type="InputType.Number"
-									   ValueChanged="OnNumberChanged" Value="@_personNumber" maxlength="10" />
-						</div>
-						<div class="form-group">
 							<label class="form-label">Client Name</label>
-							<SfComboBox TValue="int" TItem="PersonModel" Placeholder="Select Client"
+							<SfComboBox TValue="int?" TItem="PersonModel" Placeholder="Select Client"
 										CssClass="form-control" FloatLabelType='@FloatLabelType.Auto'
-										DataSource="@_personList" Value="_selectedPersonId"
+										DataSource="@_persons" Value="_person?.Id"
 										ValueChanged="OnPersonSelected">
 								<ComboBoxTemplates TItem="PersonModel">
 									<ItemTemplate>
@@ -64,6 +58,12 @@
 								</ComboBoxTemplates>
 								<ComboBoxFieldSettings Value="Id" Text="Name" />
 							</SfComboBox>
+						</div>
+
+						<div class="form-group">
+							<label class="form-label">Client Number</label>
+							<SfTextBox Placeholder='Client Number' CssClass="form-control"
+									   FloatLabelType='@FloatLabelType.Auto' Value="@_person?.Number" Readonly=true />
 						</div>
 					</div>
 				</div>
@@ -83,36 +83,34 @@
 							<label class="form-label">Session Type</label>
 							<SfComboBox TValue="int" TItem="SessionTypeModel" Placeholder="Select Type"
 										CssClass="form-control" FloatLabelType='@FloatLabelType.Auto'
-										DataSource="@_sessionTypes" @bind-Value="_selectedSessionType">
+										DataSource="@_sessionTypes" @bind-Value="_subscription.SessionTypeId">
 								<ComboBoxFieldSettings Value="Id" Text="Name" />
 							</SfComboBox>
 						</div>
 						<div class="form-group">
 							<label class="form-label">Validity Period</label>
 							<SfDateRangePicker Placeholder="Select Dates" CssClass="form-control"
-											   FloatLabelType='@FloatLabelType.Auto' @bind-StartDate="@ValidStartDate"
-											   @bind-EndDate="@ValidEndDate" Min="@MinValidDate" />
+											   FloatLabelType='@FloatLabelType.Auto' @bind-StartDate="_subscription.ValidFrom"
+											   @bind-EndDate="_subscription.ValidTo" Min="_minValidDate" />
 						</div>
 						<div class="form-group">
 							<label class="form-label">Number of Sessions</label>
-							<SfTextBox Placeholder='Enter Count' CssClass="form-control"
-									   FloatLabelType='@FloatLabelType.Auto' Type="InputType.Number"
-									   @bind-Value="@_noSessions" />
+							<SfNumericTextBox Placeholder='Enter Count' CssClass="form-control" Min=1
+											  FloatLabelType='@FloatLabelType.Auto' @bind-Value="_subscription.NoSessions" />
 						</div>
 						<div class="form-group">
 							<label class="form-label">Booking Amount</label>
-							<SfTextBox Placeholder='Enter Amount' CssClass="form-control"
-									   FloatLabelType='@FloatLabelType.Auto' Type="InputType.Number"
-									   @bind-Value="@_booking" />
+							<SfNumericTextBox Placeholder='Enter Amount' CssClass="form-control" Min=0
+											  FloatLabelType='@FloatLabelType.Auto' @bind-Value="_subscription.Booking" />
 						</div>
 						<div class="form-group">
 							<label class="form-label">Payment Date</label>
 							<SfDatePicker TValue="DateTime" Placeholder="Select Date" CssClass="form-control"
-										  FloatLabelType='@FloatLabelType.Auto' @bind-Value="@_subscriptionDate"
+										  FloatLabelType='@FloatLabelType.Auto' @bind-Value="_subscription.SubscriptionDate"
 										  Format="d" Max="@DateTime.Now.AddDays(10)" />
 						</div>
 						<div class="form-group checkbox-group">
-							<SfCheckBox Label="Active Status" @bind-Checked="_status" CssClass="custom-checkbox" />
+							<SfCheckBox Label="Active Status" @bind-Checked="_subscription.Status" CssClass="custom-checkbox" />
 						</div>
 					</div>
 				</div>
@@ -131,27 +129,24 @@
 						<div class="form-group">
 							<label class="form-label">Cash Amount</label>
 							<div class="payment-input">
-								<SfTextBox Placeholder='Enter Amount' CssClass="form-control"
-										   FloatLabelType='@FloatLabelType.Auto' Type="InputType.Number"
-										   @bind-Value="@_cash" />
+								<SfNumericTextBox Placeholder='Enter Amount' CssClass="form-control" Min=0
+												  FloatLabelType='@FloatLabelType.Auto' @bind-Value="_cash" />
 								<span class="payment-icon cash">₹</span>
 							</div>
 						</div>
 						<div class="form-group">
 							<label class="form-label">Card Payment</label>
 							<div class="payment-input">
-								<SfTextBox Placeholder='Enter Amount' CssClass="form-control"
-										   FloatLabelType='@FloatLabelType.Auto' Type="InputType.Number"
-										   @bind-Value="@_card" />
+								<SfNumericTextBox Placeholder='Enter Amount' CssClass="form-control" Min=0
+												  FloatLabelType='@FloatLabelType.Auto' @bind-Value="_card" />
 								<span class="payment-icon card">💳</span>
 							</div>
 						</div>
 						<div class="form-group">
 							<label class="form-label">UPI Payment</label>
 							<div class="payment-input">
-								<SfTextBox Placeholder='Enter Amount' CssClass="form-control"
-										   FloatLabelType='@FloatLabelType.Auto' Type="InputType.Number"
-										   @bind-Value="@_upi" />
+								<SfNumericTextBox Placeholder='Enter Amount' CssClass="form-control" Min=0
+												  FloatLabelType='@FloatLabelType.Auto' @bind-Value="_upi" />
 								<span class="payment-icon upi">📱</span>
 							</div>
 						</div>

@@ -7,26 +7,27 @@ public partial class SubscriptionsPage
 
 	[Parameter] public int? SubscriptionId { get; set; }
 
-	public DateOnly ValidStartDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
-	public DateOnly ValidEndDate { get; set; } = DateOnly.FromDateTime(DateTime.Now.AddMonths(1));
-
-	public DateTime MinValidDate { get; set; } = DateTime.Now.AddMonths(-10);
-
 	private UserModel _user;
 
-	private string _personNumber;
-	private string _noSessions;
-	private string _booking;
-	private string _cash;
-	private string _card;
-	private string _upi;
+	private int _cash;
+	private int _card;
+	private int _upi;
 
-	private DateTime _subscriptionDate = DateTime.Now.AddHours(5).AddMinutes(30);
-	private bool _status = true;
-	private int _selectedPersonId = 0;
-	private int _selectedSessionType = 0;
+	private DateTime _minValidDate = DateTime.Now.AddMonths(-10);
 
-	private List<PersonModel> _personList = [];
+	private PersonModel _person;
+	private SubscriptionModel _subscription = new()
+	{
+		Id = 0,
+		NoSessions = 1,
+		Booking = 0,
+		ValidFrom = DateOnly.FromDateTime(DateTime.Now),
+		ValidTo = DateOnly.FromDateTime(DateTime.Now.AddMonths(1)),
+		SubscriptionDate = DateTime.Now.AddHours(5).AddMinutes(30),
+		Status = true,
+	};
+
+	private List<PersonModel> _persons = [];
 	private List<SessionTypeModel> _sessionTypes = [];
 
 	#region Load Data
@@ -57,9 +58,10 @@ public partial class SubscriptionsPage
 
 	private async Task LoadComboBox()
 	{
-		_personList = await CommonData.LoadTableData<PersonModel>(TableNames.Person);
+		_persons = await CommonData.LoadTableData<PersonModel>(TableNames.Person);
 		_sessionTypes = await CommonData.LoadTableDataByStatus<SessionTypeModel>(TableNames.SessionType);
-		_selectedSessionType = _sessionTypes.FirstOrDefault()?.Id ?? 0;
+
+		_subscription.SessionTypeId = _sessionTypes.LastOrDefault()?.Id ?? 2;
 
 		if (SubscriptionId.HasValue && SubscriptionId.Value > 0)
 			await LoadSubscription();
@@ -69,181 +71,156 @@ public partial class SubscriptionsPage
 
 	private async Task LoadSubscription()
 	{
-		var subscription = await CommonData.LoadTableDataById<SubscriptionModel>(TableNames.Subscription, SubscriptionId.Value);
-		if (subscription is null)
+		_subscription = await CommonData.LoadTableDataById<SubscriptionModel>(TableNames.Subscription, SubscriptionId.Value);
+		if (_subscription is null)
 		{
 			await JS.InvokeVoidAsync("alert", "Subscription not found.");
 			NavManager.NavigateTo("/");
 			return;
 		}
 
-		var person = await CommonData.LoadTableDataById<PersonModel>(TableNames.Person, subscription.PersonId);
-		if (person is null)
+		_person = await CommonData.LoadTableDataById<PersonModel>(TableNames.Person, _subscription.PersonId);
+		if (_person is null)
 		{
 			await JS.InvokeVoidAsync("alert", "Person not found for the subscription.");
 			NavManager.NavigateTo("/");
 			return;
 		}
 
-		_personNumber = person.Number;
-		_selectedPersonId = person.Id;
-		_noSessions = subscription.NoSessions.ToString();
-		_booking = subscription.Booking.ToString();
-		_selectedSessionType = subscription.SessionTypeId;
-		_status = subscription.Status;
-		_subscriptionDate = subscription.SubscriptionDate;
-		_selectedSessionType = subscription.SessionTypeId;
-		ValidStartDate = subscription.ValidFrom;
-		ValidEndDate = subscription.ValidTo;
-
-		var payments = await SubscriptionData.LoadSubscriptionPaymentDetailsBySubscriptionId(subscription.Id);
+		var payments = await SubscriptionData.LoadSubscriptionPaymentDetailsBySubscriptionId(_subscription.Id);
 		if (payments is not null)
 		{
-			_cash = payments.FirstOrDefault(p => p.PaymentModeId == 1)?.Amount.ToString() ?? "";
-			_card = payments.FirstOrDefault(p => p.PaymentModeId == 2)?.Amount.ToString() ?? "";
-			_upi = payments.FirstOrDefault(p => p.PaymentModeId == 3)?.Amount.ToString() ?? "";
+			_cash = payments.FirstOrDefault(p => p.PaymentModeId == 1)?.Amount ?? 0;
+			_card = payments.FirstOrDefault(p => p.PaymentModeId == 2)?.Amount ?? 0;
+			_upi = payments.FirstOrDefault(p => p.PaymentModeId == 3)?.Amount ?? 0;
 		}
 		else
 		{
-			_cash = "";
-			_card = "";
-			_upi = "";
+			_cash = 0;
+			_card = 0;
+			_upi = 0;
 		}
 
 		StateHasChanged();
 	}
-	#endregion
 
-	#region Events
-	private async Task OnNumberChanged(string args)
+	private async Task OnPersonSelected(int? personId)
 	{
-		_personNumber = args;
-		if (string.IsNullOrEmpty(_personNumber)) return;
+		if (personId is null || personId == 0)
+			NavManager.NavigateTo(NavManager.Uri, forceLoad: true);
 
-		var foundPerson = await PersonData.LoadPersonByNumber(_personNumber.Trim());
-
-		if (foundPerson is not null)
+		if (personId is not null)
 		{
-			_selectedPersonId = foundPerson.Id;
+			_person = _persons.FirstOrDefault(p => p.Id == personId.Value);
 
-			var validSubscriptions = await SubscriptionData.LoadValidSubscriptionByPerson(foundPerson.Id);
-
+			var validSubscriptions = await SubscriptionData.LoadValidSubscriptionByPerson(_person.Id);
 			if (validSubscriptions is not null)
 			{
 				await JS.InvokeVoidAsync("alert", "Person Already has a Valid Subscription");
 
-				MinValidDate = validSubscriptions.SubscriptionValidTo.ToDateTime(new TimeOnly(0, 0));
-				ValidStartDate = DateOnly.FromDateTime(validSubscriptions.SubscriptionValidTo.ToDateTime(new TimeOnly(0, 0)));
-				ValidEndDate = DateOnly.FromDateTime(validSubscriptions.SubscriptionValidTo.ToDateTime(new TimeOnly(0, 0)).AddMonths(1));
-			}
-			else
-			{
-				MinValidDate = DateTime.Now.AddMonths(-10);
-				ValidStartDate = DateOnly.FromDateTime(DateTime.Now);
-				ValidEndDate = DateOnly.FromDateTime(DateTime.Now.AddMonths(1));
+				_minValidDate = validSubscriptions.SubscriptionValidTo.ToDateTime(new TimeOnly(0, 0)).AddDays(1);
+
+				_subscription = new()
+				{
+					Id = 0,
+					PersonId = _person.Id,
+					NoSessions = 1,
+					Booking = 0,
+					SessionTypeId = validSubscriptions.SessionTypeId,
+					ValidFrom = DateOnly.FromDateTime(_minValidDate),
+					ValidTo = DateOnly.FromDateTime(_minValidDate.AddMonths(1)),
+					SubscriptionDate = DateTime.Now.AddHours(5).AddMinutes(30),
+					UserId = _user?.Id ?? 0,
+					Status = true,
+				};
+
+				StateHasChanged();
+
+				return;
 			}
 		}
-		else
+
+		_subscription = new SubscriptionModel
 		{
-			_selectedPersonId = 0;
+			Id = 0,
+			PersonId = _person?.Id ?? 0,
+			NoSessions = 1,
+			Booking = 0,
+			SessionTypeId = _sessionTypes.LastOrDefault()?.Id ?? 2,
+			ValidFrom = DateOnly.FromDateTime(DateTime.Now),
+			ValidTo = DateOnly.FromDateTime(DateTime.Now.AddMonths(1)),
+			SubscriptionDate = DateTime.Now.AddHours(5).AddMinutes(30),
+			UserId = _user?.Id ?? 0,
+			Status = true,
+		};
 
-			MinValidDate = DateTime.Now.AddMonths(-10);
-			ValidStartDate = DateOnly.FromDateTime(DateTime.Now);
-			ValidEndDate = DateOnly.FromDateTime(DateTime.Now.AddMonths(1));
-
-			_personNumber = "";
-			_noSessions = "";
-			_booking = "";
-
-			_selectedSessionType = 1;
-			_status = true;
-
-			_cash = "";
-			_card = "";
-			_upi = "";
-		}
+		_minValidDate = DateTime.Now.AddMonths(-10);
 
 		StateHasChanged();
-	}
-
-	private async Task OnPersonSelected(int personId)
-	{
-		var selectedPerson = _personList.FirstOrDefault(p => p.Id == personId);
-
-		if (selectedPerson is not null)
-		{
-			_personNumber = selectedPerson.Number;
-
-			await OnNumberChanged(_personNumber);
-		}
 	}
 	#endregion
 
 	#region Saving
 	private async Task<bool> ValidateForm()
 	{
-		if (_selectedPersonId == 0)
+		if (_person is null || _person.Id <= 0 || string.IsNullOrEmpty(_person.Number))
 		{
 			await JS.InvokeVoidAsync("alert", "Please enter a valid Person");
 			return false;
 		}
 
-		if (string.IsNullOrEmpty(_personNumber) || string.IsNullOrEmpty(_personNumber))
+		_person = await PersonData.LoadPersonByNumber(_person.Number.Trim());
+		if (_person is null)
 		{
-			await JS.InvokeVoidAsync("alert", "Please enter a valid Person Number");
+			await JS.InvokeVoidAsync("alert", "Person not found.");
 			return false;
 		}
 
-		if (string.IsNullOrEmpty(_noSessions))
+		_subscription.PersonId = _person.Id;
+
+		if (_subscription.SessionTypeId <= 0)
+		{
+			await JS.InvokeVoidAsync("alert", "Please select a valid session type.");
+			return false;
+		}
+
+		if (_subscription.NoSessions <= 0)
 		{
 			await JS.InvokeVoidAsync("alert", "Please enter a valid number of sessions.");
 			return false;
 		}
 
-		if (string.IsNullOrEmpty(_booking))
+		if (_subscription.Booking < 0)
 		{
 			await JS.InvokeVoidAsync("alert", "Please enter a valid booking amount.");
 			return false;
 		}
 
-		if (ValidStartDate > ValidEndDate)
+		if (_subscription.ValidFrom > _subscription.ValidTo)
 		{
 			await JS.InvokeVoidAsync("alert", "Start date cannot be greater than end date.");
 			return false;
 		}
 
-		if (string.IsNullOrEmpty(_cash)) _cash = "0";
-		if (string.IsNullOrEmpty(_card)) _card = "0";
-		if (string.IsNullOrEmpty(_upi)) _upi = "0";
-
-		if (int.Parse(_cash) + int.Parse(_card) + int.Parse(_upi) > int.Parse(_booking.Trim()))
+		if (_cash + _card + _upi > _subscription.Booking)
 		{
 			await JS.InvokeVoidAsync("alert", "Amount Collected is greater than booking Amount.");
-			return false;
-		}
-
-		var person = await PersonData.LoadPersonByNumber(_personNumber.Trim());
-		if (person is null)
-		{
-			await JS.InvokeVoidAsync("alert", "Person not found.");
 			return false;
 		}
 
 		// Check for overlapping subscriptions
 		if (SubscriptionId is null || SubscriptionId.Value <= 0)
 		{
-			var existingSubscriptions = await SubscriptionData.LoadSubscriptionByPerson(person.Id);
+			var existingSubscriptions = await SubscriptionData.LoadSubscriptionByPerson(_person.Id);
 			foreach (var subscription in existingSubscriptions)
-			{
 				// Check if new subscription dates overlap with any existing subscription
-				if (ValidStartDate <= subscription.SubscriptionValidTo && ValidEndDate >= subscription.SubscriptionValidFrom)
+				if (_subscription.ValidFrom <= subscription.SubscriptionValidTo && _subscription.ValidTo >= subscription.SubscriptionValidFrom)
 				{
 					await JS.InvokeVoidAsync("alert",
 						$"This person already has a subscription that overlaps with the selected date range " +
 						$"(existing subscription: {subscription.SubscriptionValidFrom} to {subscription.SubscriptionValidTo})");
 					return false;
 				}
-			}
 		}
 
 		return true;
@@ -254,28 +231,8 @@ public partial class SubscriptionsPage
 		if (!await ValidateForm())
 			return;
 
-		var person = await PersonData.LoadPersonByNumber(_personNumber.Trim());
-		if (person is null)
-		{
-			await JS.InvokeVoidAsync("alert", "Person not found.");
-			return;
-		}
-
-		var subscriptionId = await SubscriptionData.InsertSubscription(new()
-		{
-			Id = SubscriptionId ?? 0,
-			PersonId = person.Id,
-			ValidFrom = ValidStartDate,
-			ValidTo = ValidEndDate,
-			SessionTypeId = _selectedSessionType,
-			NoSessions = int.Parse(_noSessions.Trim()),
-			Booking = int.Parse(_booking.Trim()),
-			UserId = _user.Id,
-			Status = _status,
-			SubscriptionDate = _subscriptionDate
-		});
-
-		if (subscriptionId == 0)
+		_subscription.Id = await SubscriptionData.InsertSubscription(_subscription);
+		if (_subscription.Id == 0)
 		{
 			await JS.InvokeVoidAsync("alert", "Error in creating subscription.");
 			return;
@@ -293,13 +250,13 @@ public partial class SubscriptionsPage
 
 		for (int i = 1; i <= 3; i++)
 		{
-			int amount = int.Parse(i switch
+			int amount = i switch
 			{
 				1 => _cash,
 				2 => _card,
 				3 => _upi,
-				_ => "0"
-			});
+				_ => 0
+			};
 
 			if (amount == 0)
 				continue;
@@ -308,7 +265,7 @@ public partial class SubscriptionsPage
 			{
 				Id = 0,
 				PaymentModeId = i,
-				SubscriptionId = subscriptionId,
+				SubscriptionId = _subscription.Id,
 				Amount = amount,
 				PaymentDate = DateTime.Now,
 				Status = true
@@ -316,7 +273,7 @@ public partial class SubscriptionsPage
 		}
 
 		if (SubscriptionId.HasValue && SubscriptionId.Value > 0)
-			NavManager.NavigateTo($"/");
+			NavManager.NavigateTo("/");
 
 		else
 			NavManager.NavigateTo(NavManager.Uri, forceLoad: true);
