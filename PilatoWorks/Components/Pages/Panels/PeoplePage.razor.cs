@@ -53,7 +53,6 @@ public partial class PeoplePage
 		_person.Number = args;
 
 		var foundPerson = await PersonData.LoadPersonByNumber(_person.Number.Trim().RemoveSpace());
-
 		if (foundPerson is not null)
 			_person = foundPerson;
 
@@ -125,6 +124,13 @@ public partial class PeoplePage
 		if (string.IsNullOrWhiteSpace(_person.CurrentFitnessLevel)) _person.CurrentFitnessLevel = "";
 		if (string.IsNullOrWhiteSpace(_person.OftenExercise)) _person.OftenExercise = "";
 		if (string.IsNullOrWhiteSpace(_person.Diet)) _person.Diet = "";
+
+		string[] names = _person.Name.Split(' ');
+		for (int i = 0; i < names.Length; i++)
+			if (names[i].Length > 0)
+				names[i] = char.ToUpper(names[i][0]) + names[i][1..].ToLower();
+
+		_person.Name = string.Join(' ', names);
 
 		return true;
 	}
