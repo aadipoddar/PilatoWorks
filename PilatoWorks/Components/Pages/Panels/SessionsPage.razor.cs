@@ -59,9 +59,10 @@ public partial class SessionsPage
 	private async Task LoadInitialData()
 	{
 		_slots = await CommonData.LoadTableData<SlotModel>(TableNames.Slot);
-		await LoadSessions();
-
 		_trainers = await CommonData.LoadTableDataByStatus<TrainerModel>(TableNames.Trainer);
+
+		await LoadSessions();
+		await LoadValidPersons();
 
 		StateHasChanged();
 	}
@@ -70,6 +71,7 @@ public partial class SessionsPage
 	{
 		_selectedDate = args.Value;
 		await LoadSessions();
+		await LoadValidPersons();
 		StateHasChanged();
 	}
 

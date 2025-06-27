@@ -6,6 +6,7 @@ public class SessionResponseModel
 	public string date { get; set; } = "";
 	public string clientName { get; set; } = "";
 }
+
 public class ClientNameMatchResult
 {
 	public int matchedId { get; set; } = 0;

@@ -133,8 +133,9 @@
 											{
 												@foreach (var session in sessions)
 												{
-													bool isGroupSession = session.SessionTypeName.ToLower().Contains("group");
-													string sessionClass = isGroupSession ? "group-session" : "private-session";
+													var isGroupSession = session.SessionTypeName.ToLower().Contains("group");
+													var sessionClass = isGroupSession ? "group-session" : "private-session";
+													var subscription = _validSubs.FirstOrDefault(s => s.SubscriptionId == session.SubscriptionId);
 
 													<div class="session-item @sessionClass" @onclick="@(() => OnSessionClick(session))">
 														<div class="session-content">
@@ -160,6 +161,31 @@
 																	}
 																</div>
 															</div>
+															@if (subscription is not null)
+															{
+																<div class="session-subscription-info">
+																	@if (subscription.Dues > 0)
+																	{
+																		<div class="subscription-detail">
+																			<svg class="subscription-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+																				<path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" />
+																			</svg>
+
+																			<span class="dues-pending">
+																				@($"Dues : {subscription.Dues.FormatIndianCurrency()}")
+																			</span>
+																		</div>
+																	}
+																	<div class="subscription-detail">
+																		<svg class="subscription-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+																			<path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 002 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z" />
+																		</svg>
+																		<span class="renewal-date">
+																			Renews: @subscription.SubscriptionValidTo.ToString("MMM dd, yyyy")
+																		</span>
+																	</div>
+																</div>
+															}
 														</div>
 														<div class="session-status">
 															@if (session.Confirmed)
@@ -709,6 +735,38 @@
 		padding: 0.5rem 0;
 	}
 
+	.session-subscription-info {
+		margin-top: 0.5rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+		font-size: 0.8rem;
+		color: #555;
+		border-top: 1px dashed rgba(0, 0, 0, 0.1);
+		padding-top: 0.5rem;
+	}
+
+	.subscription-detail {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.subscription-icon {
+		width: 14px;
+		height: 14px;
+		fill: currentColor;
+	}
+
+	.dues-pending {
+		color: #f44336;
+		font-weight: 600;
+	}
+
+	.renewal-date {
+		color: #555;
+	}
+
 	/* Date Selection */
 	.date-selection-wrapper {
 		display: flex;
@@ -879,6 +937,7 @@
 		border: 1px solid rgba(0, 0, 0, 0.08);
 		display: flex;
 		justify-content: space-between;
+		min-height: 145px;
 	}
 
 		.session-item:hover {

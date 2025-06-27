@@ -92,7 +92,6 @@
     <Build Include="StoredProcedures\LoadData\Subscription\Load_Valid_Subscription_By_Person.sql" />
     <Build Include="StoredProcedures\LoadData\Subscription\Load_SubscriptionPaymentDetails_By_SubscriptionId.sql" />
     <Build Include="Views\Subscription_Details.sql" />
-    <Build Include="StoredProcedures\LoadData\Load_Person_By_Name_Number.sql" />
     <Build Include="StoredProcedures\LoadData\Sessions\Load_SessionDetails_By_Date_Slot.sql" />
     <Build Include="StoredProcedures\LoadData\Common\Load_TableData.sql" />
     <Build Include="StoredProcedures\LoadData\Common\Load_TableData_By_Id.sql" />

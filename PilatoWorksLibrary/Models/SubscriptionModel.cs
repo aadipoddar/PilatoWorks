@@ -33,3 +33,13 @@ public class SubscriptionDetailsModel
 	public string UserName { get; set; }
 	public DateTime SubscriptionDate { get; set; }
 }
+
+public class SubscriptionPaymentDetailsModel
+{
+	public int Id { get; set; }
+	public int SubscriptionId { get; set; }
+	public int Amount { get; set; }
+	public int PaymentModeId { get; set; }
+	public DateTime PaymentDate { get; set; }
+	public bool Status { get; set; }
+}
