@@ -53,13 +53,10 @@
 						<SfDatePicker TValue="DateOnly"
 									  Placeholder="Select Session Date"
 									  Value="_selectedDate"
-									  CssClass="date-picker">
+									  CssClass="date-picker"
+									  Format="dddd, MMMM d, yyyy">
 							<DatePickerEvents TValue="DateOnly" ValueChange="OnDateChanged" />
 						</SfDatePicker>
-						<div class="selected-date-info">
-							<span class="date-label">Selected Date:</span>
-							<span class="date-value">@_selectedDate.ToLongDateString()</span>
-						</div>
 					</div>
 				</div>
 			</div>
@@ -768,39 +765,23 @@
 	}
 
 	/* Date Selection */
+	.date-selection-card {
+		max-width: 600px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
 	.date-selection-wrapper {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		gap: 1rem;
-		max-width: 400px;
 		margin: 0 auto;
 	}
 
 	.date-picker {
 		width: 100%;
-		max-width: 300px;
-	}
-
-	.selected-date-info {
-		display: flex;
-		gap: 0.75rem;
-		align-items: center;
-		padding: 0.75rem 1rem;
-		background-color: rgba(139, 195, 74, 0.1);
-		border-radius: 12px;
-		border-left: 4px solid var(--secondary-color);
-		width: 100%;
-		max-width: 300px;
-	}
-
-	.date-label {
-		font-weight: 600;
-		color: var(--dark-color);
-	}
-
-	.date-value {
-		color: #555;
+		max-width: 245px;
 	}
 
 	/* Slots Styling */

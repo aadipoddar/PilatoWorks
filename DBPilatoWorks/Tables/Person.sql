@@ -7,7 +7,7 @@
     [Number] VARCHAR(10) NOT NULL UNIQUE, 
     [Email] VARCHAR(100) NOT NULL, 
     [Address] VARCHAR(250) NOT NULL, 
-    [EmerrgencyName] VARCHAR(100) NOT NULL, 
+    [EmergencyName] VARCHAR(100) NOT NULL, 
     [EmergencyRelationship] VARCHAR(100) NOT NULL, 
     [EmergencyNumber] VARCHAR(10) NOT NULL, 
     [ExistingMedicalCondition] VARCHAR(250) NOT NULL, 

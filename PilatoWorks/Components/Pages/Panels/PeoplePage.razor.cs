@@ -1,4 +1,3 @@
-
 namespace PilatoWorks.Components.Pages.Panels;
 
 public partial class PeoplePage
@@ -125,7 +124,7 @@ public partial class PeoplePage
 		if (string.IsNullOrWhiteSpace(_person.OftenExercise)) _person.OftenExercise = "";
 		if (string.IsNullOrWhiteSpace(_person.Diet)) _person.Diet = "";
 
-		string[] names = _person.Name.Split(' ');
+		string[] names = _person.Name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 		for (int i = 0; i < names.Length; i++)
 			if (names[i].Length > 0)
 				names[i] = char.ToUpper(names[i][0]) + names[i][1..].ToLower();
