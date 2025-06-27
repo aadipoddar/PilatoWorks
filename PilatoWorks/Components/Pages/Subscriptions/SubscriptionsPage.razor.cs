@@ -58,7 +58,7 @@ public partial class SubscriptionsPage
 
 	private async Task LoadComboBox()
 	{
-		_persons = await CommonData.LoadTableData<PersonModel>(TableNames.Person);
+		_persons = [.. (await CommonData.LoadTableData<PersonModel>(TableNames.Person)).OrderBy(p => p.Name)];
 		_sessionTypes = await CommonData.LoadTableDataByStatus<SessionTypeModel>(TableNames.SessionType);
 
 		_subscription.SessionTypeId = _sessionTypes.LastOrDefault()?.Id ?? 2;

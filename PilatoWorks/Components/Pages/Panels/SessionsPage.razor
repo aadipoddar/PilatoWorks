@@ -135,7 +135,7 @@
 												{
 													var isGroupSession = session.SessionTypeName.ToLower().Contains("group");
 													var sessionClass = isGroupSession ? "group-session" : "private-session";
-													var subscription = _validSubs.FirstOrDefault(s => s.SubscriptionId == session.SubscriptionId);
+													var subscription = _validSubs.FirstOrDefault(s => s.PersonId == session.PersonId);
 
 													<div class="session-item @sessionClass" @onclick="@(() => OnSessionClick(session))">
 														<div class="session-content">

@@ -62,7 +62,6 @@ public partial class SessionsPage
 		_trainers = await CommonData.LoadTableDataByStatus<TrainerModel>(TableNames.Trainer);
 
 		await LoadSessions();
-		await LoadValidPersons();
 
 		StateHasChanged();
 	}
@@ -78,6 +77,7 @@ public partial class SessionsPage
 	private async Task LoadSessions()
 	{
 		_sessions = await SessionData.LoadSessionDetailsByDateRange(_selectedDate, _selectedDate);
+		await LoadValidPersons();
 		StateHasChanged();
 	}
 
@@ -86,7 +86,8 @@ public partial class SessionsPage
 		_validSubs = await SubscriptionData.LoadValidSubscriptionByDate(_selectedDate);
 		_validSubs = [.. _validSubs
 			.GroupBy(sub => sub.PersonId)
-			.Select(group => group.First())];
+			.Select(group => group.First())
+			.OrderBy(sub => sub.PersonName)];
 
 		if (_selectedSlot is null || _selectedSlot.Id <= 0)
 			return;
