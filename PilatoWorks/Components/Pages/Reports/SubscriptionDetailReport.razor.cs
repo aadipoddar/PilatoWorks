@@ -24,8 +24,8 @@ public partial class SubscriptionDetailReport
 		if (firstRender)
 		{
 			var today = DateOnly.FromDateTime(DateTime.Today);
-			SubscriptionsStartDate = new DateOnly(today.Year, today.Month, 1);
-			SubscriptionsEndDate = new DateOnly(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month));
+			SubscriptionsStartDate = new DateOnly(today.Year, 1, 1);
+			SubscriptionsEndDate = new DateOnly(today.Year, 12, 31);
 
 			await LoadSubscriptionData();
 		}
@@ -92,6 +92,7 @@ public partial class SubscriptionDetailReport
 	private async Task LoadSubscriptionData()
 	{
 		_subscriptionModels = await SubscriptionData.LoadSubscriptionByDateRange(SubscriptionsStartDate, SubscriptionsEndDate);
+		_subscriptionModels = [.. _subscriptionModels.OrderByDescending(s => s.SubscriptionId)];
 		await _sfSubscriptionGrid.Refresh();
 		StateHasChanged();
 	}
