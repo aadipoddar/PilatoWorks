@@ -160,6 +160,85 @@ public partial class SubscriptionsPage
 	}
 	#endregion
 
+	#region Quick Actions
+	private async Task OnEditExtendLastSubscriptionClick()
+	{
+		if (_person is null || _person.Id <= 0)
+		{
+			await JS.InvokeVoidAsync("alert", "Please select a client first.");
+			return;
+		}
+
+		var subscriptions = await SubscriptionData.LoadSubscriptionByPerson(_person.Id);
+		if (subscriptions is null || subscriptions.Count == 0)
+		{
+			await JS.InvokeVoidAsync("alert", "No subscriptions found for this client.");
+			return;
+		}
+
+		var lastSubscription = subscriptions
+			.OrderByDescending(s => s.SubscriptionValidTo)
+			.FirstOrDefault();
+		if (lastSubscription is null)
+		{
+			await JS.InvokeVoidAsync("alert", "No valid subscription found for this client.");
+			return;
+		}
+
+		NavManager.NavigateTo($"/Subscriptions/{lastSubscription.SubscriptionId}", true);
+	}
+
+	private async Task OnRenewLastSubscriptionClick()
+	{
+		if (_person is null || _person.Id <= 0)
+		{
+			await JS.InvokeVoidAsync("alert", "Please select a client first.");
+			return;
+		}
+
+		var subscriptions = await SubscriptionData.LoadSubscriptionByPerson(_person.Id);
+		if (subscriptions is null || subscriptions.Count == 0)
+		{
+			await JS.InvokeVoidAsync("alert", "No subscriptions found for this client.");
+			return;
+		}
+
+		var lastSubscription = subscriptions
+			.OrderByDescending(s => s.SubscriptionValidTo)
+			.FirstOrDefault();
+		if (lastSubscription is null)
+		{
+			await JS.InvokeVoidAsync("alert", "No valid subscription found for this client.");
+			return;
+		}
+
+		_subscription = new()
+		{
+			Id = 0,
+			PersonId = _person.Id,
+			SessionTypeId = lastSubscription.SessionTypeId,
+			NoSessions = lastSubscription.NoOfSessions,
+			Booking = lastSubscription.BookingAmount,
+			ValidFrom = lastSubscription.SubscriptionValidTo.AddDays(1),
+			ValidTo = lastSubscription.SubscriptionValidTo.AddDays((lastSubscription.SubscriptionValidTo.ToDateTime(TimeOnly.MinValue) -
+				lastSubscription.SubscriptionValidFrom.ToDateTime(TimeOnly.MinValue)).Days + 1),
+			SubscriptionDate = DateTime.Now.AddHours(5).AddMinutes(30),
+			UserId = _user?.Id ?? 0,
+			Status = true
+		};
+
+		_minValidDate = lastSubscription.SubscriptionValidTo.ToDateTime(new TimeOnly(0, 0)).AddDays(1);
+
+		_cash = 0;
+		_card = 0;
+		_upi = 0;
+
+		StateHasChanged();
+
+		await JS.InvokeVoidAsync("alert", "Subscription renewed with same details as the last subscription. Please verify and save.");
+	}
+	#endregion
+
 	#region Saving
 	private async Task<bool> ValidateForm()
 	{
@@ -272,11 +351,7 @@ public partial class SubscriptionsPage
 			});
 		}
 
-		if (SubscriptionId.HasValue && SubscriptionId.Value > 0)
-			NavManager.NavigateTo("/");
-
-		else
-			NavManager.NavigateTo(NavManager.Uri, forceLoad: true);
+		NavManager.NavigateTo("/Subscriptions", true);
 	}
 	#endregion
 }
