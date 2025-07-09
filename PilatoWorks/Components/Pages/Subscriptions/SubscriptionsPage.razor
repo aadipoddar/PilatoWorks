@@ -80,7 +80,7 @@
 				</div>
 			</div>
 
-			@if (SubscriptionId is null)
+			@if (SubscriptionId is null && _person is not null && _person.Id > 0)
 			{
 				<!-- Quick Actions Section -->
 				<div class="card-section">
